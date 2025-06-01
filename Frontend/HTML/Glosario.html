@@ -1,11 +1,705 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farmaline Glosario</title>
+    <title>Glosario Médico - Farmaline</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/Menu.css">
+    <link rel="stylesheet" href="../CSS/Index.css">
 </head>
 <body>
-    
+    <div class="main-container">
+        <!-- Menu -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="me-2">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="Index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Carrito.html">Carrito</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Pedidos.html">Pedidos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="Glosario.html">Glosario</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Login.html">Cuenta</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Glosario -->
+        <div class="container my-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="text-center mb-5">
+                    <h1 class="display-4 text-teal">
+                        <i class="fas fa-book-medical me-3"></i>
+                        Glosario de Medicamentos
+                    </h1>
+                    <p class="lead text-muted">Información detallada sobre medicamentos y tratamientos farmacológicos</p>
+                </div>
+
+                <!-- Buscador y filtros -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mx-auto">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" id="searchGlosario" class="form-control" placeholder="Buscar medicamento...">
+                        </div>
+                    </div>
+                    <!-- Los filtros adicionales se agregarán dinámicamente aquí -->
+                </div>
+
+                <div class="accordion" id="glosarioAccordion">
+                    <!-- Letra A -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseA">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>A - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseA" class="accordion-collapse collapse show" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Amoxicilina
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antibiótico de amplio espectro<br>
+                                                    <strong>Familia:</strong> Penicilinas<br>
+                                                    <strong>Usos:</strong> Infecciones bacterianas del tracto respiratorio, urinario, piel y tejidos blandos.<br>
+                                                    <strong>Presentación:</strong> Cápsulas 500mg, suspensión oral 250mg/5ml<br>
+                                                    <strong>Dosis típica:</strong> 500mg cada 8 horas por 7-10 días<br>
+                                                    <strong>Precauciones:</strong> No usar en alergia a penicilinas<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Ácido Acetilsalicílico (Aspirina)
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Analgésico, antipirético, antiinflamatorio<br>
+                                                    <strong>Familia:</strong> AINEs (Antiinflamatorios no esteroideos)<br>
+                                                    <strong>Usos:</strong> Dolor, fiebre, inflamación, prevención cardiovascular<br>
+                                                    <strong>Presentación:</strong> Tabletas 100mg, 500mg<br>
+                                                    <strong>Dosis típica:</strong> 500mg cada 6-8 horas para dolor<br>
+                                                    <strong>Precauciones:</strong> No usar en menores de 16 años, úlceras gástricas<br>
+                                                    <strong>Disponibilidad:</strong> Venta libre
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra C -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseC">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>C - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseC" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Cefalexina
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antibiótico<br>
+                                                    <strong>Familia:</strong> Cefalosporinas de primera generación<br>
+                                                    <strong>Usos:</strong> Infecciones de piel, tracto respiratorio superior, tracto urinario<br>
+                                                    <strong>Presentación:</strong> Cápsulas 500mg, suspensión 250mg/5ml<br>
+                                                    <strong>Dosis típica:</strong> 500mg cada 6 horas<br>
+                                                    <strong>Precauciones:</strong> Alergia a cefalosporinas o penicilinas<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Ciprofloxacino
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antibiótico<br>
+                                                    <strong>Familia:</strong> Fluoroquinolonas<br>
+                                                    <strong>Usos:</strong> Infecciones del tracto urinario, respiratorio, gastrointestinal<br>
+                                                    <strong>Presentación:</strong> Tabletas 500mg, 750mg<br>
+                                                    <strong>Dosis típica:</strong> 500mg cada 12 horas<br>
+                                                    <strong>Precauciones:</strong> No usar en embarazo, menores de 18 años<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra D -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseD">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>D - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseD" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Diclofenaco
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antiinflamatorio no esteroideo (AINE)<br>
+                                                    <strong>Familia:</strong> Derivados del ácido acético<br>
+                                                    <strong>Usos:</strong> Dolor, inflamación, artritis, lesiones deportivas<br>
+                                                    <strong>Presentación:</strong> Tabletas 50mg, gel tópico, inyectable<br>
+                                                    <strong>Dosis típica:</strong> 50mg cada 8 horas<br>
+                                                    <strong>Precauciones:</strong> Úlceras gástricas, problemas renales o cardíacos<br>
+                                                    <strong>Disponibilidad:</strong> Venta libre
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Dexametasona
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Corticosteroide<br>
+                                                    <strong>Familia:</strong> Glucocorticoides sintéticos<br>
+                                                    <strong>Usos:</strong> Inflamación, alergias, enfermedades autoinmunes<br>
+                                                    <strong>Presentación:</strong> Tabletas 0.5mg, 4mg, inyectable<br>
+                                                    <strong>Dosis típica:</strong> 0.5-4mg diarios según condición<br>
+                                                    <strong>Precauciones:</strong> Diabetes, hipertensión, infecciones activas<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra I -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseI">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>I - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseI" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Ibuprofeno
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antiinflamatorio no esteroideo (AINE)<br>
+                                                    <strong>Familia:</strong> Derivados del ácido propiónico<br>
+                                                    <strong>Usos:</strong> Dolor, fiebre, inflamación, dismenorrea<br>
+                                                    <strong>Presentación:</strong> Tabletas 400mg, 600mg, suspensión pediátrica<br>
+                                                    <strong>Dosis típica:</strong> 400mg cada 6-8 horas<br>
+                                                    <strong>Precauciones:</strong> Úlceras gástricas, asma, problemas renales<br>
+                                                    <strong>Disponibilidad:</strong> Venta libre
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Insulina
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Hormona antidiabética<br>
+                                                    <strong>Familia:</strong> Hormonas pancreáticas<br>
+                                                    <strong>Usos:</strong> Diabetes mellitus tipo 1 y 2<br>
+                                                    <strong>Presentación:</strong> Viales, plumas precargadas, cartuchos<br>
+                                                    <strong>Dosis típica:</strong> Variable según glucemia y peso<br>
+                                                    <strong>Precauciones:</strong> Hipoglucemia, rotación de sitios de inyección<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra L -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseL">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>L - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseL" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Losartán
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antihipertensivo<br>
+                                                    <strong>Familia:</strong> Antagonistas de receptores de angiotensina II<br>
+                                                    <strong>Usos:</strong> Hipertensión arterial, protección renal en diabetes<br>
+                                                    <strong>Presentación:</strong> Tabletas 50mg, 100mg<br>
+                                                    <strong>Dosis típica:</strong> 50-100mg una vez al día<br>
+                                                    <strong>Precauciones:</strong> Embarazo, hiperpotasemia, estenosis renal<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Loratadina
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antihistamínico<br>
+                                                    <strong>Familia:</strong> Antihistamínicos H1 de segunda generación<br>
+                                                    <strong>Usos:</strong> Rinitis alérgica, urticaria, alergias estacionales<br>
+                                                    <strong>Presentación:</strong> Tabletas 10mg, jarabe 5mg/5ml<br>
+                                                    <strong>Dosis típica:</strong> 10mg una vez al día<br>
+                                                    <strong>Precauciones:</strong> Insuficiencia hepática severa<br>
+                                                    <strong>Disponibilidad:</strong> Venta libre
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra M -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseM">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>M - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseM" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Metformina
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Antidiabético oral<br>
+                                                    <strong>Familia:</strong> Biguanidas<br>
+                                                    <strong>Usos:</strong> Diabetes mellitus tipo 2, síndrome metabólico<br>
+                                                    <strong>Presentación:</strong> Tabletas 500mg, 850mg, 1000mg<br>
+                                                    <strong>Dosis típica:</strong> 500-1000mg cada 12 horas con alimentos<br>
+                                                    <strong>Precauciones:</strong> Insuficiencia renal, acidosis láctica<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Metamizol (Dipirona)
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Analgésico, antipirético<br>
+                                                    <strong>Familia:</strong> Pirazolonas<br>
+                                                    <strong>Usos:</strong> Dolor moderado a severo, fiebre alta<br>
+                                                    <strong>Presentación:</strong> Tabletas 500mg, gotas, inyectable<br>
+                                                    <strong>Dosis típica:</strong> 500mg cada 6-8 horas<br>
+                                                    <strong>Precauciones:</strong> Agranulocitosis, alergia a pirazolonas<br>
+                                                    <strong>Disponibilidad:</strong> Venta libre
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra O -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseO">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>O - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseO" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Omeprazol
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Inhibidor de bomba de protones<br>
+                                                    <strong>Familia:</strong> Benzimidazoles<br>
+                                                    <strong>Usos:</strong> Úlcera péptica, reflujo gastroesofágico, gastritis<br>
+                                                    <strong>Presentación:</strong> Cápsulas 20mg, 40mg<br>
+                                                    <strong>Dosis típica:</strong> 20mg una vez al día antes del desayuno<br>
+                                                    <strong>Precauciones:</strong> Deficiencia de vitamina B12, fracturas óseas<br>
+                                                    <strong>Disponibilidad:</strong> Venta libre
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Oxitocina
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Hormona sintética<br>
+                                                    <strong>Familia:</strong> Hormonas hipofisarias<br>
+                                                    <strong>Usos:</strong> Inducción del parto, control de hemorragia postparto<br>
+                                                    <strong>Presentación:</strong> Inyectable 5 UI/ml<br>
+                                                    <strong>Dosis típica:</strong> Variable según indicación médica<br>
+                                                    <strong>Precauciones:</strong> Solo uso hospitalario, monitoreo fetal<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra P -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseP">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>P - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseP" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Paracetamol (Acetaminofén)
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Analgésico, antipirético<br>
+                                                    <strong>Familia:</strong> Derivados del para-aminofenol<br>
+                                                    <strong>Usos:</strong> Dolor leve a moderado, fiebre<br>
+                                                    <strong>Presentación:</strong> Tabletas 500mg, jarabe, supositorios<br>
+                                                    <strong>Dosis típica:</strong> 500-1000mg cada 6-8 horas<br>
+                                                    <strong>Precauciones:</strong> Hepatotoxicidad en sobredosis, alcoholismo<br>
+                                                    <strong>Disponibilidad:</strong> Venta libre
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Prednisona
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Corticosteroide<br>
+                                                    <strong>Familia:</strong> Glucocorticoides<br>
+                                                    <strong>Usos:</strong> Inflamación, alergias, enfermedades autoinmunes<br>
+                                                    <strong>Presentación:</strong> Tabletas 5mg, 20mg, 50mg<br>
+                                                    <strong>Dosis típica:</strong> 5-60mg diarios según condición<br>
+                                                    <strong>Precauciones:</strong> Diabetes, osteoporosis, supresión adrenal<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Letra S -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseS">
+                                <i class="fas fa-pills me-2 text-teal"></i>
+                                <strong>S - Medicamentos</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseS" class="accordion-collapse collapse" data-bs-parent="#glosarioAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-tablets me-2"></i>
+                                                    Simvastatina
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Hipolipemiante<br>
+                                                    <strong>Familia:</strong> Estatinas<br>
+                                                    <strong>Usos:</strong> Hipercolesterolemia, prevención cardiovascular<br>
+                                                    <strong>Presentación:</strong> Tabletas 10mg, 20mg, 40mg<br>
+                                                    <strong>Dosis típica:</strong> 20-40mg una vez al día por la noche<br>
+                                                    <strong>Precauciones:</strong> Miopatía, hepatotoxicidad, embarazo<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-teal">
+                                                    <i class="fas fa-capsules me-2"></i>
+                                                    Salbutamol
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Tipo:</strong> Broncodilatador<br>
+                                                    <strong>Familia:</strong> Beta-2 agonistas<br>
+                                                    <strong>Usos:</strong> Asma, broncoespasmo, EPOC<br>
+                                                    <strong>Presentación:</strong> Inhalador, nebulizador, tabletas<br>
+                                                    <strong>Dosis típica:</strong> 2 inhalaciones cada 4-6 horas<br>
+                                                    <strong>Precauciones:</strong> Taquicardia, temblor, hipopotasemia<br>
+                                                    <strong>Disponibilidad:</strong> Requiere receta médica
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="row mt-5">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle me-2"></i>Información Importante</h5>
+                            <ul class="mb-0">
+                                <li><strong>Consulte siempre a su médico</strong> antes de tomar cualquier medicamento</li>
+                                <li><strong>Lea el prospecto</strong> completo antes de usar el medicamento</li>
+                                <li><strong>Respete las dosis</strong> y horarios indicados por su médico</li>
+                                <li><strong>No se automedique</strong> - algunos medicamentos requieren receta médica</li>
+                                <li><strong>Informe sobre alergias</strong> y otros medicamentos que esté tomando</li>
+                                <li><strong>Conserve los medicamentos</strong> en lugar fresco y seco, fuera del alcance de niños</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row">
+                <!-- Logo y descripción -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-logo mb-3">
+                        <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="me-2">
+                        <h4 class="text-white d-inline-block mb-0">FARMALINE</h4>
+                    </div>
+                    <p class="footer-description">
+                        Farmacia online líder en el país, comprometida con tu salud y bienestar. 
+                        Productos farmacéuticos de calidad con entrega a domicilio.
+                    </p>
+                </div>
+
+                <!-- Horarios -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-title">
+                        <i class="fas fa-clock me-2"></i>
+                        Horarios de Atención
+                    </h5>
+                    <div class="footer-schedule">
+                        <div class="schedule-item">
+                            <strong>FARMACIA ONLINE:</strong><br>
+                            Lun - Dom: 24 Horas<br>
+                            Pedidos las 24/7
+                        </div>
+                        <div class="schedule-item">
+                            <strong>ATENCIÓN AL CLIENTE:</strong><br>
+                            Lun - Vie: 8:00 a 20:00 Hrs.<br>
+                            Sáb: 8:00 - 18:00 Hrs.
+                        </div>
+                        <div class="schedule-item">
+                            <strong>ENTREGAS:</strong><br>
+                            Lun a Vie: 9:00 a 19:00 Hrs.<br>
+                            Sáb: 9:00 - 15:00 Hrs.<br>
+                            <span class="text-warning">Entregas Express 24 Horas</span><br>
+                            <span class="text-success">Emergencias: 911</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegación -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-title">Guía de Navegación</h5>
+                    <ul class="footer-links">
+                        <li><a href="Index.html">Nuestros Productos</a></li>
+                        <li><a href="#" data-category="medicamentos">Medicamentos</a></li>
+                        <li><a href="#" data-category="vitaminas">Vitaminas y Suplementos</a></li>
+                        <li><a href="#" data-category="cuidado-personal">Cuidado Personal</a></li>
+                        <li><a href="#" data-category="bebes">Bebés y Niños</a></li>
+                        <li><a href="Glosario.html">Glosario Médico</a></li>
+                        <li><a href="Pedidos.html">Mis Pedidos</a></li>
+                        <li><a href="Login.html">Mi Cuenta</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contacto -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-title">Contacto</h5>
+                    <div class="footer-contact">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+51 (1) 234-5678</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp +51 987654321</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>contacto@farmaline.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>
+                                <strong>SEDE PRINCIPAL:</strong><br>
+                                Av. Salud 123, Lima - Perú
+                            </span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-store"></i>
+                            <span>
+                                <strong>SUCURSALES:</strong><br>
+                                Lima, Arequipa, Trujillo<br>
+                                Cusco, Chiclayo
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Redes sociales -->
+                    <div class="social-links mt-3">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <hr class="footer-divider">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="copyright">
+                        © 2024 Farmaline. Todos los derechos reservados.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-legal">
+                        <a href="#">Términos y Condiciones</a>
+                        <span class="mx-2">|</span>
+                        <a href="#">Política de Privacidad</a>
+                        <span class="mx-2">|</span>
+                        <a href="#">Política de Cookies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/glosario.js"></script>
 </body>
 </html>
