@@ -35,7 +35,7 @@ public class Producto {
     }
 
     public void setIdProducto(Integer idProducto) {
-        this.idUsuario = idProducto;
+        this.idProducto = idProducto;
     }
 
     public String getNombre() {
