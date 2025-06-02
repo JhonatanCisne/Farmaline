@@ -1,37 +1,28 @@
-package com.Farmaline.Farmaline.model;
+package com.Farmaline.Farmaline.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name="Vehiculo")
-public class Vehiculo {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="ID_Vehiculo")
+public class VehiculoDTO {
     private Integer idVehiculo;
-    
-    @Column(name="Placa")
     private String placa;
-    
-    @Column(name="Categoria")
     private String categoria;
-    
-    @Column(name="Marca")
     private String marca;
-    
-    @Column(name="Modelo")
     private String modelo;
-    
-    @Column(name="Anio")
     private Integer anio;
-    
+
+    public VehiculoDTO() {}
+
+    public VehiculoDTO(Integer idVehiculo, String placa, String categoria, String marca, String modelo, Integer anio) {
+        this.idVehiculo = idVehiculo;
+        this.placa = placa;
+        this.categoria = categoria;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.anio = anio;
+    }
+
+    // Getters y Setters
+
     public Integer getIdVehiculo() {
-    return idVehiculo;
+        return idVehiculo;
     }
 
     public void setIdVehiculo(Integer idVehiculo) {
@@ -77,5 +68,4 @@ public class Vehiculo {
     public void setAnio(Integer anio) {
         this.anio = anio;
     }
-
 }
