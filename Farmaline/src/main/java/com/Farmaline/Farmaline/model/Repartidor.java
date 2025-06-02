@@ -33,7 +33,7 @@ public class Repartidor {
 
     @OneToOne	
     @JoinColumn(name = "ID_Vehiculo", referencedColumnName = "ID_Vehiculo")
-    private Vehiculo Vehiculo;
+    private Vehiculo vehiculo;
 
     @ManyToOne
     @JoinColumn(name = "ID_Administrador", referencedColumnName = "ID_Administrador") 
@@ -80,11 +80,11 @@ public class Repartidor {
     }
 
     public Vehiculo getVehiculo() {
-        return Vehiculo;
+        return vehiculo;
     }
 
     public void setVehiculo(Vehiculo vehiculo) {
-        this.Vehiculo = vehiculo;
+        this.vehiculo = vehiculo;
     }
 
     public Administrador getAdministrador() {

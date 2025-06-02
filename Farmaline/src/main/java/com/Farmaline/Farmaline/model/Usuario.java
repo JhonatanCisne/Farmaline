@@ -21,13 +21,13 @@ public class Usuario {
     @Column(name="Apellido", nullable=false)
     private String apellido;
 
-    @Column(name="Correo_Electronico", nullable=false)
+    @Column(name="Correo_Electronico", nullable=false, unique = true)
     private String correoElectronico;
 
     @Column(name="Domicilio", nullable=false)
     private String domicilio;
 
-    @Column(name="Telefondo", nullable=false)
+    @Column(name="Telefono", nullable=false, unique = true)
     private String telefono;
     
     @Column(name="Contrasena", nullable=false)
@@ -49,7 +49,7 @@ public class Usuario {
         this.nombre=nombre;
     }
 
-     public String getApellido(){
+    public String getApellido(){
         return apellido;
     }
 
@@ -57,7 +57,7 @@ public class Usuario {
         this.apellido=apellido;
     }
     
-     public String getCorreoElectronico(){
+    public String getCorreoElectronico(){
         return correoElectronico;
     }
 
@@ -65,7 +65,7 @@ public class Usuario {
         this.correoElectronico=correoElectronico;
     }
 
-     public String getDomicilio(){
+    public String getDomicilio(){
         return domicilio;
     }
 
@@ -88,6 +88,4 @@ public class Usuario {
     public void setContrasena(String contrasena){
         this.contrasena=contrasena;
     }
-    
 }
-
