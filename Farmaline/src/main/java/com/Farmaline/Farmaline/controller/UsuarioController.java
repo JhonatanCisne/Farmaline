@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus; // Asegúrate de que esta importación sea correcta
+import org.springframework.http.HttpStatus; 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import com.Farmaline.Farmaline.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class UsuarioController {
 
     private final UsuarioService usuarioService; 
@@ -101,7 +103,6 @@ public class UsuarioController {
         } else if (domicilio != null && !domicilio.isEmpty()) {
             usuarios = usuarioService.buscarUsuariosPorDomicilio(domicilio);
         } else {
-            // Si no se proporciona ningún parámetro, devolver todos los usuarios o un BAD_REQUEST según la lógica de negocio
             usuarios = usuarioService.obtenerTodosLosUsuarios();
         }
         return new ResponseEntity<>(usuarios, HttpStatus.OK);

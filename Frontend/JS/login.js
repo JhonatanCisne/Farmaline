@@ -1,535 +1,444 @@
-// Variables globales
-let currentUser = null
-const bootstrap = window.bootstrap // Declare the bootstrap variable
+let currentUser = null;
+const bootstrap = window.bootstrap;
 
-// Inicializar cuando el DOM esté listo
+const API_BASE_URL = "http://localhost:8080";
+const LOGIN_ENDPOINT = `${API_BASE_URL}/api/usuarios/login`;
+const REGISTER_ENDPOINT = `${API_BASE_URL}/api/usuarios/registrar`;
+
 document.addEventListener("DOMContentLoaded", () => {
-  initializeLoginPage()
-})
+    initializeLoginPage();
+});
 
-// Inicializar la página de login
 function initializeLoginPage() {
-  setupEventListeners()
-  checkExistingSession()
+    setupEventListeners();
+    checkExistingSession();
+    const contenedor = document.getElementById("contenedor");
+    const registrarseBtn = document.getElementById("registrarse");
+    const iniciarSesionBtn = document.getElementById("iniciarSesion");
+
+    if (registrarseBtn && contenedor) {
+        registrarseBtn.addEventListener("click", () => {
+            contenedor.classList.add("activo");
+        });
+    }
+
+    if (iniciarSesionBtn && contenedor) {
+        iniciarSesionBtn.addEventListener("click", () => {
+            contenedor.classList.remove("activo");
+        });
+    }
 }
 
-// Configurar event listeners
 function setupEventListeners() {
-  // Formulario de login
-  document.getElementById("loginForm").addEventListener("submit", handleLogin)
-
-  // Formulario de registro
-  document.getElementById("registerForm").addEventListener("submit", handleRegister)
-
-  // Formulario de recuperación de contraseña
-  document.getElementById("forgotPasswordForm").addEventListener("submit", handleForgotPassword)
-
-  // Toggle password visibility
-  setupPasswordToggle("toggleLoginPassword", "loginPassword")
-  setupPasswordToggle("toggleRegisterPassword", "registerPassword")
-  setupPasswordToggle("toggleConfirmPassword", "confirmPassword")
-
-  // Validación en tiempo real
-  setupRealTimeValidation()
-
-  // Verificar coincidencia de contraseñas
-  document.getElementById("confirmPassword").addEventListener("input", checkPasswordMatch)
-  document.getElementById("registerPassword").addEventListener("input", function () {
-    checkPasswordStrength(this.value)
-    checkPasswordMatch()
-  })
-}
-
-// Configurar toggle de contraseña
-function setupPasswordToggle(buttonId, inputId) {
-  const button = document.getElementById(buttonId)
-  const input = document.getElementById(inputId)
-
-  button.addEventListener("click", function () {
-    const type = input.getAttribute("type") === "password" ? "text" : "password"
-    input.setAttribute("type", type)
-
-    const icon = this.querySelector("i")
-    icon.classList.toggle("fa-eye")
-    icon.classList.toggle("fa-eye-slash")
-  })
-}
-
-// Manejar login
-async function handleLogin(e) {
-  e.preventDefault()
-
-  const form = e.target
-  const email = document.getElementById("loginEmail").value
-  const password = document.getElementById("loginPassword").value
-  const remember = document.getElementById("rememberMe").checked
-
-  // Validar formulario
-  if (!form.checkValidity()) {
-    form.classList.add("was-validated")
-    return
-  }
-
-  // Mostrar loading
-  const submitBtn = form.querySelector('button[type="submit"]')
-  setLoadingState(submitBtn, true)
-
-  try {
-    // Simular llamada a API
-    await simulateAPICall()
-
-    // Verificar credenciales (simulado)
-    const loginSuccess = await validateCredentials(email, password)
-
-    if (loginSuccess) {
-      // Guardar sesión
-      const userData = {
-        email: email,
-        name: "Usuario Demo",
-        loginTime: new Date().toISOString(),
-      }
-
-      if (remember) {
-        localStorage.setItem("farmalineUser", JSON.stringify(userData))
-      } else {
-        sessionStorage.setItem("farmalineUser", JSON.stringify(userData))
-      }
-
-      showAlert("success", "¡Bienvenido! Inicio de sesión exitoso.")
-
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        window.location.href = "Index.html"
-      }, 2000)
+    const loginForm = document.getElementById("formularioInicioSesion");
+    if (loginForm) {
+        loginForm.addEventListener("submit", handleLogin);
     } else {
-      showAlert("danger", "Credenciales incorrectas. Por favor verifica tu email y contraseña.")
-    }
-  } catch (error) {
-    showAlert("danger", "Error al iniciar sesión. Por favor intenta nuevamente.")
-    console.error("Login error:", error)
-  } finally {
-    setLoadingState(submitBtn, false)
-  }
-}
-
-// Manejar registro
-async function handleRegister(e) {
-  e.preventDefault()
-
-  const form = e.target
-
-  // Validar formulario
-  if (!form.checkValidity()) {
-    form.classList.add("was-validated")
-    return
-  }
-
-  // Verificar que las contraseñas coincidan
-  if (!checkPasswordMatch()) {
-    return
-  }
-
-  const formData = {
-    firstName: document.getElementById("firstName").value,
-    lastName: document.getElementById("lastName").value,
-    email: document.getElementById("registerEmail").value,
-    phone: document.getElementById("phone").value,
-    birthDate: document.getElementById("birthDate").value,
-    password: document.getElementById("registerPassword").value,
-    newsletter: document.getElementById("newsletter").checked,
-  }
-
-  // Mostrar loading
-  const submitBtn = form.querySelector('button[type="submit"]')
-  setLoadingState(submitBtn, true)
-
-  try {
-    // Simular llamada a API
-    await simulateAPICall()
-
-    // Verificar si el email ya existe
-    const emailExists = await checkEmailExists(formData.email)
-
-    if (emailExists) {
-      showAlert("danger", "Este correo electrónico ya está registrado. Intenta con otro o inicia sesión.")
-      return
+        console.error("No se encontró el formulario de inicio de sesión con ID 'formularioInicioSesion'.");
     }
 
-    // Registrar usuario (simulado)
-    const registrationSuccess = await registerUser(formData)
-
-    if (registrationSuccess) {
-      showAlert("success", "¡Registro exitoso! Ya puedes iniciar sesión con tu cuenta.")
-
-      // Limpiar formulario
-      form.reset()
-      form.classList.remove("was-validated")
-
-      // Cambiar a pestaña de login
-      setTimeout(() => {
-        document.getElementById("login-tab").click()
-        document.getElementById("loginEmail").value = formData.email
-      }, 2000)
+    const registerForm = document.getElementById("formularioRegistro");
+    if (registerForm) {
+        registerForm.addEventListener("submit", handleRegister);
+    } else {
+        console.error("No se encontró el formulario de registro con ID 'formularioRegistro'.");
     }
-  } catch (error) {
-    showAlert("danger", "Error al crear la cuenta. Por favor intenta nuevamente.")
-    console.error("Registration error:", error)
-  } finally {
-    setLoadingState(submitBtn, false)
-  }
+
+    const forgotPasswordForm = document.getElementById("forgotPasswordForm");
+    if (forgotPasswordForm) {
+        forgotPasswordForm.addEventListener("submit", handleForgotPassword);
+    }
+
+    setupRealTimeValidation();
+
+    const confirmPasswordInput = document.getElementById("contraseña");
+    const registerPasswordInput = document.getElementById("contraseña");
+    if (confirmPasswordInput && registerPasswordInput) {
+        confirmPasswordInput.addEventListener("input", checkPasswordMatch);
+        registerPasswordInput.addEventListener("input", function() {
+            checkPasswordStrength(this.value);
+            checkPasswordMatch();
+        });
+    }
 }
 
-// Manejar recuperación de contraseña
-async function handleForgotPassword(e) {
-  e.preventDefault()
+function setupPasswordToggle(buttonId, inputId) {
+    const button = document.getElementById(buttonId);
+    const input = document.getElementById(inputId);
 
-  const email = document.getElementById("forgotEmail").value
-  const submitBtn = e.target.querySelector('button[type="submit"]')
+    if (button && input) {
+        button.addEventListener("click", function() {
+            const type = input.getAttribute("type") === "password" ? "text" : "password";
+            input.setAttribute("type", type);
 
-  setLoadingState(submitBtn, true)
-
-  try {
-    // Simular envío de email
-    await simulateAPICall()
-
-    showAlert("success", "Se ha enviado un enlace de recuperación a tu correo electrónico.")
-
-    // Cerrar modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById("forgotPasswordModal"))
-    modal.hide()
-
-    // Limpiar formulario
-    document.getElementById("forgotPasswordForm").reset()
-  } catch (error) {
-    showAlert("danger", "Error al enviar el enlace. Por favor intenta nuevamente.")
-  } finally {
-    setLoadingState(submitBtn, false)
-  }
+            const icon = this.querySelector("i");
+            if (icon) {
+                icon.classList.toggle("fa-eye");
+                icon.classList.toggle("fa-eye-slash");
+            }
+        });
+    } else {
+        console.warn(`Toggle button (${buttonId}) or input (${inputId}) not found for password toggle.`);
+    }
 }
 
-// Configurar validación en tiempo real
-function setupRealTimeValidation() {
-  const inputs = document.querySelectorAll("input[required]")
+async function handleLogin(e) {
+    e.preventDefault();
 
-  inputs.forEach((input) => {
-    input.addEventListener("blur", function () {
-      validateField(this)
-    })
+    const form = e.target;
+    const emailInput = document.getElementById("correoInicio");
+    const passwordInput = document.getElementById("contraseñaInicio");
 
-    input.addEventListener("input", function () {
-      if (this.classList.contains("is-invalid")) {
-        validateField(this)
-      }
-    })
-  })
-}
+    let isFormValid = true;
+    if (!validateField(emailInput, isEmail(emailInput.value.trim()), "Correo no válido.")) {
+        isFormValid = false;
+    }
+    if (!validateField(passwordInput, passwordInput.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres.")) {
+        isFormValid = false;
+    }
 
-// Validar campo individual
-function validateField(field) {
-  const isValid = field.checkValidity()
+    if (!isFormValid) {
+        return;
+    }
 
-  field.classList.remove("is-valid", "is-invalid")
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-  if (field.value.trim() !== "") {
-    field.classList.add(isValid ? "is-valid" : "is-invalid")
-  }
+    const submitBtn = form.querySelector('button[type="submit"]');
+    setLoadingState(submitBtn, true);
+    showAlert("info", "Iniciando sesión...");
 
-  return isValid
-}
-
-// Verificar fortaleza de contraseña
-function checkPasswordStrength(password) {
-  const strengthIndicator = document.querySelector(".password-strength")
-
-  if (!strengthIndicator) {
-    // Crear indicador si no existe
-    const indicator = document.createElement("div")
-    indicator.className = "password-strength"
-    document.getElementById("registerPassword").parentNode.appendChild(indicator)
-  }
-
-  let strength = 0
-
-  if (password.length >= 6) strength++
-  if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++
-  if (password.match(/[0-9]/)) strength++
-  if (password.match(/[^a-zA-Z0-9]/)) strength++
-
-  const indicator = document.querySelector(".password-strength")
-  indicator.className = "password-strength"
-
-  if (strength <= 1) {
-    indicator.classList.add("weak")
-  } else if (strength <= 2) {
-    indicator.classList.add("medium")
-  } else {
-    indicator.classList.add("strong")
-  }
-}
-
-// Verificar coincidencia de contraseñas
-function checkPasswordMatch() {
-  const password = document.getElementById("registerPassword").value
-  const confirmPassword = document.getElementById("confirmPassword").value
-  const confirmField = document.getElementById("confirmPassword")
-
-  if (confirmPassword === "") {
-    confirmField.classList.remove("is-valid", "is-invalid")
-    return true
-  }
-
-  const match = password === confirmPassword
-
-  confirmField.classList.remove("is-valid", "is-invalid")
-  confirmField.classList.add(match ? "is-valid" : "is-invalid")
-
-  const feedback = confirmField.nextElementSibling
-  if (feedback && feedback.classList.contains("invalid-feedback")) {
-    feedback.textContent = match ? "" : "Las contraseñas no coinciden."
-  }
-
-  return match
-}
-
-// Verificar sesión existente
-function checkExistingSession() {
-  const userData = localStorage.getItem("farmalineUser") || sessionStorage.getItem("farmalineUser")
-
-  if (userData) {
     try {
-      currentUser = JSON.parse(userData)
-      // Si ya hay sesión, redirigir al index
-      window.location.href = "Index.html"
+        const response = await fetch(LOGIN_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ correoElectronico: email, contrasena: password }),
+        });
+
+        if (response.ok) {
+            const userData = await response.json();
+            sessionStorage.setItem("farmalineUser", JSON.stringify(userData));
+            currentUser = userData;
+
+            showAlert("success", `¡Bienvenido, ${userData.nombre || userData.email || userData.correoElectronico}! Inicio de sesión exitoso.`);
+
+            setTimeout(() => {
+                window.location.href = "Index.html";
+            }, 1500);
+
+        } else if (response.status === 401) {
+            showAlert("danger", "Credenciales incorrectas. Por favor verifica tu email y contraseña.");
+        } else {
+            const errorData = await response.text();
+            showAlert("danger", `Error al iniciar sesión: ${errorData || response.statusText}.`);
+            console.error("Login error (server response):", response.status, errorData);
+        }
     } catch (error) {
-      // Si hay error al parsear, limpiar storage
-      localStorage.removeItem("farmalineUser")
-      sessionStorage.removeItem("farmalineUser")
+        showAlert("danger", "Error de conexión. No se pudo comunicar con el servidor. Intenta de nuevo más tarde.");
+        console.error("Login fetch error:", error);
+    } finally {
+        setLoadingState(submitBtn, false);
     }
-  }
 }
 
-// Funciones de simulación de API
+async function handleRegister(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const nombreInput = document.getElementById("nombre");
+    const correoInput = document.getElementById("correo");
+    const passwordInput = document.getElementById("contraseña");
+
+    let isFormValid = true;
+    if (!validateField(nombreInput, nombreInput.value.trim() !== "", "El nombre no puede estar vacío.")) {
+        isFormValid = false;
+    }
+    if (!validateField(correoInput, isEmail(correoInput.value.trim()), "Correo no válido.")) {
+        isFormValid = false;
+    }
+    if (!validateField(passwordInput, passwordInput.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres.")) {
+        isFormValid = false;
+    }
+
+    if (!isFormValid) {
+        return;
+    }
+
+    const formData = {
+        nombre: nombreInput.value.trim(),
+        correoElectronico: correoInput.value.trim(),
+        password: passwordInput.value.trim(),
+    };
+
+    const submitBtn = form.querySelector('button[type="button"]');
+    setLoadingState(submitBtn, true);
+    showAlert("info", "Registrando usuario...");
+
+    try {
+        const response = await fetch(REGISTER_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (response.ok && response.status === 201) {
+            const newUserData = await response.json();
+            showAlert("success", "¡Registro exitoso! Ya puedes iniciar sesión con tu cuenta.");
+
+            form.reset();
+            form.classList.remove("was-validated");
+
+            setTimeout(() => {
+                const contenedor = document.getElementById("contenedor");
+                if (contenedor) {
+                    contenedor.classList.remove("activo");
+                }
+                const correoInicioInput = document.getElementById("correoInicio");
+                if (correoInicioInput) {
+                    correoInicioInput.value = newUserData.correoElectronico;
+                }
+            }, 1500);
+
+        } else if (response.status === 400) {
+            const errorData = await response.text();
+            showAlert("danger", `Error de registro: ${errorData || "Datos inválidos o correo ya registrado."}`);
+        } else {
+            showAlert("danger", `Error al crear la cuenta. Código: ${response.status}. Por favor intenta nuevamente.`);
+            console.error("Registration error (server response):", response.status, await response.text());
+        }
+    } catch (error) {
+        showAlert("danger", "Error de conexión. No se pudo comunicar con el servidor para registrarte.");
+        console.error("Registration fetch error:", error);
+    } finally {
+        setLoadingState(submitBtn, false);
+    }
+}
+
+async function handleForgotPassword(e) {
+    e.preventDefault();
+
+    const email = document.getElementById("forgotEmail").value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+
+    setLoadingState(submitBtn, true);
+    showAlert("info", "Enviando enlace de recuperación...");
+
+    try {
+        await simulateAPICall();
+
+        showAlert("success", "Se ha enviado un enlace de recuperación a tu correo electrónico.");
+
+        const modalElement = document.getElementById("forgotPasswordModal");
+        const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        modal.hide();
+
+        document.getElementById("forgotPasswordForm").reset();
+    } catch (error) {
+        showAlert("danger", "Error al enviar el enlace. Por favor intenta nuevamente.");
+    } finally {
+        setLoadingState(submitBtn, false);
+    }
+}
+
+function setupRealTimeValidation() {
+    const loginInputs = document.querySelectorAll(".inicio-sesion input[required]");
+    const registerInputs = document.querySelectorAll(".registro input[required]");
+
+    loginInputs.forEach((input) => {
+        input.addEventListener("blur", function() {
+            if (this.id === "correoInicio") {
+                validateField(this, isEmail(this.value.trim()), "Correo no válido");
+            } else if (this.id === "contraseñaInicio") {
+                validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
+            } else {
+                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+            }
+        });
+        input.addEventListener("input", function() {
+            if (this.classList.contains("is-invalid")) {
+                 if (this.id === "correoInicio") {
+                    validateField(this, isEmail(this.value.trim()), "Correo no válido");
+                } else if (this.id === "contraseñaInicio") {
+                    validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
+                } else {
+                    validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+                }
+            }
+        });
+    });
+
+    registerInputs.forEach((input) => {
+        input.addEventListener("blur", function() {
+            if (this.id === "nombre") {
+                validateField(this, this.value.trim() !== "", "El nombre no puede estar vacío");
+            } else if (this.id === "correo") {
+                validateField(this, isEmail(this.value.trim()), "Correo no válido");
+            } else if (this.id === "contraseña") {
+                validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
+            } else {
+                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+            }
+        });
+        input.addEventListener("input", function() {
+            if (this.classList.contains("is-invalid")) {
+                 if (this.id === "nombre") {
+                    validateField(this, this.value.trim() !== "", "El nombre no puede estar vacío");
+                } else if (this.id === "correo") {
+                    validateField(this, isEmail(this.value.trim()), "Correo no válido");
+                } else if (this.id === "contraseña") {
+                    validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
+                } else {
+                    validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+                }
+            }
+        });
+    });
+}
+
+function validateField(field, condition, errorMessage) {
+    const formControl = field.closest(".form-control");
+    const small = formControl ? formControl.querySelector("small") : null;
+
+    if (condition) {
+        field.classList.remove("is-invalid");
+        field.classList.add("is-valid");
+        if (formControl) formControl.classList.remove("error");
+        if (small) small.innerText = "";
+        return true;
+    } else {
+        field.classList.remove("is-valid");
+        field.classList.add("is-invalid");
+        if (formControl) formControl.classList.add("error");
+        if (small) small.innerText = errorMessage;
+        return false;
+    }
+}
+
+function checkPasswordStrength(password) {
+    const strengthIndicator = document.getElementById("contraseña").closest(".form-control").querySelector(".password-strength");
+
+    if (!strengthIndicator) {
+        const indicator = document.createElement("div");
+        indicator.className = "password-strength";
+        document.getElementById("contraseña").parentNode.appendChild(indicator);
+    }
+
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+    if (password.match(/[0-9]/)) strength++;
+    if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+    const indicator = document.getElementById("contraseña").closest(".form-control").querySelector(".password-strength");
+    if (indicator) {
+        indicator.className = "password-strength";
+        if (strength <= 1) {
+            indicator.classList.add("weak");
+            indicator.innerText = "Débil";
+        } else if (strength <= 3) {
+            indicator.classList.add("medium");
+            indicator.innerText = "Media";
+        } else {
+            indicator.classList.add("strong");
+            indicator.innerText = "Fuerte";
+        }
+    }
+}
+
+function checkPasswordMatch() {
+    const passwordInput = document.getElementById("contraseña");
+    const password = passwordInput.value.trim();
+    const confirmPassword = passwordInput.value.trim();
+
+    const match = password === confirmPassword;
+
+    return match;
+}
+
+function checkExistingSession() {
+    const userData = localStorage.getItem("farmalineUser") || sessionStorage.getItem("farmalineUser");
+
+    if (userData) {
+        try {
+            currentUser = JSON.parse(userData);
+            window.location.href = "Index.html";
+        } catch (error) {
+            console.error("Error al parsear datos de sesión:", error);
+            localStorage.removeItem("farmalineUser");
+            sessionStorage.removeItem("farmalineUser");
+        }
+    }
+}
+
 async function simulateAPICall() {
-  return new Promise((resolve) => {
-    setTimeout(resolve, 1000 + Math.random() * 1000)
-  })
+    return new Promise((resolve) => {
+        setTimeout(resolve, 500 + Math.random() * 500);
+    });
 }
 
-async function validateCredentials(email, password) {
-  // Simulación: aceptar cualquier email con contraseña "123456"
-  return password === "123456" || email === "demo@farmaline.com"
-}
-
-async function checkEmailExists(email) {
-  // Simulación: algunos emails ya existen
-  const existingEmails = ["admin@farmaline.com", "test@test.com"]
-  return existingEmails.includes(email)
-}
-
-async function registerUser(userData) {
-  // Simulación: siempre exitoso
-  console.log("Registering user:", userData)
-  return true
-}
-
-// Utilidades
 function setLoadingState(button, loading) {
-  if (loading) {
-    button.classList.add("loading")
-    button.disabled = true
-  } else {
-    button.classList.remove("loading")
-    button.disabled = false
-  }
+    if (button) {
+        if (loading) {
+            button.classList.add("loading");
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Cargando...';
+        } else {
+            button.classList.remove("loading");
+            button.disabled = false;
+            if (button.closest('#formularioInicioSesion')) {
+                button.innerHTML = 'Ingresar';
+            } else if (button.closest('#formularioRegistro')) {
+                button.innerHTML = 'Registrarse';
+            } else if (button.closest('#forgotPasswordForm')) {
+                button.innerHTML = 'Enviar Enlace';
+            }
+        }
+    }
 }
 
 function showAlert(type, message) {
-  // Remover alertas existentes
-  const existingAlerts = document.querySelectorAll(".alert")
-  existingAlerts.forEach((alert) => alert.remove())
+    const existingAlerts = document.querySelectorAll(".alert");
+    existingAlerts.forEach((alert) => alert.remove());
 
-  // Crear nueva alerta
-  const alert = document.createElement("div")
-  alert.className = `alert alert-${type} alert-dismissible fade show`
-  alert.innerHTML = `
+    const alertContainer = document.querySelector(".login-section .contenedor");
+    if (!alertContainer) {
+        console.error("No se encontró el contenedor para las alertas.");
+        return;
+    }
+
+    const alert = document.createElement("div");
+    alert.className = `alert alert-${type} alert-dismissible fade show mt-3`;
+    alert.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `
+    `;
 
-  // Insertar al inicio del contenido
-  const cardBody = document.querySelector(".card-body")
-  cardBody.insertBefore(alert, cardBody.firstChild)
+    alertContainer.insertBefore(alert, alertContainer.firstChild);
 
-  // Auto-remover después de 5 segundos
-  setTimeout(() => {
-    if (alert.parentNode) {
-      alert.remove()
-    }
-  }, 5000)
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
 }
 
-// Función para logout (para usar en otras páginas)
 function logout() {
-  localStorage.removeItem("farmalineUser")
-  sessionStorage.removeItem("farmalineUser")
-  currentUser = null
-  window.location.href = "Login.html"
+    localStorage.removeItem("farmalineUser");
+    sessionStorage.removeItem("farmalineUser");
+    currentUser = null;
+    window.location.href = "Login.html";
 }
 
-// Exportar funciones para uso global
 window.farmalineAuth = {
-  logout,
-  getCurrentUser: () => currentUser,
-  isLoggedIn: () => currentUser !== null,
-}
-
-// ========================================
-// FUNCIONALIDAD DEL FORMULARIO ANIMADO
-// ========================================
-
-// Selección del contenedor principal y los botones de alternar
-const contenedor = document.getElementById("contenedor")
-const registrarseBtn = document.getElementById("registrarse")
-const iniciarSesionBtn = document.getElementById("iniciarSesion")
-
-// Agregar evento de clic al botón de "Registrarse"
-if (registrarseBtn) {
-  registrarseBtn.addEventListener("click", () => {
-    contenedor.classList.add("activo") // Añadir clase "activo" al contenedor
-  })
-}
-
-// Agregar evento de clic al botón de "Iniciar Sesión"
-if (iniciarSesionBtn) {
-  iniciarSesionBtn.addEventListener("click", () => {
-    contenedor.classList.remove("activo") // Eliminar clase "activo" del contenedor
-  })
-}
-
-// Funcionalidad adicional para formularios animados
-document.addEventListener("DOMContentLoaded", () => {
-  // Referencias a los elementos de los formularios
-  const formularioRegistro = document.getElementById("formularioRegistro")
-  const formularioInicioSesion = document.getElementById("formularioInicioSesion")
-  const nombre = document.getElementById("nombre")
-  const correo = document.getElementById("correo")
-  const contraseña = document.getElementById("contraseña")
-  const correoInicio = document.getElementById("correoInicio")
-  const contraseñaInicio = document.getElementById("contraseñaInicio")
-
-  // Solo ejecutar si los elementos existen (para evitar errores en otras páginas)
-  if (formularioRegistro && formularioInicioSesion) {
-    // Validación del formulario de registro
-    formularioRegistro.addEventListener("submit", (e) => {
-      e.preventDefault()
-      if (checkInputsRegistro()) {
-        alert("Registro exitoso.")
-        window.location.href = "Index.html"
-      }
-    })
-
-    // Validación del formulario de inicio de sesión
-    formularioInicioSesion.addEventListener("submit", (e) => {
-      e.preventDefault()
-      if (checkInputsInicio()) {
-        alert("Inicio de sesión exitoso.")
-        window.location.href = "Index.html"
-      }
-    })
-
-    // Validaciones dinámicas en el registro
-    if (nombre) {
-      nombre.addEventListener("input", () =>
-        validateField(nombre, nombre.value.trim() !== "", "El nombre no puede estar vacío"),
-      )
-    }
-    if (correo) {
-      correo.addEventListener("input", () => validateField(correo, isEmail(correo.value.trim()), "Correo no válido"))
-    }
-    if (contraseña) {
-      contraseña.addEventListener("input", () =>
-        validateField(
-          contraseña,
-          contraseña.value.trim().length >= 8,
-          "La contraseña debe tener al menos 8 caracteres",
-        ),
-      )
-    }
-
-    // Validaciones dinámicas en el inicio de sesión
-    if (correoInicio) {
-      correoInicio.addEventListener("input", () =>
-        validateField(correoInicio, isEmail(correoInicio.value.trim()), "Correo no válido"),
-      )
-    }
-    if (contraseñaInicio) {
-      contraseñaInicio.addEventListener("input", () =>
-        validateField(
-          contraseñaInicio,
-          contraseñaInicio.value.trim().length >= 8,
-          "La contraseña debe tener al menos 8 caracteres",
-        ),
-      )
-    }
-
-    // Agregar funcionalidad a los botones de envío del formulario
-    document.querySelectorAll('button[type="button"]').forEach((button) => {
-      button.addEventListener("click", () => {
-        // Simular almacenamiento de sesión
-        sessionStorage.setItem(
-          "farmalineUser",
-          JSON.stringify({
-            name: nombre?.value || "Usuario",
-            email: correo?.value || correoInicio?.value || "usuario@ejemplo.com",
-            isLoggedIn: true,
-          }),
-        )
-      })
-    })
-  }
-})
-
-// Funciones de validación para formularios animados
-function checkInputsRegistro() {
-  let isValid = true
-  const nombre = document.getElementById("nombre")
-  const correo = document.getElementById("correo")
-  const contraseña = document.getElementById("contraseña")
-
-  if (nombre) validateField(nombre, nombre.value.trim() !== "", "El nombre no puede estar vacío")
-  if (correo) validateField(correo, isEmail(correo.value.trim()), "Correo no válido")
-  if (contraseña)
-    validateField(contraseña, contraseña.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres")
-
-  document.querySelectorAll(".registro .form-control").forEach((control) => {
-    if (control.classList.contains("error")) {
-      isValid = false
-    }
-  })
-  return isValid
-}
-
-function checkInputsInicio() {
-  let isValid = true
-  const correoInicio = document.getElementById("correoInicio")
-  const contraseñaInicio = document.getElementById("contraseñaInicio")
-
-  if (correoInicio) validateField(correoInicio, isEmail(correoInicio.value.trim()), "Correo no válido")
-  if (contraseñaInicio)
-    validateField(
-      contraseñaInicio,
-      contraseñaInicio.value.trim().length >= 8,
-      "La contraseña debe tener al menos 8 caracteres",
-    )
-
-  document.querySelectorAll(".inicio-sesion .form-control").forEach((control) => {
-    if (control.classList.contains("error")) {
-      isValid = false
-    }
-  })
-  return isValid
-}
+    logout,
+    getCurrentUser: () => currentUser,
+    isLoggedIn: () => currentUser !== null,
+};
 
 function isEmail(email) {
-  return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(email)
+    return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(email);
 }
