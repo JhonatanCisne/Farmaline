@@ -1,0 +1,440 @@
+/* admin.css - Estilos del panel de administración basados en el Index */
+
+/* Variables CSS del Index */
+:root {
+  --primary-color: #20b2aa;
+  --primary-dark: #1a9a92;
+  --secondary-color: #17a2b8;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --info-color: #17a2b8;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+/* Reset y base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-color);
+  color: var(--dark-color);
+  margin: 0;
+  padding: 0;
+}
+
+/* Clases utilitarias del Index */
+.bg-teal {
+  background-color: var(--primary-color) !important;
+}
+
+.text-teal {
+  color: var(--primary-color) !important;
+}
+
+.btn-teal {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+  transition: var(--transition);
+}
+
+.btn-teal:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-outline-teal {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  background-color: transparent;
+  transition: var(--transition);
+}
+
+.btn-outline-teal:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.btn-outline-teal.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+/* Sidebar con gradiente del Index */
+.admin-sidebar {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  min-height: 100vh;
+  width: 280px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  transition: var(--transition);
+  color: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h4 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.sidebar-header img {
+  filter: brightness(0) invert(1);
+  transition: var(--transition);
+}
+
+.sidebar-nav {
+  padding: 1rem 0;
+}
+
+.sidebar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  padding: 1rem 1.5rem;
+  border: none;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-nav .nav-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+  z-index: 0;
+}
+
+.sidebar-nav .nav-link:hover::before {
+  width: 100%;
+}
+
+.sidebar-nav .nav-link:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+.sidebar-nav .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-right: 3px solid white;
+}
+
+.sidebar-nav .nav-link.active::before {
+  width: 100%;
+}
+
+.sidebar-nav .nav-link i {
+  margin-right: 0.75rem;
+  width: 20px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-nav .nav-link span {
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Main content */
+.main-content {
+  margin-left: 280px;
+  transition: var(--transition);
+  min-height: 100vh;
+  background-color: var(--light-color);
+}
+
+.main-content.expanded {
+  margin-left: 80px;
+}
+
+/* Header con estilo del Index */
+.admin-header {
+  background: white;
+  padding: 1rem 2rem;
+  box-shadow: var(--box-shadow);
+  border-bottom: 3px solid var(--primary-color);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.admin-header h2 {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Cards con estilo del Index */
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  box-shadow: var(--box-shadow);
+  background: white;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  background-color: var(--light-color);
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 600;
+}
+
+/* Stats cards con gradientes del Index */
+.stats-card {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.stats-card:hover::before {
+  transform: scale(1.5);
+}
+
+.stats-card.danger {
+  background: linear-gradient(135deg, var(--danger-color) 0%, #c82333 100%);
+}
+
+.stats-card.warning {
+  background: linear-gradient(135deg, var(--warning-color) 0%, #e0a800 100%);
+  color: var(--dark-color);
+}
+
+.stats-card.success {
+  background: linear-gradient(135deg, var(--success-color) 0%, #1e7e34 100%);
+}
+
+.stats-card.info {
+  background: linear-gradient(135deg, var(--info-color) 0%, #138496 100%);
+}
+
+.stats-card .card-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* Tabla con estilo del Index */
+.table {
+  background: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(32, 178, 170, 0.1);
+}
+
+.table thead th {
+  background-color: var(--light-color);
+  border-bottom: 2px solid var(--primary-color);
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+/* Badges del Index */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Modal con estilo del Index */
+.modal-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  border-bottom: none;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-header .btn-close {
+  filter: invert(1);
+}
+
+.modal-content {
+  border-radius: var(--border-radius);
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Form controls del Index */
+.form-control {
+  border-radius: var(--border-radius);
+  border: 1px solid #dee2e6;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(32, 178, 170, 0.25);
+}
+
+.form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(32, 178, 170, 0.25);
+}
+
+/* Content sections */
+.content-section {
+  display: none;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.content-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive del Index */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .admin-sidebar.show {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .main-content.expanded {
+    margin-left: 0;
+  }
+
+  .admin-header {
+    padding: 1rem;
+  }
+
+  .content-section {
+    padding: 1rem;
+  }
+
+  .stats-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Hover effects para botones del Index */
+.btn {
+  transition: var(--transition);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Sidebar collapsed styles */
+.admin-sidebar.collapsed .sidebar-header h4,
+.admin-sidebar.collapsed .nav-link span {
+  display: none;
+}
+
+.admin-sidebar.collapsed .nav-link {
+  justify-content: center;
+  padding: 1rem;
+}
+
+.admin-sidebar.collapsed .nav-link i {
+  margin-right: 0;
+}
+
+.admin-sidebar.collapsed .sidebar-footer .btn span {
+  display: none;
+}
+
+/* Scrollbar personalizado del Index */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
