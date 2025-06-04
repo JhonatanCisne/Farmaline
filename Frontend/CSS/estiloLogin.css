@@ -39,333 +39,206 @@ body {
   z-index: 2000;
 }
 
-/* Estilo del contenedor principal */
+/* Estilo del contenedor principal - MÁS GRANDE */
 .contenedor {
   background-color: #fff;
-  /* Fondo blanco */
-  border-radius: 30px;
-  /* Bordes redondeados */
+  border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-  /* Sombra */
   position: relative;
-  /* Posicionamiento relativo para los elementos secundarios */
   overflow: hidden;
-  /* Ocultar desbordamiento */
-  width: 768px;
-  /* Ancho máximo */
+  width: 1000px; /* Aumentado de 768px */
   max-width: 100%;
-  /* Ancho máximo adaptativo */
-  min-height: 480px;
-  /* Altura mínima */
+  min-height: 600px; /* Aumentado de 480px */
 }
 
 /* Estilos de texto en el contenedor */
 .contenedor p {
   font-size: 14px;
-  /* Tamaño de fuente */
   line-height: 20px;
-  /* Altura de línea */
   letter-spacing: 0.3px;
-  /* Espaciado de letras */
-  margin: 20px 0;
-  /* Margen */
+  margin: 15px 0; /* Reducido de 20px */
 }
 
 .contenedor span {
   font-size: 12px;
-  /* Tamaño de fuente */
 }
 
 .contenedor a {
   color: #333;
-  /* Color de texto */
   font-size: 13px;
-  /* Tamaño de fuente */
   text-decoration: none;
-  /* Sin subrayado */
-  margin: 15px 0 10px;
-  /* Margen */
+  margin: 10px 0; /* Reducido de 15px */
 }
 
 .contenedor button {
   background-color: #20b2aa;
-  /* Color de fondo */
   color: #fff;
-  /* Color de texto */
   font-size: 12px;
-  /* Tamaño de fuente */
   padding: 10px 45px;
-  /* Espaciado interno */
   border: 1px solid transparent;
-  /* Borde */
   border-radius: 8px;
-  /* Bordes redondeados */
   font-weight: 600;
-  /* Grosor de la fuente */
   letter-spacing: 0.5px;
-  /* Espaciado de letras */
   text-transform: uppercase;
-  /* Texto en mayúsculas */
   margin-top: 10px;
-  /* Margen superior */
   cursor: pointer;
-  /* Cursor de puntero */
 }
 
 .contenedor button.oculto {
   background-color: transparent;
-  /* Fondo transparente */
   border-color: #fff;
-  /* Color del borde */
 }
 
 /* Estilo del formulario */
 .contenedor form {
   background-color: #fff;
-  /* Fondo blanco */
   display: flex;
-  /* Flexbox para centrar contenido */
   align-items: center;
-  /* Centrar verticalmente */
   justify-content: center;
-  /* Centrar horizontalmente */
   flex-direction: column;
-  /* Dirección en columna */
-  padding: 0 40px;
-  /* Espaciado interno */
+  padding: 0 30px; /* Reducido de 40px */
   height: 100%;
-  /* Altura del contenedor */
 }
 
 .contenedor input {
   background-color: #eee;
-  /* Fondo gris claro */
   border: none;
-  /* Sin borde */
-  margin: 8px 0;
-  /* Margen */
-  padding: 10px 15px;
-  /* Espaciado interno */
-  font-size: 13px;
-  /* Tamaño de fuente */
-  border-radius: 8px;
-  /* Bordes redondeados */
+  margin: 4px 0; /* Reducido de 8px */
+  padding: 8px 12px; /* Reducido de 10px 15px */
+  font-size: 12px; /* Reducido de 13px */
+  border-radius: 6px; /* Reducido de 8px */
   width: 100%;
-  /* Ancho completo */
   outline: none;
-  /* Sin contorno */
 }
 
 /* Configuración de contenedor de formularios */
 .formulario-contenedor {
   position: absolute;
-  /* Posición absoluta */
   top: 0;
-  /* Posición desde el tope */
   height: 100%;
-  /* Altura del contenedor */
   transition: all 0.6s ease-in-out;
-  /* Transición suave */
 }
 
 .inicio-sesion {
   left: 0;
-  /* Posición desde la izquierda */
   width: 50%;
-  /* Ancho del contenedor */
   z-index: 2;
-  /* Nivel de apilamiento */
 }
 
 .contenedor.activo .inicio-sesion {
   transform: translateX(100%);
-  /* Mover el formulario fuera de la vista */
 }
 
 .registro {
   left: 0;
-  /* Posición desde la izquierda */
   width: 50%;
-  /* Ancho del contenedor */
   opacity: 0;
-  /* Transparencia inicial */
   z-index: 1;
-  /* Nivel de apilamiento */
 }
 
 .contenedor.activo .registro {
   transform: translateX(100%);
-  /* Mover el formulario a la vista */
   opacity: 1;
-  /* Visibilidad */
   z-index: 5;
-  /* Nivel de apilamiento más alto */
   animation: mover 0.6s;
-  /* Animación */
 }
 
 @keyframes mover {
   0%,
   49.99% {
     opacity: 0;
-    /* Transparencia inicial */
     z-index: 1;
-    /* Nivel de apilamiento */
   }
 
   50%,
   100% {
     opacity: 1;
-    /* Visibilidad */
     z-index: 5;
-    /* Nivel de apilamiento */
   }
-}
-
-.iconos-sociales {
-  margin: 20px 0;
-  /* Margen */
-}
-
-.iconos-sociales a {
-  border: 1px solid #ccc;
-  /* Borde gris claro */
-  border-radius: 20%;
-  /* Bordes redondeados */
-  display: inline-flex;
-  /* Flexbox en línea */
-  justify-content: center;
-  /* Centrado horizontal */
-  align-items: center;
-  /* Centrado vertical */
-  margin: 0 3px;
-  /* Margen */
-  width: 40px;
-  /* Ancho */
-  height: 40px;
-  /* Altura */
 }
 
 /* Configuración del contenedor de la opción de alternar */
 .contenedor-toggle {
   position: absolute;
-  /* Posición absoluta */
   top: 0;
-  /* Posición desde el tope */
   left: 50%;
-  /* Posición desde la izquierda */
   width: 50%;
-  /* Ancho del contenedor */
   height: 100%;
-  /* Altura del contenedor */
   overflow: hidden;
-  /* Ocultar desbordamiento */
   transition: all 0.6s ease-in-out;
-  /* Transición suave */
   border-radius: 150px 0 0 100px;
-  /* Bordes redondeados */
   z-index: 1000;
-  /* Nivel de apilamiento alto */
 }
 
 .contenedor.activo .contenedor-toggle {
   transform: translateX(-100%);
-  /* Mover contenedor fuera de la vista */
   border-radius: 0 150px 100px 0;
-  /* Bordes redondeados */
 }
 
 .toggle {
   background-color: #20b2aa;
-  /* Color de fondo */
   height: 100%;
-  /* Altura del contenedor */
   background: linear-gradient(to right, #20b2aa, #17a2b8);
-  /* Degradado de fondo */
   color: #fff;
-  /* Color del texto */
   position: relative;
-  /* Posición relativa */
   left: -100%;
-  /* Posición inicial */
   height: 100%;
-  /* Altura */
   width: 200%;
-  /* Ancho */
   transform: translateX(0);
-  /* Sin traslación */
   transition: all 0.6s ease-in-out;
-  /* Transición suave */
 }
 
 .contenedor.activo .toggle {
   transform: translateX(50%);
-  /* Mover contenedor de vuelta a la vista */
 }
 
 /* Configuración de los paneles de alternancia */
 .panel-toggle {
   position: absolute;
-  /* Posición absoluta */
   width: 50%;
-  /* Ancho del panel */
   height: 100%;
-  /* Altura del panel */
   display: flex;
-  /* Flexbox */
   align-items: center;
-  /* Centrado vertical */
   justify-content: center;
-  /* Centrado horizontal */
   flex-direction: column;
-  /* Dirección en columna */
   padding: 0 30px;
-  /* Espaciado interno */
   text-align: center;
-  /* Texto centrado */
   top: 0;
-  /* Posición desde el tope */
   transform: translateX(0);
-  /* Sin traslación */
   transition: all 0.6s ease-in-out;
-  /* Transición suave */
 }
 
 .panel-izquierdo {
   transform: translateX(-200%);
-  /* Posición inicial fuera de la vista */
 }
 
 .contenedor.activo .panel-izquierdo {
   transform: translateX(0);
-  /* Mover panel a la vista */
 }
 
 .panel-derecho {
   right: 0;
-  /* Posición desde la derecha */
   transform: translateX(0);
-  /* Sin traslación */
 }
 
 .contenedor.activo .panel-derecho {
   transform: translateX(200%);
-  /* Mover panel fuera de la vista */
 }
 
 /* Estilos para validación de formularios */
 .form-control {
   width: 100%;
   position: relative;
-  margin-bottom: 10px;
+  margin-bottom: 6px; /* Reducido de 10px */
 }
 
 .form-control small {
   color: #e74c3c;
   position: absolute;
-  bottom: -15px;
+  bottom: -12px; /* Reducido de -15px */
   left: 0;
   visibility: hidden;
+  font-size: 10px; /* Reducido */
 }
 
 .form-control.error small {
@@ -380,6 +253,30 @@ body {
   border: 2px solid #2ecc71;
 }
 
+/* Checkbox styling */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin: 8px 0; /* Reducido */
+  font-size: 11px; /* Reducido */
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+  margin-bottom: 0;
+}
+
+.checkbox-container label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkbox-container a {
+  color: #20b2aa;
+  margin: 0;
+}
+
 /* Hover effects para botones */
 .contenedor button:hover {
   background-color: #1a9a92;
@@ -389,14 +286,6 @@ body {
 
 .contenedor button.oculto:hover {
   background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Iconos sociales hover */
-.iconos-sociales a:hover {
-  border-color: #20b2aa;
-  color: #20b2aa;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(32, 178, 170, 0.2);
 }
 
 /* Links hover */
@@ -423,79 +312,61 @@ body {
   color: white;
 }
 
-/* Responsive adjustments */
+/* Estilos para los botones de acceso rápido */
+.access-buttons-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 15px 0;
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+.access-btn {
+    padding: 12px 25px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 25px;
+    margin: 0 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    border-color: #dc3545;
+}
+
+.admin-btn:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    color: white;
+}
+
+.delivery-btn {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+    border-color: #28a745;
+}
+
+.delivery-btn:hover {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+.access-btn i {
+    margin-right: 8px;
+}
+
+/* Responsive para botones */
 @media (max-width: 768px) {
-  .contenedor {
-    min-height: 800px;
-    margin: 20px;
-  }
-
-  .formulario-contenedor {
-    width: 100%;
-    height: 50%;
-  }
-
-  .inicio-sesion {
-    width: 100%;
-    top: 0;
-  }
-
-  .registro {
-    width: 100%;
-    top: 0;
-  }
-
-  .contenedor.activo .registro {
-    transform: translateY(100%);
-    top: 50%;
-  }
-
-  .contenedor.activo .inicio-sesion {
-    transform: translateY(0);
-  }
-
-  .contenedor-toggle {
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    border-radius: 0;
-  }
-
-  .contenedor.activo .contenedor-toggle {
-    transform: translateY(-100%);
-    border-radius: 0;
-  }
-
-  .toggle {
-    width: 100%;
-    left: 0;
-    height: 200%;
-  }
-
-  .contenedor.activo .toggle {
-    transform: translateY(50%);
-  }
-
-  .panel-toggle {
-    width: 100%;
-    height: 50%;
-  }
-
-  .panel-izquierdo {
-    transform: translateY(-200%);
-  }
-
-  .panel-derecho {
-    transform: translateY(0);
-    top: 50%;
-  }
-
-  .contenedor.activo .panel-izquierdo {
-    transform: translateY(0);
-  }
-
-  .contenedor.activo .panel-derecho {
-    transform: translateY(200%);
-  }
+    .access-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+        margin: 5px;
+    }
 }
