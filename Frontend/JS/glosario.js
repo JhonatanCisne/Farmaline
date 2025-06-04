@@ -1,21 +1,15 @@
-// Funcionalidad de búsqueda en el glosario
 document.addEventListener("DOMContentLoaded", () => {
-  // Configurar búsqueda
   setupGlosarioSearch()
 
-  // Configurar navegación por letras
   setupLetterNavigation()
 
-  // Configurar filtros
   setupFilters()
 
-  // Agregar estilos CSS dinámicamente
   setTimeout(() => {
     addDynamicStyles()
   }, 100)
 })
 
-// Configurar funcionalidad de búsqueda
 function setupGlosarioSearch() {
   const searchInput = document.getElementById("searchGlosario")
 
@@ -27,25 +21,21 @@ function setupGlosarioSearch() {
   }
 }
 
-// Función principal de búsqueda
 function searchInGlosario(searchTerm) {
   const cards = document.querySelectorAll(".card")
   let hasResults = false
 
-  // Si no hay término de búsqueda, aplicar filtros actuales
   if (!searchTerm.trim()) {
     applyCurrentFilters()
     clearHighlights()
     return
   }
 
-  // Buscar en las tarjetas
   cards.forEach((card) => {
     const title = card.querySelector(".card-title").textContent.toLowerCase()
     const content = card.querySelector(".card-text").textContent.toLowerCase()
 
     if (title.includes(searchTerm) || content.includes(searchTerm)) {
-      // Verificar si también pasa los filtros actuales
       if (passesCurrentFilters(card)) {
         card.parentElement.style.display = "block"
         highlightText(card, searchTerm)
@@ -58,14 +48,11 @@ function searchInGlosario(searchTerm) {
     }
   })
 
-  // Actualizar visibilidad de accordions y expandir los que tienen resultados
   updateAccordionVisibility(true)
 
-  // Mostrar mensaje si no hay resultados
   showNoResultsMessage(!hasResults, searchTerm)
 }
 
-// Verificar si una tarjeta pasa los filtros actuales
 function passesCurrentFilters(card) {
   const medicationType = document.getElementById("medicationType")
   const availability = document.getElementById("availability")
@@ -76,7 +63,6 @@ function passesCurrentFilters(card) {
   const title = card.querySelector(".card-title").textContent.toLowerCase()
   const fullText = (title + " " + content).toLowerCase()
 
-  // Verificar filtro de tipo
   const selectedType = medicationType.value.toLowerCase()
   if (selectedType) {
     let typeMatch = false
@@ -180,7 +166,6 @@ function passesCurrentFilters(card) {
     if (!typeMatch) return false
   }
 
-  // Verificar filtro de disponibilidad
   const selectedAvailability = availability.value
   if (selectedAvailability === "libre") {
     if (!fullText.includes("venta libre") && !fullText.includes("disponibilidad:** venta libre")) return false
@@ -197,7 +182,6 @@ function passesCurrentFilters(card) {
   return true
 }
 
-// Aplicar filtros actuales sin búsqueda
 function applyCurrentFilters() {
   const cards = document.querySelectorAll(".card")
   let hasResults = false
@@ -211,24 +195,19 @@ function applyCurrentFilters() {
     }
   })
 
-  // Actualizar visibilidad de accordions y expandir los que tienen resultados
   updateAccordionVisibility(true)
 
-  // Mostrar mensaje si no hay resultados
   showNoResultsMessage(!hasResults)
 }
 
-// Resaltar texto de búsqueda
 function highlightText(card, searchTerm) {
   if (!searchTerm) return
 
   const title = card.querySelector(".card-title")
   const content = card.querySelector(".card-text")
 
-  // Limpiar highlights anteriores
   clearHighlights(card)
 
-  // Resaltar en título
   if (title) {
     const titleText = title.textContent
     const highlightedTitle = highlightTextInString(titleText, searchTerm)
@@ -237,7 +216,6 @@ function highlightText(card, searchTerm) {
     }
   }
 
-  // Resaltar en contenido
   if (content) {
     const contentText = content.textContent
     const highlightedContent = highlightTextInString(contentText, searchTerm)
@@ -247,19 +225,16 @@ function highlightText(card, searchTerm) {
   }
 }
 
-// Función auxiliar para resaltar texto en string
 function highlightTextInString(text, searchTerm) {
   if (!searchTerm) return text
   const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, "gi")
   return text.replace(regex, '<mark class="search-highlight">$1</mark>')
 }
 
-// Escapar caracteres especiales para regex
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }
 
-// Limpiar highlights
 function clearHighlights(container = document) {
   const highlights = container.querySelectorAll(".search-highlight")
   highlights.forEach((highlight) => {
@@ -269,7 +244,6 @@ function clearHighlights(container = document) {
   })
 }
 
-// Mostrar mensaje de "no hay resultados"
 function showNoResultsMessage(show, searchTerm = "") {
   let noResultsDiv = document.getElementById("noResultsMessage")
 
@@ -301,12 +275,9 @@ function showNoResultsMessage(show, searchTerm = "") {
   }
 }
 
-// Configurar navegación por letras
 function setupLetterNavigation() {
-  // Crear navegación alfabética
   createAlphabetNavigation()
 
-  // Configurar clicks en letras
   document.querySelectorAll(".letter-nav").forEach((letter) => {
     letter.addEventListener("click", function (e) {
       e.preventDefault()
@@ -316,7 +287,6 @@ function setupLetterNavigation() {
   })
 }
 
-// Crear navegación alfabética
 function createAlphabetNavigation() {
   const searchContainer = document.querySelector(".row.mb-4")
   if (!searchContainer) return
@@ -342,11 +312,9 @@ function createAlphabetNavigation() {
   searchContainer.appendChild(alphabetNav)
 }
 
-// Navegar a una letra específica
 function navigateToLetter(letter) {
   const targetAccordion = document.getElementById(`collapse${letter}`)
   if (targetAccordion) {
-    // Cerrar otros accordions
     document.querySelectorAll(".accordion-collapse.show").forEach((collapse) => {
       if (collapse.id !== `collapse${letter}`) {
         const button = document.querySelector(`[data-bs-target="#${collapse.id}"]`)
@@ -356,7 +324,6 @@ function navigateToLetter(letter) {
       }
     })
 
-    // Abrir el accordion objetivo
     if (!targetAccordion.classList.contains("show")) {
       const button = document.querySelector(`[data-bs-target="#collapse${letter}"]`)
       if (button) {
@@ -364,7 +331,6 @@ function navigateToLetter(letter) {
       }
     }
 
-    // Scroll suave al elemento
     setTimeout(() => {
       targetAccordion.scrollIntoView({
         behavior: "smooth",
@@ -372,12 +338,10 @@ function navigateToLetter(letter) {
       })
     }, 300)
 
-    // Resaltar temporalmente
     highlightSection(targetAccordion)
   }
 }
 
-// Resaltar sección temporalmente
 function highlightSection(element) {
   element.style.backgroundColor = "rgba(32, 178, 170, 0.1)"
   element.style.transition = "background-color 0.3s ease"
@@ -387,15 +351,12 @@ function highlightSection(element) {
   }, 2000)
 }
 
-// Configurar filtros adicionales
 function setupFilters() {
-  // Crear filtros
   createMedicationTypeFilter()
   createAvailabilityFilter()
   addClearFiltersButton()
 }
 
-// Crear filtro por tipo de medicamento
 function createMedicationTypeFilter() {
   const searchContainer = document.querySelector(".row.mb-4")
   if (!searchContainer) return
@@ -424,13 +385,11 @@ function createMedicationTypeFilter() {
 
   searchContainer.appendChild(filterContainer)
 
-  // Event listener para el filtro
   document.getElementById("medicationType").addEventListener("change", () => {
     applyFilters()
   })
 }
 
-// Crear filtro por disponibilidad
 function createAvailabilityFilter() {
   const searchContainer = document.querySelector(".row.mb-4")
   if (!searchContainer) return
@@ -451,27 +410,22 @@ function createAvailabilityFilter() {
 
   searchContainer.appendChild(filterContainer)
 
-  // Event listener para el filtro
   document.getElementById("availability").addEventListener("change", () => {
     applyFilters()
   })
 }
 
-// Aplicar todos los filtros
 function applyFilters() {
   const searchInput = document.getElementById("searchGlosario")
   const searchTerm = searchInput ? searchInput.value.toLowerCase() : ""
 
   if (searchTerm) {
-    // Si hay búsqueda, usar la función de búsqueda que ya incluye filtros
     searchInGlosario(searchTerm)
   } else {
-    // Si no hay búsqueda, solo aplicar filtros
     applyCurrentFilters()
   }
 }
 
-// Actualizar visibilidad de accordions
 function updateAccordionVisibility(expandWithResults = false) {
   const accordionItems = document.querySelectorAll(".accordion-item")
 
@@ -481,7 +435,6 @@ function updateAccordionVisibility(expandWithResults = false) {
     if (visibleCards.length > 0) {
       item.style.display = "block"
 
-      // Si hay resultados y se solicita expansión automática
       if (expandWithResults) {
         const collapseElement = item.querySelector(".accordion-collapse")
         if (collapseElement && !collapseElement.classList.contains("show")) {
@@ -497,41 +450,33 @@ function updateAccordionVisibility(expandWithResults = false) {
   })
 }
 
-// Función para limpiar todos los filtros
 function clearAllFilters() {
-  // Limpiar búsqueda
   const searchInput = document.getElementById("searchGlosario")
   if (searchInput) {
     searchInput.value = ""
   }
 
-  // Limpiar filtros
   const medicationType = document.getElementById("medicationType")
   const availability = document.getElementById("availability")
 
   if (medicationType) medicationType.value = ""
   if (availability) availability.value = ""
 
-  // Mostrar todas las tarjetas
   const cards = document.querySelectorAll(".card")
   cards.forEach((card) => {
     card.parentElement.style.display = "block"
   })
 
-  // Mostrar todos los accordions
   const accordionItems = document.querySelectorAll(".accordion-item")
   accordionItems.forEach((item) => {
     item.style.display = "block"
   })
 
-  // Limpiar highlights
   clearHighlights()
 
-  // Ocultar mensaje de no resultados
   showNoResultsMessage(false)
 }
 
-// Agregar botón para limpiar filtros
 function addClearFiltersButton() {
   const searchContainer = document.querySelector(".row.mb-4")
   if (!searchContainer) return
@@ -547,11 +492,9 @@ function addClearFiltersButton() {
 
   searchContainer.appendChild(clearButton)
 
-  // Event listener para limpiar filtros
   document.getElementById("clearFilters").addEventListener("click", clearAllFilters)
 }
 
-// Agregar estilos CSS dinámicamente
 function addDynamicStyles() {
   const style = document.createElement("style")
   style.textContent = `

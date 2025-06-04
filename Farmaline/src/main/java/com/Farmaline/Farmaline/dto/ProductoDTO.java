@@ -1,6 +1,7 @@
 package com.Farmaline.Farmaline.dto;
 
 public class ProductoDTO {
+    private Integer idProducto;
     private String nombre;
     private String descripcion;
     private float precio;
@@ -13,6 +14,14 @@ public class ProductoDTO {
         this.descripcion = descripcion;
         this.precio = precio;
         this.imagen = imagen;
+    }
+
+    public Integer getIdProducto() {
+        return idProducto;
+    }
+
+    public void setIdProducto(Integer idProducto) { 
+        this.idProducto = idProducto;
     }
 
     public String getNombre() {

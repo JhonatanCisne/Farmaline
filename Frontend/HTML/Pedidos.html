@@ -8,10 +8,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/Menu.css">
     <link rel="stylesheet" href="../CSS/Index.css">
-</head>
+    </head>
 <body>
     <div class="main-container">
-        <!-- Menu -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand d-flex align-items-center" href="#">
@@ -42,65 +41,63 @@
             </div>
         </nav>
 
-        <!-- Historial de Pedidos -->
         <div class="container my-5">
-        <div class="text-center mb-4">
-            <h1 class="display-5">
-                <i class="fas fa-clipboard-list me-3 text-teal"></i>
-                Mis Pedidos
-            </h1>
-        </div>
-        
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
-                <h4 class="text-muted mb-3">No tienes pedidos realizados aún</h4>
-                <p class="text-muted mb-4">¡Realiza tu primera compra y aparecerá aquí!</p>
-                <a href="Index.html" class="btn btn-teal btn-lg">
-                    <i class="fas fa-pills me-2"></i>
-                    Realizar primer pedido
-                </a>
+            <div class="text-center mb-4">
+                <h1 class="display-5">
+                    <i class="fas fa-clipboard-list me-3 text-teal"></i>
+                    Mis Pedidos
+                </h1>
             </div>
-        </div>
 
-        <!-- Información adicional -->
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <div class="card text-center h-100">
-                    <div class="card-body">
-                        <i class="fas fa-shipping-fast fa-3x text-teal mb-3"></i>
-                        <h5>Envío Rápido</h5>
-                        <p class="text-muted">Entregas en 24-48 horas en Lima Metropolitana</p>
+            <div id="ordersContainer">
+                <div id="noOrdersMessage" class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted mb-3">No tienes pedidos realizados aún</h4>
+                        <p class="text-muted mb-4">¡Realiza tu primera compra y aparecerá aquí!</p>
+                        <a href="Index.html" class="btn btn-teal btn-lg">
+                            <i class="fas fa-pills me-2"></i>
+                            Realizar primer pedido
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-center h-100">
-                    <div class="card-body">
-                        <i class="fas fa-shield-alt fa-3x text-teal mb-3"></i>
-                        <h5>Compra Segura</h5>
-                        <p class="text-muted">Todos tus datos están protegidos con encriptación SSL</p>
+
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-shipping-fast fa-3x text-teal mb-3"></i>
+                            <h5>Envío Rápido</h5>
+                            <p class="text-muted">Entregas en 24-48 horas en Lima Metropolitana</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center h-100">
-                    <div class="card-body">
-                        <i class="fas fa-headset fa-3x text-teal mb-3"></i>
-                        <h5>Soporte 24/7</h5>
-                        <p class="text-muted">Atención al cliente disponible todos los días</p>
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-shield-alt fa-3x text-teal mb-3"></i>
+                            <h5>Compra Segura</h5>
+                            <p class="text-muted">Todos tus datos están protegidos con encriptación SSL</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-headset fa-3x text-teal mb-3"></i>
+                            <h5>Soporte 24/7</h5>
+                            <p class="text-muted">Atención al cliente disponible todos los días</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
 
-    <!-- Footer -->
     <footer class="footer-section">
         <div class="container">
             <div class="row">
-                <!-- Logo y descripción -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="footer-logo mb-3">
                         <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="me-2">
@@ -112,7 +109,6 @@
                     </p>
                 </div>
 
-                <!-- Horarios -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-title">
                         <i class="fas fa-clock me-2"></i>
@@ -139,7 +135,6 @@
                     </div>
                 </div>
 
-                <!-- Navegación -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-title">Guía de Navegación</h5>
                     <ul class="footer-links">
@@ -154,7 +149,6 @@
                     </ul>
                 </div>
 
-                <!-- Contacto -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-title">Contacto</h5>
                     <div class="footer-contact">
@@ -187,7 +181,6 @@
                         </div>
                     </div>
 
-                    <!-- Redes sociales -->
                     <div class="social-links mt-3">
                         <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
@@ -198,7 +191,6 @@
                 </div>
             </div>
 
-            <!-- Copyright -->
             <hr class="footer-divider">
             <div class="row">
                 <div class="col-md-6">
@@ -220,5 +212,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/pedidos.js"></script> 
 </body>
 </html>

@@ -120,6 +120,9 @@ async function handleLogin(e) {
         if (response.ok) {
             const userData = await response.json();
             sessionStorage.setItem("farmalineUser", JSON.stringify(userData));
+            if (userData.idUsuario) {
+                localStorage.setItem("farmalineUserId", userData.idUsuario);
+            }
             currentUser = userData;
 
             showAlert("success", `¡Bienvenido, ${userData.nombre || userData.email || userData.correoElectronico}! Inicio de sesión exitoso.`);
@@ -260,7 +263,7 @@ function setupRealTimeValidation() {
         });
         input.addEventListener("input", function() {
             if (this.classList.contains("is-invalid")) {
-                 if (this.id === "correoInicio") {
+                if (this.id === "correoInicio") {
                     validateField(this, isEmail(this.value.trim()), "Correo no válido");
                 } else if (this.id === "contraseñaInicio") {
                     validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
@@ -285,7 +288,7 @@ function setupRealTimeValidation() {
         });
         input.addEventListener("input", function() {
             if (this.classList.contains("is-invalid")) {
-                 if (this.id === "nombre") {
+                if (this.id === "nombre") {
                     validateField(this, this.value.trim() !== "", "El nombre no puede estar vacío");
                 } else if (this.id === "correo") {
                     validateField(this, isEmail(this.value.trim()), "Correo no válido");
@@ -361,15 +364,20 @@ function checkPasswordMatch() {
 
 function checkExistingSession() {
     const userData = localStorage.getItem("farmalineUser") || sessionStorage.getItem("farmalineUser");
+    const userId = localStorage.getItem("farmalineUserId");
 
     if (userData) {
         try {
             currentUser = JSON.parse(userData);
+            if (userId && !currentUser.idUsuario) {
+                currentUser.idUsuario = parseInt(userId); 
+            }
             window.location.href = "Index.html";
         } catch (error) {
             console.error("Error al parsear datos de sesión:", error);
             localStorage.removeItem("farmalineUser");
             sessionStorage.removeItem("farmalineUser");
+            localStorage.removeItem("farmalineUserId"); // Also remove the ID
         }
     }
 }
@@ -429,6 +437,7 @@ function showAlert(type, message) {
 function logout() {
     localStorage.removeItem("farmalineUser");
     sessionStorage.removeItem("farmalineUser");
+    localStorage.removeItem("farmalineUserId"); // Remove ID on logout
     currentUser = null;
     window.location.href = "Login.html";
 }
