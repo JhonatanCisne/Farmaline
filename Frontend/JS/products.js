@@ -29,7 +29,6 @@ async function fetchProductsFromBackend() {
             originalPrice: item.precioOriginal || null,
             image: `${item.imagen}`,
             description: item.descripcion || '',
-            isNew: item.esNuevo || false,
             hasDiscount: item.tieneDescuento || false,
             info: item.informacionAdicional || [],
             comments: item.comentarios || []

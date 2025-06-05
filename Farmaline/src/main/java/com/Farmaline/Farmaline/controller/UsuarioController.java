@@ -64,7 +64,6 @@ public class UsuarioController {
             UsuarioDTO usuarioActualizado = usuarioService.actualizarUsuario(id, usuarioDTO);
             return new ResponseEntity<>(usuarioActualizado, HttpStatus.OK);
         } catch (RuntimeException e) {
-            // Manejo para usuario no encontrado al actualizar
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
@@ -73,10 +72,9 @@ public class UsuarioController {
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Integer id) {
         try {
             usuarioService.eliminarUsuario(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content para eliminación exitosa
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
         } catch (RuntimeException e) {
-            // Manejo para usuario no encontrado al eliminar
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -90,7 +88,7 @@ public class UsuarioController {
     public ResponseEntity<List<UsuarioDTO>> buscarUsuarios(
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String apellido,
-            @RequestParam(required = false) String texto, // Para buscar por nombre O apellido
+            @RequestParam(required = false) String texto,
             @RequestParam(required = false) String domicilio) {
 
         List<UsuarioDTO> usuarios;

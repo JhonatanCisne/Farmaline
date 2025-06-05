@@ -57,7 +57,6 @@ public class UsuarioService {
             usuarioExistente.setCorreoElectronico(usuarioDTO.getCorreoElectronico());
             usuarioExistente.setDomicilio(usuarioDTO.getDomicilio());
             usuarioExistente.setTelefono(usuarioDTO.getTelefono());
-            // No se actualiza la contraseña en este método, deberías tener uno específico si es necesario.
             Usuario usuarioActualizado = usuarioRepository.save(usuarioExistente);
             return convertirAUsuarioDTO(usuarioActualizado);
         }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
