@@ -1,11 +1,14 @@
 package com.Farmaline.Farmaline.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.Id; // ¡Importante! Añadir esta importación
+import jakarta.persistence.Table; // Para java.time.LocalDate
 
 @Entity
 @Table(name="Producto")
@@ -14,21 +17,73 @@ public class Producto {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="ID_Producto")
     private Integer idProducto;
-    
-    @Column(name="Nombre", nullable=false)
+
+    @Column(name="Nombre", nullable=false, length=100)
     private String nombre;
-    
-    @Column(name="Descripcion", nullable=false)
+
+    @Column(name="Descripcion", nullable=true, length=500)
     private String descripcion;
-    
+
     @Column(name="Stock_Disponible", nullable=false)
     private Integer stockDisponible;
-    
-    @Column(name="Precio", nullable=false)
-    private float precio;
-    
-    @Column(name="Imagen", nullable=false)
+
+    // --- CAMBIO AQUÍ: float a BigDecimal ---
+    @Column(name="Precio", nullable=false, precision=10, scale=2)
+    private BigDecimal precio;
+
+    @Column(name="Imagen", nullable=true, length=255)
     private String imagen;
+
+    @Column(name = "Fecha_Caducidad", nullable = true)
+    private LocalDate fechaCaducidad;
+
+    @Column(name = "Fecha_Ingreso", nullable = false)
+    private LocalDate fechaIngreso;
+
+    // --- CAMBIO AQUÍ: float a BigDecimal ---
+    @Column(name = "IGV", nullable = false, precision=5, scale=2)
+    private BigDecimal igv;
+
+    // --- CAMBIO AQUÍ: float a BigDecimal ---
+    @Column(name = "Precio_Final", nullable = false, precision=10, scale=2)
+    private BigDecimal precioFinal;
+
+    public Producto() {
+    }
+
+    // --- GETTERS Y SETTERS ACTUALIZADOS PARA BigDecimal ---
+
+    public LocalDate getFechaCaducidad() {
+        return fechaCaducidad;
+    }
+
+    public void setFechaCaducidad(LocalDate fechaCaducidad) {
+        this.fechaCaducidad = fechaCaducidad;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
+    }
+
+    public BigDecimal getIgv() {
+        return igv;
+    }
+
+    public void setIgv(BigDecimal igv) {
+        this.igv = igv;
+    }
+
+    public BigDecimal getPrecioFinal() {
+        return precioFinal;
+    }
+
+    public void setPrecioFinal(BigDecimal precioFinal) {
+        this.precioFinal = precioFinal;
+    }
 
     public Integer getIdProducto() {
         return idProducto;
@@ -43,7 +98,7 @@ public class Producto {
     }
 
     public void setNombre(String nombre) {
-    this.nombre = nombre;
+        this.nombre = nombre;
     }
 
     public String getDescripcion() {
@@ -62,11 +117,12 @@ public class Producto {
         this.stockDisponible = stockDisponible;
     }
 
-    public float getPrecio() {
+    // --- GETTER Y SETTER DE PRECIO ACTUALIZADOS ---
+    public BigDecimal getPrecio() {
         return precio;
     }
 
-    public void setPrecio(float precio) {
+    public void setPrecio(BigDecimal precio) {
         this.precio = precio;
     }
 
@@ -77,5 +133,4 @@ public class Producto {
     public void setImagen(String imagen) {
         this.imagen = imagen;
     }
-
 }
