@@ -1,27 +1,47 @@
 package com.Farmaline.Farmaline.service;
 
-import java.math.BigDecimal; // Importar BigDecimal
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.Farmaline.Farmaline.dto.ProductoDTO;
+import com.Farmaline.Farmaline.model.Calificacion;
+import com.Farmaline.Farmaline.model.Carrito_Anadido;
 import com.Farmaline.Farmaline.model.Producto;
+import com.Farmaline.Farmaline.repository.CalificacionRepository;
+import com.Farmaline.Farmaline.repository.Carrito_AnadidoRepository;
 import com.Farmaline.Farmaline.repository.ProductoRepository;
 
 @Service
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final Carrito_AnadidoRepository carritoAnadidoRepository;
+    private final CalificacionRepository calificacionRepository;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @Autowired
-    public ProductoService(ProductoRepository productoRepository) {
+    public ProductoService(ProductoRepository productoRepository,
+                           Carrito_AnadidoRepository carritoAnadidoRepository,
+                           CalificacionRepository calificacionRepository) {
         this.productoRepository = productoRepository;
+        this.carritoAnadidoRepository = carritoAnadidoRepository;
+        this.calificacionRepository = calificacionRepository;
     }
 
     private ProductoDTO convertToDto(Producto producto) {
@@ -33,12 +53,12 @@ public class ProductoService {
         dto.setNombre(producto.getNombre());
         dto.setDescripcion(producto.getDescripcion());
         dto.setStockDisponible(producto.getStockDisponible());
-        dto.setPrecio(producto.getPrecio()); // BigDecimal a BigDecimal
+        dto.setPrecio(producto.getPrecio());
         dto.setImagen(producto.getImagen());
         dto.setFechaCaducidad(producto.getFechaCaducidad());
         dto.setFechaIngreso(producto.getFechaIngreso());
-        dto.setIgv(producto.getIgv());       // BigDecimal a BigDecimal
-        dto.setPrecioFinal(producto.getPrecioFinal()); // BigDecimal a BigDecimal
+        dto.setIgv(producto.getIgv());
+        dto.setPrecioFinal(producto.getPrecioFinal());
         return dto;
     }
 
@@ -47,17 +67,18 @@ public class ProductoService {
             return null;
         }
         Producto producto = new Producto();
-        // Cuando creamos una nueva entidad, el ID lo genera la base de datos
-        // producto.setIdProducto(dto.getIdProducto()); // Esto no es necesario para una nueva entidad
+        if (dto.getIdProducto() != null) {
+            producto.setIdProducto(dto.getIdProducto());
+        }
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
-        producto.setStockDisponible(Optional.ofNullable(dto.getStockDisponible()).orElse(0)); // Valor predeterminado a 0 si es nulo
-        producto.setPrecio(dto.getPrecio()); // BigDecimal a BigDecimal
+        producto.setStockDisponible(Optional.ofNullable(dto.getStockDisponible()).orElse(0));
+        producto.setPrecio(dto.getPrecio());
         producto.setImagen(dto.getImagen());
         producto.setFechaCaducidad(dto.getFechaCaducidad());
-        producto.setFechaIngreso(Optional.ofNullable(dto.getFechaIngreso()).orElse(LocalDate.now())); // Valor predeterminado a la fecha actual si es nulo
-        producto.setIgv(dto.getIgv());       // BigDecimal a BigDecimal
-        producto.setPrecioFinal(dto.getPrecioFinal()); // BigDecimal a BigDecimal
+        producto.setFechaIngreso(Optional.ofNullable(dto.getFechaIngreso()).orElse(LocalDate.now()));
+        producto.setIgv(dto.getIgv());
+        producto.setPrecioFinal(dto.getPrecioFinal());
         return producto;
     }
 
@@ -81,21 +102,18 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
-    // --- CAMBIOS EN MÉTODOS DE BÚSQUEDA Y CREACIÓN ---
-
     @Transactional(readOnly = true)
-    public List<ProductoDTO> findProductosByPrecioLessThanEqual(BigDecimal precio) { // Cambiado a BigDecimal
+    public List<ProductoDTO> findProductosByPrecioLessThanEqual(BigDecimal precio) {
         return productoRepository.findByPrecioLessThanEqual(precio).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ProductoDTO createProducto(ProductoDTO productoDTO) {
+    public ProductoDTO createProducto(ProductoDTO productoDTO, MultipartFile file) throws IOException {
         if (productoDTO.getNombre() == null || productoDTO.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del producto es obligatorio.");
         }
-        // Usar compareTo para comparar BigDecimals
         if (productoDTO.getPrecio() == null || productoDTO.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El precio del producto debe ser mayor que cero.");
         }
@@ -106,12 +124,23 @@ public class ProductoService {
             throw new IllegalArgumentException("El IGV no puede ser negativo.");
         }
         if (productoDTO.getPrecioFinal() == null || productoDTO.getPrecioFinal().compareTo(BigDecimal.ZERO) <= 0) {
-             throw new IllegalArgumentException("El precio final del producto debe ser mayor que cero.");
+            throw new IllegalArgumentException("El precio final del producto debe ser mayor que cero.");
         }
 
         if (productoRepository.findByNombreIgnoreCase(productoDTO.getNombre()).isPresent()) {
             throw new IllegalStateException("Ya existe un producto con el nombre: " + productoDTO.getNombre());
         }
+
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path uploadPath = Paths.get(uploadDir);
+        
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath);
+        productoDTO.setImagen("/" + uploadDir + "/" + fileName);
 
         Producto producto = convertToEntity(productoDTO);
         Producto savedProducto = productoRepository.save(producto);
@@ -121,60 +150,73 @@ public class ProductoService {
     @Transactional
     public ProductoDTO updateProducto(Integer id, ProductoDTO productoDTO) {
         return productoRepository.findById(id)
-            .map(producto -> {
+            .map(productoExistente -> {
                 if (productoDTO.getNombre() != null) {
-                    producto.setNombre(productoDTO.getNombre());
+                    productoExistente.setNombre(productoDTO.getNombre());
                 }
                 if (productoDTO.getDescripcion() != null) {
-                    producto.setDescripcion(productoDTO.getDescripcion());
+                    productoExistente.setDescripcion(productoDTO.getDescripcion());
                 }
                 if (productoDTO.getStockDisponible() != null && productoDTO.getStockDisponible() >= 0) {
-                    producto.setStockDisponible(productoDTO.getStockDisponible());
+                    productoExistente.setStockDisponible(productoDTO.getStockDisponible());
                 }
-                // Usar compareTo para comparar BigDecimals
                 if (productoDTO.getPrecio() != null && productoDTO.getPrecio().compareTo(BigDecimal.ZERO) > 0) {
-                    producto.setPrecio(productoDTO.getPrecio());
+                    productoExistente.setPrecio(productoDTO.getPrecio());
                 }
                 if (productoDTO.getImagen() != null) {
-                    producto.setImagen(productoDTO.getImagen());
+                    productoExistente.setImagen(productoDTO.getImagen());
                 }
                 if (productoDTO.getFechaCaducidad() != null) {
-                    producto.setFechaCaducidad(productoDTO.getFechaCaducidad());
+                    productoExistente.setFechaCaducidad(productoDTO.getFechaCaducidad());
                 }
-                // Usar compareTo para comparar BigDecimals
+                if (productoDTO.getFechaIngreso() != null) {
+                    productoExistente.setFechaIngreso(productoDTO.getFechaIngreso());
+                }
                 if (productoDTO.getIgv() != null && productoDTO.getIgv().compareTo(BigDecimal.ZERO) >= 0) {
-                    producto.setIgv(productoDTO.getIgv());
+                    productoExistente.setIgv(productoDTO.getIgv());
                 }
-                // Usar compareTo para comparar BigDecimals
                 if (productoDTO.getPrecioFinal() != null && productoDTO.getPrecioFinal().compareTo(BigDecimal.ZERO) > 0) {
-                    producto.setPrecioFinal(productoDTO.getPrecioFinal());
+                    productoExistente.setPrecioFinal(productoDTO.getPrecioFinal());
                 }
-                Producto updatedProducto = productoRepository.save(producto);
+                Producto updatedProducto = productoRepository.save(productoExistente);
                 return convertToDto(updatedProducto);
             }).orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
     }
-
-    // El resto de los métodos se mantienen, pero asegúrate de que los métodos en ProductoRepository
-    // que interactúan con Precio, IGV o Precio_Final también usen BigDecimal en sus firmas.
 
     @Transactional
     public void deleteProducto(Integer id) {
         if (!productoRepository.existsById(id)) {
             throw new RuntimeException("Producto con ID " + id + " no encontrado para eliminar.");
         }
-        productoRepository.deleteById(id);
+
+        try {
+            List<Carrito_Anadido> carritosRelacionados = carritoAnadidoRepository.findByProductoIdProducto(id);
+            if (!carritosRelacionados.isEmpty()) {
+                carritoAnadidoRepository.deleteAll(carritosRelacionados);
+            }
+
+            List<Calificacion> calificacionesRelacionadas = calificacionRepository.findByProductoIdProducto(id);
+            if (!calificacionesRelacionadas.isEmpty()) {
+                calificacionRepository.deleteAll(calificacionesRelacionadas);
+            }
+
+            productoRepository.deleteById(id);
+
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo eliminar el producto debido a dependencias existentes (carritos o calificaciones). Detalles: " + e.getMessage(), e);
+        }
     }
 
     @Transactional
     public ProductoDTO updateStock(Integer id, Integer cantidadCambio) {
         return productoRepository.findById(id)
-            .map(producto -> {
-                int nuevoStock = producto.getStockDisponible() + cantidadCambio;
+            .map(productoExistente -> {
+                int nuevoStock = productoExistente.getStockDisponible() + cantidadCambio;
                 if (nuevoStock < 0) {
-                    throw new IllegalArgumentException("No hay suficiente stock para esta operación. Stock actual: " + producto.getStockDisponible());
+                    throw new IllegalArgumentException("No hay suficiente stock para esta operación. Stock actual: " + productoExistente.getStockDisponible());
                 }
-                producto.setStockDisponible(nuevoStock);
-                Producto updatedProducto = productoRepository.save(producto);
+                productoExistente.setStockDisponible(nuevoStock);
+                Producto updatedProducto = productoRepository.save(productoExistente);
                 return convertToDto(updatedProducto);
             }).orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
     }
@@ -201,7 +243,7 @@ public class ProductoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductoDTO> findProductosByPrecioBetween(BigDecimal minPrecio, BigDecimal maxPrecio) { // Cambiado a BigDecimal
+    public List<ProductoDTO> findProductosByPrecioBetween(BigDecimal minPrecio, BigDecimal maxPrecio) {
         return productoRepository.findByPrecioBetween(minPrecio, maxPrecio).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -247,21 +289,21 @@ public class ProductoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductoDTO> findProductosByIgvBetween(BigDecimal minIgv, BigDecimal maxIgv) { // Cambiado a BigDecimal
+    public List<ProductoDTO> findProductosByIgvBetween(BigDecimal minIgv, BigDecimal maxIgv) {
         return productoRepository.findByIgvBetween(minIgv, maxIgv).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<ProductoDTO> findProductosByPrecioFinalBetween(BigDecimal minPrecioFinal, BigDecimal maxPrecioFinal) { // Cambiado a BigDecimal
+    public List<ProductoDTO> findProductosByPrecioFinalBetween(BigDecimal minPrecioFinal, BigDecimal maxPrecioFinal) {
         return productoRepository.findByPrecioFinalBetween(minPrecioFinal, maxPrecioFinal).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public long countProductosByPrecioBetween(BigDecimal minPrecio, BigDecimal maxPrecio) { // Cambiado a BigDecimal
+    public long countProductosByPrecioBetween(BigDecimal minPrecio, BigDecimal maxPrecio) {
         return productoRepository.countByPrecioBetween(minPrecio, maxPrecio);
     }
 

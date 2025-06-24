@@ -7,8 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id; // ¡Importante! Añadir esta importación
-import jakarta.persistence.Table; // Para java.time.LocalDate
+import jakarta.persistence.Id; 
+import jakarta.persistence.Table; 
 
 @Entity
 @Table(name="Producto")
@@ -27,7 +27,6 @@ public class Producto {
     @Column(name="Stock_Disponible", nullable=false)
     private Integer stockDisponible;
 
-    // --- CAMBIO AQUÍ: float a BigDecimal ---
     @Column(name="Precio", nullable=false, precision=10, scale=2)
     private BigDecimal precio;
 
@@ -40,18 +39,14 @@ public class Producto {
     @Column(name = "Fecha_Ingreso", nullable = false)
     private LocalDate fechaIngreso;
 
-    // --- CAMBIO AQUÍ: float a BigDecimal ---
     @Column(name = "IGV", nullable = false, precision=5, scale=2)
     private BigDecimal igv;
 
-    // --- CAMBIO AQUÍ: float a BigDecimal ---
     @Column(name = "Precio_Final", nullable = false, precision=10, scale=2)
     private BigDecimal precioFinal;
 
     public Producto() {
     }
-
-    // --- GETTERS Y SETTERS ACTUALIZADOS PARA BigDecimal ---
 
     public LocalDate getFechaCaducidad() {
         return fechaCaducidad;
@@ -117,7 +112,6 @@ public class Producto {
         this.stockDisponible = stockDisponible;
     }
 
-    // --- GETTER Y SETTER DE PRECIO ACTUALIZADOS ---
     public BigDecimal getPrecio() {
         return precio;
     }

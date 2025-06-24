@@ -189,6 +189,8 @@
                                         <th>ID</th>
                                         <th>Nombre</th>
                                         <th>Stock</th>
+                                        <th>Fecha de Ingreso</th>
+                                        <th>Fecha de Caducidad</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -322,6 +324,10 @@
                             <input type="text" class="form-control" id="producto-nombre" required>
                         </div>
                         <div class="mb-3">
+                            <label for="producto-descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="producto-descripcion" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
                             <label for="producto-categoria" class="form-label">Categoría</label>
                             <select class="form-select" id="producto-categoria" required>
                                 <option value="">Selecciona una categoría</option>
@@ -336,6 +342,26 @@
                             <label for="producto-stock-inicial" class="form-label">Stock Inicial</label>
                             <input type="number" class="form-control" id="producto-stock-inicial" min="0" value="0" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="producto-precio" class="form-label">Precio (Sin IGV)</label>
+                            <input type="number" class="form-control" id="producto-precio" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-fecha-caducidad" class="form-label">Fecha de Caducidad</label>
+                            <input type="date" class="form-control" id="producto-fecha-caducidad">
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-igv" class="form-label">IGV (%)</label>
+                            <input type="number" class="form-control" id="producto-igv" step="0.01" min="0" value="0.18" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-precio-final" class="form-label">Precio Final (Con IGV)</label>
+                            <input type="number" class="form-control" id="producto-precio-final" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-imagen" class="form-label">Imagen del Producto</label>
+                            <input type="file" class="form-control" id="producto-imagen" accept="image/*">
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -347,5 +373,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../JS/admin.js"></script> </body>
+    <script src="../JS/admin.js"></script> 
+</body>
 </html>

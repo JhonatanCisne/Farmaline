@@ -1,6 +1,6 @@
 package com.Farmaline.Farmaline.dto;
 
-import java.math.BigDecimal; // ¡Importante! Añadir esta importación
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ProductoDTO {
@@ -8,24 +8,17 @@ public class ProductoDTO {
     private String nombre;
     private String descripcion;
     private Integer stockDisponible;
-    
-    // --- CAMBIO AQUÍ: float a BigDecimal ---
     private BigDecimal precio;
-    
     private String imagen;
     private LocalDate fechaCaducidad;
     private LocalDate fechaIngreso;
-    
-    // --- CAMBIO AQUÍ: float a BigDecimal ---
     private BigDecimal igv;
-    
-    // --- CAMBIO AQUÍ: float a BigDecimal ---
     private BigDecimal precioFinal;
 
     public ProductoDTO() {}
 
-    // --- Constructor actualizado con BigDecimal ---
-    public ProductoDTO(String nombre, String descripcion, Integer stockDisponible, BigDecimal precio, String imagen, LocalDate fechaCaducidad, LocalDate fechaIngreso, BigDecimal igv, BigDecimal precioFinal) {
+    public ProductoDTO(Integer idProducto, String nombre, String descripcion, Integer stockDisponible, BigDecimal precio, String imagen, LocalDate fechaCaducidad, LocalDate fechaIngreso, BigDecimal igv, BigDecimal precioFinal) {
+        this.idProducto = idProducto;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.stockDisponible = stockDisponible;
@@ -69,7 +62,6 @@ public class ProductoDTO {
         this.stockDisponible = stockDisponible;
     }
 
-    // --- Getter y Setter de Precio actualizados ---
     public BigDecimal getPrecio() {
         return precio;
     }
@@ -102,7 +94,6 @@ public class ProductoDTO {
         this.fechaIngreso = fechaIngreso;
     }
 
-    // --- Getter y Setter de IGV actualizados ---
     public BigDecimal getIgv() {
         return igv;
     }
@@ -111,7 +102,6 @@ public class ProductoDTO {
         this.igv = igv;
     }
 
-    // --- Getter y Setter de Precio Final actualizados ---
     public BigDecimal getPrecioFinal() {
         return precioFinal;
     }

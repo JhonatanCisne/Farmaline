@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.Farmaline.Farmaline.dto.ProductoDTO;
 import com.Farmaline.Farmaline.service.ProductoService;
@@ -57,7 +59,6 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // --- CAMBIO AQUÍ: float a BigDecimal ---
     @GetMapping("/buscar/precio-max")
     public ResponseEntity<List<ProductoDTO>> getProductosByPrecioLessThanEqual(@RequestParam BigDecimal precio) {
         List<ProductoDTO> productos = productoService.findProductosByPrecioLessThanEqual(precio);
@@ -77,10 +78,12 @@ public class ProductoController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Object> createProducto(@RequestBody ProductoDTO productoDTO) {
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Object> createProducto(
+            @RequestPart("producto") ProductoDTO productoDTO,
+            @RequestPart("file") MultipartFile file) {
         try {
-            ProductoDTO createdProducto = productoService.createProducto(productoDTO);
+            ProductoDTO createdProducto = productoService.createProducto(productoDTO, file);
             return new ResponseEntity<>(createdProducto, HttpStatus.CREATED);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -141,7 +144,6 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // --- CAMBIO AQUÍ: Float a BigDecimal ---
     @GetMapping("/buscar/precio-entre")
     public ResponseEntity<List<ProductoDTO>> getProductosByPrecioBetween(@RequestParam BigDecimal minPrecio, @RequestParam BigDecimal maxPrecio) {
         List<ProductoDTO> productos = productoService.findProductosByPrecioBetween(minPrecio, maxPrecio);
@@ -200,7 +202,6 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // --- CAMBIO AQUÍ: Float a BigDecimal ---
     @GetMapping("/buscar/igv-entre")
     public ResponseEntity<List<ProductoDTO>> getProductosByIgvBetween(@RequestParam BigDecimal minIgv, @RequestParam BigDecimal maxIgv) {
         List<ProductoDTO> productos = productoService.findProductosByIgvBetween(minIgv, maxIgv);
@@ -210,7 +211,6 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // --- CAMBIO AQUÍ: Float a BigDecimal ---
     @GetMapping("/buscar/precio-final-entre")
     public ResponseEntity<List<ProductoDTO>> getProductosByPrecioFinalBetween(@RequestParam BigDecimal minPrecioFinal, @RequestParam BigDecimal maxPrecioFinal) {
         List<ProductoDTO> productos = productoService.findProductosByPrecioFinalBetween(minPrecioFinal, maxPrecioFinal);
@@ -220,7 +220,6 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // --- CAMBIO AQUÍ: Float a BigDecimal ---
     @GetMapping("/contar/precio-entre")
     public ResponseEntity<Long> countProductosByPrecioBetween(@RequestParam BigDecimal minPrecio, @RequestParam BigDecimal maxPrecio) {
         long count = productoService.countProductosByPrecioBetween(minPrecio, maxPrecio);
