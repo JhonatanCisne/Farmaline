@@ -1,10 +1,22 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
 
-public class Carrito_AnadidoDTO {
+public class CarritoAnadidoDTO {
     private Integer idCarritoAnadido;
     private int cantidad;
-    private Integer idProducto; 
-    private Integer idCarrito;  
+    private Integer idProducto;
+    private String nombreProducto;
+    private Integer idCarrito;
+
+    public CarritoAnadidoDTO() {
+    }
+
+    public CarritoAnadidoDTO(Integer idCarritoAnadido, int cantidad, Integer idProducto, String nombreProducto, Integer idCarrito) {
+        this.idCarritoAnadido = idCarritoAnadido;
+        this.cantidad = cantidad;
+        this.idProducto = idProducto;
+        this.nombreProducto = nombreProducto;
+        this.idCarrito = idCarrito;
+    }
 
     public Integer getIdCarritoAnadido() {
         return idCarritoAnadido;
@@ -28,6 +40,14 @@ public class Carrito_AnadidoDTO {
 
     public void setIdProducto(Integer idProducto) {
         this.idProducto = idProducto;
+    }
+
+    public String getNombreProducto() {
+        return nombreProducto;
+    }
+
+    public void setNombreProducto(String nombreProducto) {
+        this.nombreProducto = nombreProducto;
     }
 
     public Integer getIdCarrito() {

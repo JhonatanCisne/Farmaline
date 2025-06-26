@@ -1,16 +1,13 @@
-package com.Farmaline.Farmaline.service;
+package com.farmaline.farmaline.service;
 
+import com.farmaline.farmaline.dto.VehiculoDTO;
+import com.farmaline.farmaline.model.Vehiculo;
+import com.farmaline.farmaline.repository.VehiculoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.Farmaline.Farmaline.dto.VehiculoDTO;
-import com.Farmaline.Farmaline.model.Vehiculo;
-import com.Farmaline.Farmaline.repository.VehiculoRepository;
 
 @Service
 public class VehiculoService {
@@ -22,10 +19,44 @@ public class VehiculoService {
         this.vehiculoRepository = vehiculoRepository;
     }
 
-    private VehiculoDTO convertToDto(Vehiculo vehiculo) {
-        if (vehiculo == null) {
-            return null;
+    public List<VehiculoDTO> obtenerTodosVehiculos() {
+        return vehiculoRepository.findAll().stream()
+                .map(this::convertirAVehiculoDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<VehiculoDTO> obtenerVehiculoPorId(Integer id) {
+        return vehiculoRepository.findById(id)
+                .map(this::convertirAVehiculoDTO);
+    }
+
+    public VehiculoDTO crearVehiculo(VehiculoDTO vehiculoDTO) {
+        Vehiculo vehiculo = convertirAVehiculoEntidad(vehiculoDTO);
+        vehiculo = vehiculoRepository.save(vehiculo);
+        return convertirAVehiculoDTO(vehiculo);
+    }
+
+    public Optional<VehiculoDTO> actualizarVehiculo(Integer id, VehiculoDTO vehiculoDTO) {
+        return vehiculoRepository.findById(id)
+                .map(vehiculoExistente -> {
+                    vehiculoExistente.setPlaca(vehiculoDTO.getPlaca());
+                    vehiculoExistente.setCategoria(vehiculoDTO.getCategoria());
+                    vehiculoExistente.setMarca(vehiculoDTO.getMarca());
+                    vehiculoExistente.setModelo(vehiculoDTO.getModelo());
+                    vehiculoExistente.setAnio(vehiculoDTO.getAnio());
+                    return convertirAVehiculoDTO(vehiculoRepository.save(vehiculoExistente));
+                });
+    }
+
+    public boolean eliminarVehiculo(Integer id) {
+        if (vehiculoRepository.existsById(id)) {
+            vehiculoRepository.deleteById(id);
+            return true;
         }
+        return false;
+    }
+
+    private VehiculoDTO convertirAVehiculoDTO(Vehiculo vehiculo) {
         VehiculoDTO dto = new VehiculoDTO();
         dto.setIdVehiculo(vehiculo.getIdVehiculo());
         dto.setPlaca(vehiculo.getPlaca());
@@ -36,114 +67,14 @@ public class VehiculoService {
         return dto;
     }
 
-    private Vehiculo convertToEntity(VehiculoDTO dto) {
-        if (dto == null) {
-            return null;
-        }
+    private Vehiculo convertirAVehiculoEntidad(VehiculoDTO dto) {
         Vehiculo vehiculo = new Vehiculo();
-        if (dto.getIdVehiculo() != null) {
-            vehiculo.setIdVehiculo(dto.getIdVehiculo());
-        }
+        vehiculo.setIdVehiculo(dto.getIdVehiculo());
         vehiculo.setPlaca(dto.getPlaca());
         vehiculo.setCategoria(dto.getCategoria());
         vehiculo.setMarca(dto.getMarca());
         vehiculo.setModelo(dto.getModelo());
         vehiculo.setAnio(dto.getAnio());
         return vehiculo;
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<VehiculoDTO> findAllVehiculos() {
-        return vehiculoRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<VehiculoDTO> findVehiculoById(Integer id) {
-        return vehiculoRepository.findById(id)
-                .map(this::convertToDto);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<VehiculoDTO> findVehiculoByPlaca(String placa) {
-        return vehiculoRepository.findByPlaca(placa)
-                .map(this::convertToDto);
-    }
-
-    @Transactional(readOnly = true)
-    public List<VehiculoDTO> findVehiculosByMarca(String marca) {
-        return vehiculoRepository.findByMarcaContainingIgnoreCase(marca).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-    
-    @Transactional(readOnly = true)
-    public List<VehiculoDTO> findVehiculosByAnioGreaterThanEqual(Integer anio) {
-        return vehiculoRepository.findByAnioGreaterThanEqual(anio).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public VehiculoDTO createVehiculo(VehiculoDTO vehiculoDTO) {
-        if (vehiculoDTO.getPlaca() == null || vehiculoDTO.getPlaca().trim().isEmpty()) {
-            throw new IllegalArgumentException("La placa del vehículo es obligatoria.");
-        }
-        if (vehiculoRepository.findByPlaca(vehiculoDTO.getPlaca()).isPresent()) {
-            throw new IllegalStateException("Ya existe un vehículo con esta placa: " + vehiculoDTO.getPlaca());
-        }
-        if (vehiculoDTO.getAnio() == null || vehiculoDTO.getAnio() <= 1900) { 
-            throw new IllegalArgumentException("El año del vehículo debe ser válido.");
-        }
-
-        Vehiculo vehiculo = convertToEntity(vehiculoDTO);
-        Vehiculo savedVehiculo = vehiculoRepository.save(vehiculo);
-        return convertToDto(savedVehiculo);
-    }
-
-    @Transactional
-    public VehiculoDTO updateVehiculo(Integer id, VehiculoDTO vehiculoDTO) {
-        return vehiculoRepository.findById(id)
-            .map(vehiculo -> {
-                if (vehiculoDTO.getPlaca() != null) {
-                    if (!vehiculo.getPlaca().equals(vehiculoDTO.getPlaca()) &&
-                        vehiculoRepository.findByPlaca(vehiculoDTO.getPlaca()).isPresent()) {
-                        throw new IllegalStateException("La nueva placa ya está en uso.");
-                    }
-                    vehiculo.setPlaca(vehiculoDTO.getPlaca());
-                }
-                if (vehiculoDTO.getCategoria() != null) {
-                    vehiculo.setCategoria(vehiculoDTO.getCategoria());
-                }
-                if (vehiculoDTO.getMarca() != null) {
-                    vehiculo.setMarca(vehiculoDTO.getMarca());
-                }
-                if (vehiculoDTO.getModelo() != null) {
-                    vehiculo.setModelo(vehiculoDTO.getModelo());
-                }
-                if (vehiculoDTO.getAnio() != null && vehiculoDTO.getAnio() > 1900) {
-                    vehiculo.setAnio(vehiculoDTO.getAnio());
-                }
-                
-                Vehiculo updatedVehiculo = vehiculoRepository.save(vehiculo);
-                return convertToDto(updatedVehiculo);
-            }).orElseThrow(() -> new RuntimeException("Vehículo no encontrado con ID: " + id));
-    }
-
-    @Transactional
-    public void deleteVehiculo(Integer id) {
-        if (!vehiculoRepository.existsById(id)) {
-            throw new RuntimeException("Vehículo con ID " + id + " no encontrado para eliminar.");
-        }
-        vehiculoRepository.deleteById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public List<VehiculoDTO> findByModeloContainingIgnoreCase(String modelo) {
-        return vehiculoRepository.findByModeloContainingIgnoreCase(modelo).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
     }
 }

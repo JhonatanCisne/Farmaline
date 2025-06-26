@@ -1,21 +1,11 @@
-package com.Farmaline.Farmaline.repository;
+package com.farmaline.farmaline.repository;
 
-import java.util.List;
-import java.util.Optional; 
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import com.Farmaline.Farmaline.model.Administrador;
+import com.farmaline.farmaline.model.Administrador;
 
-@Repository
 public interface AdministradorRepository extends JpaRepository<Administrador, Integer> {
-
-    Optional<Administrador> findByNombre(String nombre);
-
-    Optional<Administrador> findByNombreAndApellido(String nombre, String apellido);
-
-    List<Administrador> findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(String nombrePart, String apellidoPart);
-
-    boolean existsByNombreAndApellido(String nombre, String apellido);
+    Optional<Administrador> findByNombreAndContrasena(String nombre, String contrasena);
 }

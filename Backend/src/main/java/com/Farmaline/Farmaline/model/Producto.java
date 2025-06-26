@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

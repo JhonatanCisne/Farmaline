@@ -1,12 +1,9 @@
 class AdminPanel {
     constructor() {
-        this.API_BASE_URL = 'http://localhost:8080/api';
-
+        this.API_BASE_URL = 'http://localhost:8080';
         this.productos = [];
-        this.repartidores = JSON.parse(localStorage.getItem('farmaline_repartidores')) || [
-            { id: 1, nombre: 'Juan Pérez', telefono: '987654321', zona: 'norte' },
-            { id: 2, nombre: 'María López', telefono: '912345678', zona: 'centro' }
-        ];
+        this.repartidores = [];
+        this.vehiculos = []; // Nueva propiedad para almacenar vehículos
         this.currentSection = 'inicio';
         this.currentStockFilter = '';
         this.initEventListeners();
@@ -122,12 +119,26 @@ class AdminPanel {
 
         const repartidorModal = document.getElementById('modalRepartidor');
         if (repartidorModal) {
+            repartidorModal.addEventListener('show.bs.modal', async () => { // Evento para cargar vehículos al abrir el modal
+                await this.cargarVehiculosDesdeBackend();
+                this.poblarSelectVehiculos();
+            });
             repartidorModal.addEventListener('hidden.bs.modal', () => {
                 document.getElementById('modalRepartidorLabel').innerHTML = '<i class="fas fa-user-plus"></i> Añadir Nuevo Repartidor';
                 const btn = document.getElementById('guardar-repartidor-btn');
                 btn.textContent = 'Guardar Repartidor';
                 delete btn.dataset.editingId;
                 document.getElementById('formRepartidor').reset();
+                // Asegurarse de que el select de vehículos se resetee
+                const vehiculoSelect = document.getElementById('repartidor-id-vehiculo');
+                if (vehiculoSelect) {
+                    vehiculoSelect.value = '';
+                }
+                // Restaurar el ID de administrador por defecto si existe el campo
+                const adminIdInput = document.getElementById('repartidor-id-administrador');
+                if (adminIdInput) {
+                    adminIdInput.value = '1';
+                }
             });
         }
     }
@@ -154,13 +165,15 @@ class AdminPanel {
 
     async render() {
         await this.cargarProductosDesdeBackend();
+        await this.cargarRepartidoresDesdeBackend();
+        await this.cargarVehiculosDesdeBackend(); // Cargar vehículos al inicio
         this.actualizarDashboard();
         this.changeSection(this.currentSection);
     }
 
     async cargarProductosDesdeBackend() {
         try {
-            const response = await fetch(`${this.API_BASE_URL}/productos`);
+            const response = await fetch(`${this.API_BASE_URL}/api/productos`);
             if (!response.ok) {
                 if (response.status === 204) {
                     this.productos = [];
@@ -180,6 +193,62 @@ class AdminPanel {
         this.actualizarDashboard();
     }
 
+    async cargarRepartidoresDesdeBackend() {
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/repartidores`);
+            if (!response.ok) {
+                if (response.status === 204) {
+                    this.repartidores = [];
+                    this.mostrarNotificacion('No se encontraron repartidores en el servidor.', 'info');
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } else {
+                this.repartidores = await response.json();
+            }
+        } catch (error) {
+            console.error('Error al cargar repartidores desde el backend:', error);
+            this.mostrarNotificacion('Error al cargar repartidores. Intenta recargar la página.', 'danger');
+            this.repartidores = [];
+        }
+        this.cargarTablaRepartidores();
+        this.actualizarDashboard();
+    }
+
+    async cargarVehiculosDesdeBackend() {
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/vehiculos`); // Asume un endpoint /api/vehiculos
+            if (!response.ok) {
+                if (response.status === 204) {
+                    this.vehiculos = [];
+                    this.mostrarNotificacion('No se encontraron vehículos en el servidor.', 'info');
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } else {
+                this.vehiculos = await response.json();
+            }
+            this.poblarSelectVehiculos(); // Poblar el select después de cargar
+        } catch (error) {
+            console.error('Error al cargar vehículos desde el backend:', error);
+            this.mostrarNotificacion('Error al cargar vehículos. Intenta recargar la página o verifica la conexión con el servidor de vehículos.', 'danger');
+            this.vehiculos = [];
+        }
+    }
+
+    poblarSelectVehiculos() {
+        const vehiculoSelect = document.getElementById('repartidor-id-vehiculo');
+        if (vehiculoSelect) {
+            vehiculoSelect.innerHTML = '<option value="">Selecciona un vehículo</option>'; // Limpiar y añadir opción por defecto
+            this.vehiculos.forEach(vehiculo => {
+                const option = document.createElement('option');
+                option.value = vehiculo.idVehiculo;
+                option.textContent = `${vehiculo.marca} - ${vehiculo.modelo} (${vehiculo.placa})`;
+                vehiculoSelect.appendChild(option);
+            });
+        }
+    }
+
     async confirmarActualizacionStock() {
         const productoId = parseInt(document.getElementById('producto-id-stock').value);
         const cantidadAgregar = parseInt(document.getElementById('cantidad-agregar').value);
@@ -190,7 +259,7 @@ class AdminPanel {
         }
 
         try {
-            const response = await fetch(`${this.API_BASE_URL}/productos/${productoId}/stock?cantidadCambio=${cantidadAgregar}`, {
+            const response = await fetch(`${this.API_BASE_URL}/api/productos/${productoId}/stock?cantidadCambio=${cantidadAgregar}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -231,7 +300,7 @@ class AdminPanel {
         const precio = parseFloat(document.getElementById('producto-precio').value) || 0.0;
         const igv = parseFloat(document.getElementById('producto-igv').value) || 0.0;
         const precioFinal = parseFloat(document.getElementById('producto-precio-final').value) || 0.0;
-        const fechaCaducidadStr = document.getElementById('producto-fecha-caducidad').value;
+        const fechaCaducidadStr = document.getElementById('producto-fecha-caducidad').value || null;
         const fechaIngresoStr = document.getElementById('producto-fecha-ingreso').value;
 
         const imagenInput = document.getElementById('producto-imagen');
@@ -254,7 +323,7 @@ class AdminPanel {
             precio: precio,
             igv: igv,
             precioFinal: precioFinal,
-            fechaCaducidad: fechaCaducidadStr || null,
+            fechaCaducidad: fechaCaducidadStr,
             fechaIngreso: fechaIngresoStr
         };
 
@@ -263,7 +332,7 @@ class AdminPanel {
         formData.append('file', imagenFile);
 
         try {
-            const response = await fetch(`${this.API_BASE_URL}/productos`, {
+            const response = await fetch(`${this.API_BASE_URL}/api/productos`, {
                 method: 'POST',
                 body: formData
             });
@@ -298,7 +367,7 @@ class AdminPanel {
         const precio = parseFloat(document.getElementById('producto-precio').value) || 0.0;
         const igv = parseFloat(document.getElementById('producto-igv').value) || 0.0;
         const precioFinal = parseFloat(document.getElementById('producto-precio-final').value) || 0.0;
-        const fechaCaducidadStr = document.getElementById('producto-fecha-caducidad').value;
+        const fechaCaducidadStr = document.getElementById('producto-fecha-caducidad').value || null;
         const fechaIngresoStr = document.getElementById('producto-fecha-ingreso').value;
 
         const imagenInput = document.getElementById('producto-imagen');
@@ -317,7 +386,7 @@ class AdminPanel {
             precio: precio,
             igv: igv,
             precioFinal: precioFinal,
-            fechaCaducidad: fechaCaducidadStr || null,
+            fechaCaducidad: fechaCaducidadStr,
             fechaIngreso: fechaIngresoStr
         };
 
@@ -328,7 +397,7 @@ class AdminPanel {
         }
 
         try {
-            const response = await fetch(`${this.API_BASE_URL}/productos/${productId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/api/productos/${productId}`, {
                 method: 'PUT',
                 body: formData
             });
@@ -388,7 +457,7 @@ class AdminPanel {
             return;
         }
         try {
-            const response = await fetch(`${this.API_BASE_URL}/productos/${productId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/api/productos/${productId}`, {
                 method: 'DELETE'
             });
 
@@ -397,8 +466,6 @@ class AdminPanel {
                 throw new Error(`Error al eliminar producto: ${errorText || response.statusText}`);
             }
 
-            // Si la eliminación en el backend fue exitosa (status 200 OK, 204 No Content),
-            // actualizamos el array local de productos.
             this.productos = this.productos.filter(p => p.idProducto !== productId);
             this.actualizarDashboard();
             this.cargarTablaProductos();
@@ -537,16 +604,15 @@ class AdminPanel {
         } else {
             tbody.innerHTML = this.repartidores.map(r => `
                 <tr>
-                    <td><strong>#${r.id}</strong></td>
-                    <td>${r.nombre}</td>
+                    <td><strong>#${r.idRepartidor}</strong></td>
+                    <td>${r.nombre} ${r.apellido || ''}</td>
                     <td>${r.telefono}</td>
-                    <td>${this.getZonaName(r.zona)}</td>
-                    <td><span class="badge bg-success">Activo</span></td>
+                    <td>${r.placaVehiculo || 'N/A'}</td>
                     <td>
-                        <button class="btn btn-sm btn-warning text-white me-1" onclick="adminPanel.openEditRepartidorModal(${r.id})" title="Editar">
+                        <button class="btn btn-sm btn-warning text-white me-1" onclick="adminPanel.openEditRepartidorModal(${r.idRepartidor})" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="adminPanel.deleteRepartidor(${r.id})" title="Eliminar">
+                        <button class="btn btn-sm btn-danger" onclick="adminPanel.deleteRepartidor(${r.idRepartidor})" title="Eliminar">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -575,22 +641,47 @@ class AdminPanel {
         document.getElementById('stock-nuevo').value = stockActual + cantidadAgregar;
     }
 
-    confirmarNuevoRepartidor() {
+    async confirmarNuevoRepartidor() {
         const nombre = document.getElementById('repartidor-nombre').value;
+        const apellido = document.getElementById('repartidor-apellido') ? document.getElementById('repartidor-apellido').value : 'N/A';
         const telefono = document.getElementById('repartidor-telefono').value;
-        const zona = document.getElementById('repartidor-zona').value;
+        const contrasena = document.getElementById('repartidor-contrasena') ? document.getElementById('repartidor-contrasena').value : 'password123';
+        // Obtener el valor seleccionado del select
+        const idVehiculo = document.getElementById('repartidor-id-vehiculo').value;
+        const idVehiculoParsed = idVehiculo ? parseInt(idVehiculo) : null; // Convertir a número o null
+        const idAdministrador = parseInt(document.getElementById('repartidor-id-administrador').value) || 1;
 
-        if (nombre && telefono && zona) {
-            const nuevoId = this.repartidores.length > 0 ? Math.max(...this.repartidores.map(r => r.id)) + 1 : 1;
-            const nuevoRepartidor = {
-                id: nuevoId,
-                nombre,
-                telefono,
-                zona
-            };
 
-            this.repartidores.push(nuevoRepartidor);
-            localStorage.setItem('farmaline_repartidores', JSON.stringify(this.repartidores));
+        if (!nombre || !telefono || !contrasena || idVehiculoParsed === null || isNaN(idAdministrador) || idAdministrador < 1) {
+            this.mostrarNotificacion('Por favor, completa todos los campos obligatorios para el repartidor (Nombre, Teléfono, Contraseña, Vehículo Asignado, ID Administrador) correctamente.', 'warning');
+            return;
+        }
+
+        const nuevoRepartidorData = {
+            nombre: nombre,
+            apellido: apellido,
+            telefono: telefono,
+            contrasena: contrasena,
+            idVehiculo: idVehiculoParsed, // Usar el ID del vehículo seleccionado
+            idAdministrador: idAdministrador
+        };
+
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/repartidores`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nuevoRepartidorData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                throw new Error(`Error al crear repartidor: ${errorData.message}`);
+            }
+
+            const createdRepartidor = await response.json();
+            this.repartidores.push(createdRepartidor);
 
             const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalRepartidor'));
             modalInstance.hide();
@@ -599,14 +690,16 @@ class AdminPanel {
             this.actualizarDashboard();
             this.cargarTablaRepartidores();
 
-            this.mostrarNotificacion(`Repartidor ${nombre} creado`, 'success');
-        } else {
-            this.mostrarNotificacion('Por favor, completa todos los campos del repartidor.', 'danger');
+            this.mostrarNotificacion(`Repartidor ${createdRepartidor.nombre} ${createdRepartidor.apellido} creado con éxito`, 'success');
+
+        } catch (error) {
+            console.error('Error al añadir nuevo repartidor:', error);
+            this.mostrarNotificacion(`Error al añadir repartidor: ${error.message}`, 'danger');
         }
     }
 
     openEditRepartidorModal(repartidorId) {
-        const repartidor = this.repartidores.find(r => r.id === repartidorId);
+        const repartidor = this.repartidores.find(r => r.idRepartidor === repartidorId);
         if (!repartidor) {
             this.mostrarNotificacion('Repartidor no encontrado para editar.', 'danger');
             return;
@@ -615,57 +708,114 @@ class AdminPanel {
         document.getElementById('modalRepartidorLabel').innerHTML = '<i class="fas fa-user-edit"></i> Editar Repartidor';
         const guardarRepartidorBtn = document.getElementById('guardar-repartidor-btn');
         guardarRepartidorBtn.textContent = 'Guardar Cambios';
-        guardarRepartidorBtn.dataset.editingId = repartidor.id;
+        guardarRepartidorBtn.dataset.editingId = repartidor.idRepartidor;
 
         document.getElementById('repartidor-nombre').value = repartidor.nombre;
+        if (document.getElementById('repartidor-apellido')) {
+            document.getElementById('repartidor-apellido').value = repartidor.apellido || '';
+        }
         document.getElementById('repartidor-telefono').value = repartidor.telefono;
-        document.getElementById('repartidor-zona').value = repartidor.zona;
+        if (document.getElementById('repartidor-id-vehiculo')) {
+            // Seleccionar el vehículo asignado en el dropdown
+            document.getElementById('repartidor-id-vehiculo').value = repartidor.idVehiculo || '';
+        }
+        if (document.getElementById('repartidor-contrasena')) {
+            document.getElementById('repartidor-contrasena').value = ''; // La contraseña no se precarga por seguridad
+            document.getElementById('repartidor-contrasena-group').classList.remove('d-none'); // Asegurarse de que el campo de contraseña sea visible en edición si se decide usar
+        }
+        if (document.getElementById('repartidor-id-administrador')) {
+            document.getElementById('repartidor-id-administrador').value = repartidor.idAdministrador || '1';
+        }
+
 
         const modal = new bootstrap.Modal(document.getElementById('modalRepartidor'));
         modal.show();
     }
 
-    confirmarEdicionRepartidor(repartidorId) {
+    async confirmarEdicionRepartidor(repartidorId) {
         const nombre = document.getElementById('repartidor-nombre').value;
+        const apellido = document.getElementById('repartidor-apellido') ? document.getElementById('repartidor-apellido').value : 'N/A';
         const telefono = document.getElementById('repartidor-telefono').value;
-        const zona = document.getElementById('repartidor-zona').value;
+        const contrasena = document.getElementById('repartidor-contrasena') ? document.getElementById('repartidor-contrasena').value : ''; // Vacío si no se cambia
+        const idVehiculo = document.getElementById('repartidor-id-vehiculo').value;
+        const idVehiculoParsed = idVehiculo ? parseInt(idVehiculo) : null;
+        const idAdministrador = parseInt(document.getElementById('repartidor-id-administrador').value) || 1;
 
-        if (!nombre || !telefono || !zona) {
-            this.mostrarNotificacion('Por favor, completa todos los campos del repartidor.', 'warning');
+
+        if (!nombre || !telefono || idVehiculoParsed === null || isNaN(idAdministrador) || idAdministrador < 1) {
+            this.mostrarNotificacion('Por favor, completa al menos los campos nombre, teléfono, vehículo asignado y ID de administrador del repartidor.', 'warning');
             return;
         }
 
-        const repartidorIndex = this.repartidores.findIndex(r => r.id === repartidorId);
-        if (repartidorIndex !== -1) {
-            this.repartidores[repartidorIndex] = {
-                ...this.repartidores[repartidorIndex],
-                nombre,
-                telefono,
-                zona
-            };
-            localStorage.setItem('farmaline_repartidores', JSON.stringify(this.repartidores));
+        const updatedRepartidorData = {
+            idRepartidor: repartidorId,
+            nombre: nombre,
+            apellido: apellido,
+            telefono: telefono,
+            // Solo incluir la contraseña si se ha ingresado una nueva
+            ...(contrasena && { contrasena: contrasena }),
+            idVehiculo: idVehiculoParsed,
+            idAdministrador: idAdministrador
+        };
+
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/repartidores/${repartidorId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedRepartidorData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                throw new Error(`Error al actualizar repartidor: ${errorData.message}`);
+            }
+
+            const updatedRepartidor = await response.json();
+            const index = this.repartidores.findIndex(r => r.idRepartidor === updatedRepartidor.idRepartidor);
+            if (index !== -1) {
+                this.repartidores[index] = updatedRepartidor;
+            }
 
             const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalRepartidor'));
             modalInstance.hide();
 
             this.actualizarDashboard();
             this.cargarTablaRepartidores();
-            this.mostrarNotificacion(`Repartidor ${nombre} actualizado con éxito`, 'success');
-        } else {
-            this.mostrarNotificacion('Error: Repartidor no encontrado para actualizar.', 'danger');
+            this.mostrarNotificacion(`Repartidor ${updatedRepartidor.nombre} ${updatedRepartidor.apellido} actualizado con éxito`, 'success');
+
+        } catch (error) {
+            console.error('Error al editar repartidor:', error);
+            this.mostrarNotificacion(`Error al editar repartidor: ${error.message}`, 'danger');
         }
     }
 
-
-    deleteRepartidor(repartidorId) {
+    async deleteRepartidor(repartidorId) {
         if (!confirm('¿Estás seguro de que deseas eliminar este repartidor? Esta acción no se puede deshacer.')) {
             return;
         }
-        this.repartidores = this.repartidores.filter(r => r.id !== repartidorId);
-        localStorage.setItem('farmaline_repartidores', JSON.stringify(this.repartidores));
-        this.actualizarDashboard();
-        this.cargarTablaRepartidores();
-        this.mostrarNotificacion('Repartidor eliminado con éxito.', 'success');
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/repartidores/${repartidorId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                if (response.status === 409) {
+                    throw new Error(`Conflicto de eliminación: ${errorText || 'El repartidor tiene elementos asociados y no puede ser eliminado.'}`);
+                }
+                throw new Error(`Error al eliminar repartidor: ${errorText || response.statusText}`);
+            }
+
+            this.repartidores = this.repartidores.filter(r => r.idRepartidor !== repartidorId);
+            this.actualizarDashboard();
+            this.cargarTablaRepartidores();
+            this.mostrarNotificacion('Repartidor eliminado con éxito.', 'success');
+        } catch (error) {
+            console.error('Error al eliminar repartidor:', error);
+            this.mostrarNotificacion(`Error al eliminar repartidor: ${error.message}`, 'danger');
+        }
     }
 
     getZonaName(zona) {

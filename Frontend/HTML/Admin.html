@@ -155,7 +155,7 @@
             <div class="content-section" id="productos-section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3>Gestión de Productos</h3>
-                    <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modalNuevoProducto">
+                    <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modalProducto" id="btn-nuevo-producto">
                         <i class="fas fa-plus"></i> Añadir Nuevo Producto
                     </button>
                 </div>
@@ -188,9 +188,10 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Nombre</th>
+                                        <th>Categoría</th>
                                         <th>Stock</th>
-                                        <th>Fecha de Ingreso</th>
-                                        <th>Fecha de Caducidad</th>
+                                        <th>Precio</th>
+                                        <th>Fecha Caducidad</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -205,7 +206,7 @@
             <div class="content-section" id="repartidores-section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3>Gestión de Repartidores</h3>
-                    <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modalRepartidor">
+                    <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modalRepartidor" id="btn-nuevo-repartidor">
                         <i class="fas fa-user-plus"></i> Añadir Nuevo Repartidor
                     </button>
                 </div>
@@ -220,10 +221,10 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Nombre</th>
+                                        <th>Nombre Completo</th>
                                         <th>Teléfono</th>
-                                        <th>Zona</th>
-                                        <th>Estado</th>
+                                        <th>Vehículo (ID - Placa)</th> 
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabla-repartidores">
@@ -266,59 +267,70 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-teal" onclick="adminPanel.confirmarActualizacionStock()">Actualizar Stock</button>
+                    <button type="button" class="btn btn-teal" id="guardar-stock-btn">Actualizar Stock</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalRepartidor" tabindex="-1" aria-labelledby="modalRepartidorLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-teal text-white">
-                    <h5 class="modal-title" id="modalRepartidorLabel"><i class="fas fa-user-plus"></i> Añadir Nuevo Repartidor</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formRepartidor">
-                        <div class="mb-3">
-                            <label for="repartidor-nombre" class="form-label">Nombre Completo</label>
-                            <input type="text" class="form-control" id="repartidor-nombre" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="repartidor-telefono" class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="repartidor-telefono" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="repartidor-zona" class="form-label">Zona de Reparto</label>
-                            <select class="form-select" id="repartidor-zona" required>
-                                <option value="">Selecciona una zona</option>
-                                <option value="norte">Zona Norte</option>
-                                <option value="sur">Zona Sur</option>
-                                <option value="este">Zona Este</option>
-                                <option value="oeste">Zona Oeste</option>
-                                <option value="centro">Centro</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-teal" onclick="adminPanel.confirmarNuevoRepartidor()">Guardar Repartidor</button>
-                </div>
+<div class="modal fade" id="modalRepartidor" tabindex="-1" aria-labelledby="modalRepartidorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-teal text-white">
+                <h5 class="modal-title" id="modalRepartidorLabel">Gestión de Repartidor</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formRepartidor">
+                    <input type="hidden" id="repartidor-id">
+                    <div class="mb-3">
+                        <label for="repartidor-nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="repartidor-nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="repartidor-apellido" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="repartidor-apellido" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="repartidor-telefono" class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="repartidor-telefono" required>
+                    </div>
+                    <div class="mb-3" id="repartidor-contrasena-group">
+                        <label for="repartidor-contrasena" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="repartidor-contrasena">
+                    </div>
+                    <div class="mb-3">
+                        <label for="repartidor-id-vehiculo" class="form-label">Vehículo Asignado</label>
+                        <select class="form-select" id="repartidor-id-vehiculo">
+                            <option value="">Selecciona un vehículo</option>
+                        </select>
+                        <small class="form-text text-muted">Si el vehículo no aparece, asegúrate de que esté creado.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="repartidor-id-administrador" class="form-label">ID Administrador</label>
+                        <input type="number" class="form-control" id="repartidor-id-administrador" required value="1" min="1">
+                        <small class="form-text text-muted">El ID del administrador que registra al repartidor.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-teal" id="guardar-repartidor-btn">Guardar Repartidor</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="modalNuevoProducto" tabindex="-1" aria-labelledby="modalNuevoProductoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalProducto" tabindex="-1" aria-labelledby="modalProductoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-teal text-white">
-                    <h5 class="modal-title" id="modalNuevoProductoLabel"><i class="fas fa-plus-circle"></i> Añadir Nuevo Producto</h5>
+                    <h5 class="modal-title" id="modalProductoLabel">Gestión de Producto</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formNuevoProducto">
+                    <form id="formProducto">
+                        <input type="hidden" id="producto-id">
                         <div class="mb-3">
                             <label for="producto-nombre" class="form-label">Nombre del Producto</label>
                             <input type="text" class="form-control" id="producto-nombre" required>
@@ -339,8 +351,8 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="producto-stock-inicial" class="form-label">Stock Inicial</label>
-                            <input type="number" class="form-control" id="producto-stock-inicial" min="0" value="0" required>
+                            <label for="producto-stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="producto-stock" min="0" value="0" required>
                         </div>
                         <div class="mb-3">
                             <label for="producto-precio" class="form-label">Precio (Sin IGV)</label>
@@ -356,17 +368,18 @@
                         </div>
                         <div class="mb-3">
                             <label for="producto-precio-final" class="form-label">Precio Final (Con IGV)</label>
-                            <input type="number" class="form-control" id="producto-precio-final" step="0.01" min="0.01" required>
+                            <input type="number" class="form-control" id="producto-precio-final" step="0.01" min="0.01" required readonly>
                         </div>
                         <div class="mb-3">
-                            <label for="producto-imagen" class="form-label">Imagen del Producto</label>
-                            <input type="file" class="form-control" id="producto-imagen" accept="image/*">
+                            <label for="producto-imagen" class="form-label">Imagen del Producto (URL)</label>
+                            <input type="text" class="form-control" id="producto-imagen">
+                            <small class="form-text text-muted">Introduce la URL de la imagen del producto.</small>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-teal" onclick="adminPanel.confirmarNuevoProducto()">Guardar Producto</button>
+                    <button type="button" class="btn btn-teal" id="guardar-producto-btn">Guardar Producto</button>
                 </div>
             </div>
         </div>

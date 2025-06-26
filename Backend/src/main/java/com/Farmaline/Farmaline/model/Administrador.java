@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,5 +55,4 @@ public class Administrador {
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
     }
-
 }

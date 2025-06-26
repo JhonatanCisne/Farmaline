@@ -1,8 +1,22 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
+
+import java.util.List;
 
 public class CarritoDTO {
     private Integer idCarrito;
-    private Integer idUsuario; 
+    private Integer idUsuario;
+    private String nombreUsuario;
+    private List<CarritoAnadidoDTO> itemsCarrito;
+
+    public CarritoDTO() {
+    }
+
+    public CarritoDTO(Integer idCarrito, Integer idUsuario, String nombreUsuario, List<CarritoAnadidoDTO> itemsCarrito) {
+        this.idCarrito = idCarrito;
+        this.idUsuario = idUsuario;
+        this.nombreUsuario = nombreUsuario;
+        this.itemsCarrito = itemsCarrito;
+    }
 
     public Integer getIdCarrito() {
         return idCarrito;
@@ -18,5 +32,21 @@ public class CarritoDTO {
 
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    public List<CarritoAnadidoDTO> getItemsCarrito() {
+        return itemsCarrito;
+    }
+
+    public void setItemsCarrito(List<CarritoAnadidoDTO> itemsCarrito) {
+        this.itemsCarrito = itemsCarrito;
     }
 }

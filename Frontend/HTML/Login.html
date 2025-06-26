@@ -166,7 +166,7 @@
                     <form id="adminForm">
                         <div class="mb-3">
                             <label for="adminEmail" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="adminEmail" required>
+                            <input type="text" class="form-control" id="adminEmail" required>
                         </div>
                         <div class="mb-3">
                             <label for="adminPassword" class="form-label">Contraseña</label>
@@ -397,7 +397,7 @@
         document.getElementById('adminForm').addEventListener('submit', function(e) {
             e.preventDefault();
             // Aquí iría la validación del administrador
-            window.location.href = 'admin-panel.html';
+            window.location.href = 'Admin.html';
         });
 
         document.getElementById('deliveryForm').addEventListener('submit', function(e) {

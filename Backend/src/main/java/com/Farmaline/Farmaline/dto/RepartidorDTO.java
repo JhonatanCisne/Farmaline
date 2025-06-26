@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
 
 public class RepartidorDTO {
     private Integer idRepartidor;
@@ -6,8 +6,25 @@ public class RepartidorDTO {
     private String apellido;
     private String telefono;
     private String contrasena;
-    private Integer idVehiculo;      
-    private Integer idAdministrador;  
+    private Integer idVehiculo;
+    private String placaVehiculo;
+    private Integer idAdministrador;
+    private String nombreAdministrador;
+
+    public RepartidorDTO() {
+    }
+
+    public RepartidorDTO(Integer idRepartidor, String nombre, String apellido, String telefono, String contrasena, Integer idVehiculo, String placaVehiculo, Integer idAdministrador, String nombreAdministrador) {
+        this.idRepartidor = idRepartidor;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.telefono = telefono;
+        this.contrasena = contrasena;
+        this.idVehiculo = idVehiculo;
+        this.placaVehiculo = placaVehiculo;
+        this.idAdministrador = idAdministrador;
+        this.nombreAdministrador = nombreAdministrador;
+    }
 
     public Integer getIdRepartidor() {
         return idRepartidor;
@@ -57,11 +74,27 @@ public class RepartidorDTO {
         this.idVehiculo = idVehiculo;
     }
 
+    public String getPlacaVehiculo() {
+        return placaVehiculo;
+    }
+
+    public void setPlacaVehiculo(String placaVehiculo) {
+        this.placaVehiculo = placaVehiculo;
+    }
+
     public Integer getIdAdministrador() {
         return idAdministrador;
     }
 
     public void setIdAdministrador(Integer idAdministrador) {
         this.idAdministrador = idAdministrador;
+    }
+
+    public String getNombreAdministrador() {
+        return nombreAdministrador;
+    }
+
+    public void setNombreAdministrador(String nombreAdministrador) {
+        this.nombreAdministrador = nombreAdministrador;
     }
 }

@@ -1,7 +1,7 @@
-package com.Farmaline.Farmaline.controller;
+package com.farmaline.farmaline.controller;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.Farmaline.Farmaline.dto.RepartidorDTO;
-import com.Farmaline.Farmaline.service.RepartidorService;
+import com.farmaline.farmaline.dto.RepartidorDTO;
+import com.farmaline.farmaline.service.RepartidorService;
 
 @RestController
 @RequestMapping("/api/repartidores")
@@ -31,76 +30,53 @@ public class RepartidorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RepartidorDTO>> getAllRepartidores() {
-        List<RepartidorDTO> repartidores = repartidorService.findAllRepartidores();
+    public ResponseEntity<List<RepartidorDTO>> obtenerTodosRepartidores() {
+        List<RepartidorDTO> repartidores = repartidorService.obtenerTodosRepartidores();
         return ResponseEntity.ok(repartidores);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RepartidorDTO> getRepartidorById(@PathVariable Integer id) {
-        Optional<RepartidorDTO> repartidor = repartidorService.findRepartidorById(id);
-        return repartidor.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/telefono")
-    public ResponseEntity<RepartidorDTO> getRepartidorByTelefono(@RequestParam String telefono) {
-        Optional<RepartidorDTO> repartidor = repartidorService.findRepartidorByTelefono(telefono);
-        return repartidor.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/administrador/{adminId}")
-    public ResponseEntity<List<RepartidorDTO>> getRepartidoresByAdministradorId(@PathVariable Integer adminId) {
-        List<RepartidorDTO> repartidores = repartidorService.findRepartidoresByAdministradorId(adminId);
-        if (repartidores.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(repartidores);
+    public ResponseEntity<RepartidorDTO> obtenerRepartidorPorId(@PathVariable Integer id) {
+        return repartidorService.obtenerRepartidorPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Object> createRepartidor(@RequestBody RepartidorDTO repartidorDTO) {
+    public ResponseEntity<RepartidorDTO> crearRepartidor(@RequestBody RepartidorDTO repartidorDTO) {
         try {
-            RepartidorDTO createdRepartidor = repartidorService.createRepartidor(repartidorDTO);
-            return new ResponseEntity<>(createdRepartidor, HttpStatus.CREATED);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            RepartidorDTO nuevoRepartidor = repartidorService.crearRepartidor(repartidorDTO);
+            return new ResponseEntity<>(nuevoRepartidor, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND); // Para Vehículo/Admin no encontrado
-        } catch (Exception e) {
-            return new ResponseEntity<>("Error interno del servidor al crear repartidor: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateRepartidor(@PathVariable Integer id, @RequestBody RepartidorDTO repartidorDTO) {
+    public ResponseEntity<RepartidorDTO> actualizarRepartidor(@PathVariable Integer id, @RequestBody RepartidorDTO repartidorDTO) {
         try {
-            RepartidorDTO updatedRepartidor = repartidorService.updateRepartidor(id, repartidorDTO);
-            return ResponseEntity.ok(updatedRepartidor);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return repartidorService.actualizarRepartidor(id, repartidorDTO)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRepartidor(@PathVariable Integer id) {
-        try {
-            repartidorService.deleteRepartidor(id);
+    public ResponseEntity<Void> eliminarRepartidor(@PathVariable Integer id) {
+        if (repartidorService.eliminarRepartidor(id)) {
             return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticateRepartidor(@RequestParam String telefono, @RequestParam String contrasena) {
-        if (repartidorService.authenticateRepartidor(telefono, contrasena)) {
-            return ResponseEntity.ok("Autenticación exitosa.");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Teléfono o contraseña incorrectos.");
-        }
+    @PostMapping("/login")
+    public ResponseEntity<RepartidorDTO> iniciarSesion(@RequestBody Map<String, String> credenciales) {
+        String telefono = credenciales.get("telefono");
+        String contrasena = credenciales.get("contrasena");
+        return repartidorService.iniciarSesion(telefono, contrasena)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 }

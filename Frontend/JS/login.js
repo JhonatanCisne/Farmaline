@@ -49,6 +49,15 @@ function setupEventListeners() {
         forgotPasswordForm.addEventListener("submit", handleForgotPassword);
     }
 
+    // --- NUEVO: Manejo del formulario de Administrador ---
+    const adminForm = document.getElementById("adminForm");
+    if (adminForm) {
+        adminForm.addEventListener("submit", handleAdminLogin);
+    } else {
+        console.warn("No se encontró el formulario de administrador con ID 'adminForm'.");
+    }
+    // --- FIN NUEVO ---
+
     setupRealTimeValidation();
 
     const confirmPasswordInput = document.getElementById("contraseña");
@@ -81,6 +90,93 @@ function setupPasswordToggle(buttonId, inputId) {
         console.warn(`Toggle button (${buttonId}) or input (${inputId}) not found for password toggle.`);
     }
 }
+
+// --- NUEVO: Función para manejar el login del Administrador ---
+async function handleAdminLogin(e) {
+    e.preventDefault();
+
+    const adminEmailInput = document.getElementById("adminEmail"); // Este será el "nombre" del administrador
+    const adminPasswordInput = document.getElementById("adminPassword");
+    const adminModalElement = document.getElementById("adminModal");
+    const adminModal = bootstrap.Modal.getInstance(adminModalElement) || new bootstrap.Modal(adminModalElement);
+
+    const adminName = adminEmailInput.value.trim();
+    const adminPassword = adminPasswordInput.value.trim();
+
+    // Validación básica: asegura que ambos campos no estén vacíos
+    let isValid = true;
+    if (adminName === "") {
+        showAlert("danger", "El nombre de administrador no puede estar vacío.", adminModalElement.querySelector(".modal-body"));
+        isValid = false;
+    }
+    if (adminPassword === "") {
+        showAlert("danger", "La contraseña de administrador no puede estar vacía.", adminModalElement.querySelector(".modal-body"));
+        isValid = false;
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setLoadingState(submitBtn, true);
+    showAlert("info", "Iniciando sesión de administrador...", adminModalElement.querySelector(".modal-body"));
+
+    try {
+        // --- AQUÍ DEBERÍAS REEMPLAZAR CON TU LÓGICA DE AUTENTICACIÓN REAL DEL ADMINISTRADOR ---
+        // Ejemplo de simulación:
+        await simulateAPICall(); // Simula una llamada a la API
+        
+        // Simulación de credenciales: Reemplaza esto con una llamada a tu backend real
+        const MOCK_ADMIN_USER = "admin";
+        const MOCK_ADMIN_PASS = "admin123"; // Cambia esto por una contraseña segura o un hash
+
+        if (adminName === MOCK_ADMIN_USER && adminPassword === MOCK_ADMIN_PASS) {
+            localStorage.setItem("farmalineAdminId", adminName); // Guarda el nombre como ID en localStorage
+            adminModal.hide(); // Oculta el modal
+            showAlert("success", `¡Bienvenido, ${adminName}! Acceso de administrador concedido.`);
+            setTimeout(() => {
+                window.location.href = "Admin.html"; // Redirige al panel de administrador
+            }, 1500);
+        } else {
+            showAlert("danger", "Credenciales de administrador incorrectas.", adminModalElement.querySelector(".modal-body"));
+        }
+        // --- FIN DEL EJEMPLO DE SIMULACIÓN ---
+
+        // Si tuvieras un endpoint real para admin:
+        /*
+        const response = await fetch(`${API_BASE_URL}/api/admin/login`, { // Asumiendo un endpoint para admin
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: adminName, password: adminPassword }),
+        });
+
+        if (response.ok) {
+            const adminData = await response.json(); // Si el backend devuelve datos del admin
+            localStorage.setItem("farmalineAdminId", adminData.username || adminName); // Guarda el ID/nombre
+            // Puedes guardar más datos del admin si es necesario
+            adminModal.hide();
+            showAlert("success", `¡Bienvenido, ${adminData.username || adminName}! Acceso de administrador concedido.`);
+            setTimeout(() => {
+                window.location.href = "admin-panel.html";
+            }, 1500);
+        } else if (response.status === 401) {
+            showAlert("danger", "Credenciales de administrador incorrectas.", adminModalElement.querySelector(".modal-body"));
+        } else {
+            const errorData = await response.text();
+            showAlert("danger", `Error de acceso de administrador: ${errorData || response.statusText}.`, adminModalElement.querySelector(".modal-body"));
+            console.error("Admin login error (server response):", response.status, errorData);
+        }
+        */
+
+    } catch (error) {
+        showAlert("danger", "Error de conexión. No se pudo comunicar con el servidor de administrador.", adminModalElement.querySelector(".modal-body"));
+        console.error("Admin login fetch error:", error);
+    } finally {
+        setLoadingState(submitBtn, false);
+    }
+}
+// --- FIN NUEVO ---
 
 async function handleLogin(e) {
     e.preventDefault();
@@ -175,7 +271,7 @@ async function handleRegister(e) {
         password: passwordInput.value.trim(),
     };
 
-    const submitBtn = form.querySelector('button[type="button"]');
+    const submitBtn = form.querySelector('button[type="submit"]'); // Cambiado a type="submit" si es lo correcto en tu HTML
     setLoadingState(submitBtn, true);
     showAlert("info", "Registrando usuario...");
 
@@ -250,6 +346,9 @@ async function handleForgotPassword(e) {
 function setupRealTimeValidation() {
     const loginInputs = document.querySelectorAll(".inicio-sesion input[required]");
     const registerInputs = document.querySelectorAll(".registro input[required]");
+    const adminInputs = document.querySelectorAll("#adminForm input[required]"); // Seleccionar inputs del formulario de administrador
+    const deliveryInputs = document.querySelectorAll("#deliveryForm input[required]"); // Seleccionar inputs del formulario de repartidor
+
 
     loginInputs.forEach((input) => {
         input.addEventListener("blur", function() {
@@ -300,7 +399,32 @@ function setupRealTimeValidation() {
             }
         });
     });
+
+    // Validación en tiempo real para el formulario de administrador
+    adminInputs.forEach((input) => {
+        input.addEventListener("blur", function() {
+            validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+        });
+        input.addEventListener("input", function() {
+            if (this.classList.contains("is-invalid")) {
+                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+            }
+        });
+    });
+
+    // Validación en tiempo real para el formulario de repartidor (si lo deseas implementar)
+    deliveryInputs.forEach((input) => {
+        input.addEventListener("blur", function() {
+            validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+        });
+        input.addEventListener("input", function() {
+            if (this.classList.contains("is-invalid")) {
+                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+            }
+        });
+    });
 }
+
 
 function validateField(field, condition, errorMessage) {
     const formControl = field.closest(".form-control");
@@ -322,12 +446,15 @@ function validateField(field, condition, errorMessage) {
 }
 
 function checkPasswordStrength(password) {
-    const strengthIndicator = document.getElementById("contraseña").closest(".form-control").querySelector(".password-strength");
+    const passwordInput = document.getElementById("contraseña");
+    if (!passwordInput) return; // Salir si el input de contraseña no existe
+
+    let strengthIndicator = passwordInput.closest(".form-control")?.querySelector(".password-strength");
 
     if (!strengthIndicator) {
-        const indicator = document.createElement("div");
-        indicator.className = "password-strength";
-        document.getElementById("contraseña").parentNode.appendChild(indicator);
+        strengthIndicator = document.createElement("div");
+        strengthIndicator.className = "password-strength";
+        passwordInput.parentNode.appendChild(strengthIndicator);
     }
 
     let strength = 0;
@@ -336,28 +463,43 @@ function checkPasswordStrength(password) {
     if (password.match(/[0-9]/)) strength++;
     if (password.match(/[^a-zA-Z0-9]/)) strength++;
 
-    const indicator = document.getElementById("contraseña").closest(".form-control").querySelector(".password-strength");
-    if (indicator) {
-        indicator.className = "password-strength";
-        if (strength <= 1) {
-            indicator.classList.add("weak");
-            indicator.innerText = "Débil";
+    if (strengthIndicator) {
+        strengthIndicator.className = "password-strength"; // Reset classes
+        if (password.length === 0) {
+            strengthIndicator.innerText = "";
+        } else if (strength <= 1) {
+            strengthIndicator.classList.add("weak");
+            strengthIndicator.innerText = "Débil";
         } else if (strength <= 3) {
-            indicator.classList.add("medium");
-            indicator.innerText = "Media";
+            strengthIndicator.classList.add("medium");
+            strengthIndicator.innerText = "Media";
         } else {
-            indicator.classList.add("strong");
-            indicator.innerText = "Fuerte";
+            strengthIndicator.classList.add("strong");
+            strengthIndicator.innerText = "Fuerte";
         }
     }
 }
 
+
 function checkPasswordMatch() {
     const passwordInput = document.getElementById("contraseña");
+    const confirmPasswordInput = document.getElementById("confirmarContraseña");
+
+    if (!passwordInput || !confirmPasswordInput) return;
+
     const password = passwordInput.value.trim();
-    const confirmPassword = passwordInput.value.trim();
+    const confirmPassword = confirmPasswordInput.value.trim();
 
     const match = password === confirmPassword;
+
+    // Aplica validación también al campo de confirmación de contraseña
+    if (confirmPassword.length > 0) { // Solo si el usuario ha empezado a escribir en este campo
+        validateField(confirmPasswordInput, match, "Las contraseñas no coinciden.");
+    } else if (password.length > 0 && confirmPassword.length === 0) {
+         validateField(confirmPasswordInput, false, "Confirma tu contraseña.");
+    } else {
+         validateField(confirmPasswordInput, true, ""); // Resetea el estado si ambos están vacíos
+    }
 
     return match;
 }
@@ -365,22 +507,28 @@ function checkPasswordMatch() {
 function checkExistingSession() {
     const userData = localStorage.getItem("farmalineUser") || sessionStorage.getItem("farmalineUser");
     const userId = localStorage.getItem("farmalineUserId");
+    const adminId = localStorage.getItem("farmalineAdminId"); // Verificar si hay una sesión de administrador
 
     if (userData) {
         try {
             currentUser = JSON.parse(userData);
             if (userId && !currentUser.idUsuario) {
-                currentUser.idUsuario = parseInt(userId); 
+                currentUser.idUsuario = parseInt(userId);
             }
             window.location.href = "Index.html";
         } catch (error) {
             console.error("Error al parsear datos de sesión:", error);
             localStorage.removeItem("farmalineUser");
             sessionStorage.removeItem("farmalineUser");
-            localStorage.removeItem("farmalineUserId"); // Also remove the ID
+            localStorage.removeItem("farmalineUserId");
         }
+    } else if (adminId) { // Si hay una sesión de administrador, redirigir
+        console.log(`Sesión de administrador activa para: ${adminId}`);
+        // No hay un 'currentUser' para admin en esta estructura, pero se podría crear si es necesario
+        window.location.href = "admin-panel.html"; // Redirige directamente al panel de admin
     }
 }
+
 
 async function simulateAPICall() {
     return new Promise((resolve) => {
@@ -397,7 +545,14 @@ function setLoadingState(button, loading) {
         } else {
             button.classList.remove("loading");
             button.disabled = false;
-            if (button.closest('#formularioInicioSesion')) {
+            // Asegúrate de restaurar el texto original del botón según el formulario
+            if (button.closest('#adminForm')) {
+                button.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Ingresar como Administrador';
+            }
+            else if (button.closest('#deliveryForm')) {
+                button.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Ingresar como Repartidor';
+            }
+            else if (button.closest('#formularioInicioSesion')) {
                 button.innerHTML = 'Ingresar';
             } else if (button.closest('#formularioRegistro')) {
                 button.innerHTML = 'Registrarse';
@@ -408,15 +563,16 @@ function setLoadingState(button, loading) {
     }
 }
 
-function showAlert(type, message) {
-    const existingAlerts = document.querySelectorAll(".alert");
-    existingAlerts.forEach((alert) => alert.remove());
-
-    const alertContainer = document.querySelector(".login-section .contenedor");
-    if (!alertContainer) {
+// Modificada para permitir un contenedor de alerta específico (útil para modales)
+function showAlert(type, message, container = null) {
+    // Eliminar alertas existentes del mismo contenedor
+    const targetContainer = container || document.querySelector(".login-section .contenedor");
+    if (!targetContainer) {
         console.error("No se encontró el contenedor para las alertas.");
         return;
     }
+    const existingAlerts = targetContainer.querySelectorAll(".alert");
+    existingAlerts.forEach((alert) => alert.remove());
 
     const alert = document.createElement("div");
     alert.className = `alert alert-${type} alert-dismissible fade show mt-3`;
@@ -425,7 +581,8 @@ function showAlert(type, message) {
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
 
-    alertContainer.insertBefore(alert, alertContainer.firstChild);
+    // Insertar la alerta al principio del contenedor
+    targetContainer.insertBefore(alert, targetContainer.firstChild);
 
     setTimeout(() => {
         if (alert.parentNode) {
@@ -437,7 +594,8 @@ function showAlert(type, message) {
 function logout() {
     localStorage.removeItem("farmalineUser");
     sessionStorage.removeItem("farmalineUser");
-    localStorage.removeItem("farmalineUserId"); // Remove ID on logout
+    localStorage.removeItem("farmalineUserId");
+    localStorage.removeItem("farmalineAdminId"); // También eliminar la sesión de administrador
     currentUser = null;
     window.location.href = "Login.html";
 }
@@ -445,7 +603,7 @@ function logout() {
 window.farmalineAuth = {
     logout,
     getCurrentUser: () => currentUser,
-    isLoggedIn: () => currentUser !== null,
+    isLoggedIn: () => currentUser !== null || localStorage.getItem("farmalineAdminId") !== null, // Incluir admin en isLoggedIn
 };
 
 function isEmail(email) {

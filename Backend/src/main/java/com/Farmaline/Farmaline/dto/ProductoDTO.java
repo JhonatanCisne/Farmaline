@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +15,8 @@ public class ProductoDTO {
     private BigDecimal igv;
     private BigDecimal precioFinal;
 
-    public ProductoDTO() {}
+    public ProductoDTO() {
+    }
 
     public ProductoDTO(Integer idProducto, String nombre, String descripcion, Integer stockDisponible, BigDecimal precio, String imagen, LocalDate fechaCaducidad, LocalDate fechaIngreso, BigDecimal igv, BigDecimal precioFinal) {
         this.idProducto = idProducto;
@@ -34,7 +35,7 @@ public class ProductoDTO {
         return idProducto;
     }
 
-    public void setIdProducto(Integer idProducto) { 
+    public void setIdProducto(Integer idProducto) {
         this.idProducto = idProducto;
     }
 

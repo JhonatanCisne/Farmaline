@@ -1,9 +1,18 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
 
 public class RegistroDTO {
     private Integer idRegistro;
     private Integer idPedido;
     private Integer idDobleVerificacion;
+
+    public RegistroDTO() {
+    }
+
+    public RegistroDTO(Integer idRegistro, Integer idPedido, Integer idDobleVerificacion) {
+        this.idRegistro = idRegistro;
+        this.idPedido = idPedido;
+        this.idDobleVerificacion = idDobleVerificacion;
+    }
 
     public Integer getIdRegistro() {
         return idRegistro;

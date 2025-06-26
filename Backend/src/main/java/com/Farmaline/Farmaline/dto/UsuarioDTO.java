@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
 
 public class UsuarioDTO {
     private Integer idUsuario;
@@ -7,16 +7,21 @@ public class UsuarioDTO {
     private String correoElectronico;
     private String domicilio;
     private String telefono;
+    private String contrasena;
+    private Integer idCarrito;
 
-    public UsuarioDTO() {}
+    public UsuarioDTO() {
+    }
 
-    public UsuarioDTO(Integer idUsuario, String nombre, String apellido, String correoElectronico, String domicilio, String telefono) {
+    public UsuarioDTO(Integer idUsuario, String nombre, String apellido, String correoElectronico, String domicilio, String telefono, String contrasena, Integer idCarrito) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
         this.correoElectronico = correoElectronico;
         this.domicilio = domicilio;
         this.telefono = telefono;
+        this.contrasena = contrasena;
+        this.idCarrito = idCarrito;
     }
 
     public Integer getIdUsuario() {
@@ -65,5 +70,21 @@ public class UsuarioDTO {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
+
+    public Integer getIdCarrito() {
+        return idCarrito;
+    }
+
+    public void setIdCarrito(Integer idCarrito) {
+        this.idCarrito = idCarrito;
     }
 }

@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.service;
+package com.farmaline.farmaline.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,43 +6,30 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.Farmaline.Farmaline.dto.UsuarioDTO;
-import com.Farmaline.Farmaline.dto.UsuarioLoginDTO;
-import com.Farmaline.Farmaline.dto.UsuarioRegistroDTO;
-import com.Farmaline.Farmaline.model.Usuario;
-import com.Farmaline.Farmaline.repository.UsuarioRepository;
+import com.farmaline.farmaline.dto.UsuarioDTO;
+import com.farmaline.farmaline.model.Carrito;
+import com.farmaline.farmaline.model.Usuario;
+import com.farmaline.farmaline.repository.CarritoRepository;
+import com.farmaline.farmaline.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
 
+    private final UsuarioRepository usuarioRepository;
+    private final CarritoRepository carritoRepository;
+
     @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    public UsuarioDTO registrarUsuario(UsuarioRegistroDTO usuarioRegistroDTO) {
-        if (usuarioRepository.existsByCorreoElectronico(usuarioRegistroDTO.getCorreoElectronico())) {
-            throw new IllegalArgumentException("El correo electrónico ya está registrado.");
-        }
-        if (usuarioRepository.existsByTelefono(usuarioRegistroDTO.getTelefono())) {
-            throw new IllegalArgumentException("El número de teléfono ya está registrado.");
-        }
-
-        Usuario usuario = new Usuario();
-        usuario.setNombre(usuarioRegistroDTO.getNombre());
-        usuario.setApellido(usuarioRegistroDTO.getApellido());
-        usuario.setCorreoElectronico(usuarioRegistroDTO.getCorreoElectronico());
-        usuario.setDomicilio(usuarioRegistroDTO.getDomicilio());
-        usuario.setTelefono(usuarioRegistroDTO.getTelefono());
-        usuario.setContrasena(usuarioRegistroDTO.getContrasena()); 
-
-        Usuario nuevoUsuario = usuarioRepository.save(usuario);
-        return convertirAUsuarioDTO(nuevoUsuario);
+    public UsuarioService(UsuarioRepository usuarioRepository, CarritoRepository carritoRepository) {
+        this.usuarioRepository = usuarioRepository;
+        this.carritoRepository = carritoRepository;
     }
 
-    public Optional<UsuarioDTO> loginUsuario(UsuarioLoginDTO usuarioLoginDTO) {
-        return usuarioRepository.findByCorreoElectronico(usuarioLoginDTO.getCorreoElectronico())
-                .filter(usuario -> usuario.getContrasena().equals(usuarioLoginDTO.getContrasena())) 
-                .map(this::convertirAUsuarioDTO);
+    public List<UsuarioDTO> obtenerTodosUsuarios() {
+        return usuarioRepository.findAll().stream()
+                .map(this::convertirAUsuarioDTO)
+                .collect(Collectors.toList());
     }
 
     public Optional<UsuarioDTO> obtenerUsuarioPorId(Integer id) {
@@ -50,53 +37,50 @@ public class UsuarioService {
                 .map(this::convertirAUsuarioDTO);
     }
 
-    public UsuarioDTO actualizarUsuario(Integer id, UsuarioDTO usuarioDTO) {
-        return usuarioRepository.findById(id).map(usuarioExistente -> {
-            usuarioExistente.setNombre(usuarioDTO.getNombre());
-            usuarioExistente.setApellido(usuarioDTO.getApellido());
-            usuarioExistente.setCorreoElectronico(usuarioDTO.getCorreoElectronico());
-            usuarioExistente.setDomicilio(usuarioDTO.getDomicilio());
-            usuarioExistente.setTelefono(usuarioDTO.getTelefono());
-            Usuario usuarioActualizado = usuarioRepository.save(usuarioExistente);
-            return convertirAUsuarioDTO(usuarioActualizado);
-        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+    @Transactional
+    public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        usuario.setCorreoElectronico(usuarioDTO.getCorreoElectronico());
+        usuario.setDomicilio(usuarioDTO.getDomicilio());
+        usuario.setTelefono(usuarioDTO.getTelefono());
+        usuario.setContrasena(usuarioDTO.getContrasena());
+
+        usuario = usuarioRepository.save(usuario);
+
+        Carrito carrito = new Carrito();
+        carrito.setUsuario(usuario);
+        carritoRepository.save(carrito);
+
+        return convertirAUsuarioDTO(usuario);
     }
 
-    public void eliminarUsuario(Integer id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + id);
+    @Transactional
+    public Optional<UsuarioDTO> actualizarUsuario(Integer id, UsuarioDTO usuarioDTO) {
+        return usuarioRepository.findById(id)
+                .map(usuarioExistente -> {
+                    usuarioExistente.setNombre(usuarioDTO.getNombre());
+                    usuarioExistente.setApellido(usuarioDTO.getApellido());
+                    usuarioExistente.setCorreoElectronico(usuarioDTO.getCorreoElectronico());
+                    usuarioExistente.setDomicilio(usuarioDTO.getDomicilio());
+                    usuarioExistente.setTelefono(usuarioDTO.getTelefono());
+                    usuarioExistente.setContrasena(usuarioDTO.getContrasena());
+                    return convertirAUsuarioDTO(usuarioRepository.save(usuarioExistente));
+                });
+    }
+
+    public boolean eliminarUsuario(Integer id) {
+        if (usuarioRepository.existsById(id)) {
+            usuarioRepository.deleteById(id);
+            return true;
         }
-        usuarioRepository.deleteById(id);
+        return false;
     }
 
-    public List<UsuarioDTO> obtenerTodosLosUsuarios() {
-        return usuarioRepository.findAll().stream()
-                .map(this::convertirAUsuarioDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<UsuarioDTO> buscarUsuariosPorNombre(String nombre) {
-        return usuarioRepository.findByNombreContainingIgnoreCase(nombre).stream()
-                .map(this::convertirAUsuarioDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<UsuarioDTO> buscarUsuariosPorApellido(String apellido) {
-        return usuarioRepository.findByApellidoContainingIgnoreCase(apellido).stream()
-                .map(this::convertirAUsuarioDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<UsuarioDTO> buscarUsuariosPorNombreOApellido(String texto) {
-        return usuarioRepository.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(texto, texto).stream()
-                .map(this::convertirAUsuarioDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<UsuarioDTO> buscarUsuariosPorDomicilio(String domicilio) {
-        return usuarioRepository.findByDomicilioContainingIgnoreCase(domicilio).stream()
-                .map(this::convertirAUsuarioDTO)
-                .collect(Collectors.toList());
+    public Optional<UsuarioDTO> iniciarSesion(String correoElectronico, String contrasena) {
+        return usuarioRepository.findByCorreoElectronicoAndContrasena(correoElectronico, contrasena)
+                .map(this::convertirAUsuarioDTO);
     }
 
     private UsuarioDTO convertirAUsuarioDTO(Usuario usuario) {
@@ -107,6 +91,9 @@ public class UsuarioService {
         dto.setCorreoElectronico(usuario.getCorreoElectronico());
         dto.setDomicilio(usuario.getDomicilio());
         dto.setTelefono(usuario.getTelefono());
+        dto.setContrasena(usuario.getContrasena());
+        // Se asume que el Carrito ya existe y está asociado al usuario
+        carritoRepository.findByUsuarioIdUsuario(usuario.getIdUsuario()).ifPresent(carrito -> dto.setIdCarrito(carrito.getIdCarrito()));
         return dto;
     }
 }

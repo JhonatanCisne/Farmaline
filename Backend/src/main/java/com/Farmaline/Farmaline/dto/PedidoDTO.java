@@ -1,15 +1,32 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class PedidoDTO {
     private Integer idPedido;
     private LocalDate fecha;
     private LocalTime hora;
     private Integer idUsuario;
-    private Integer idCarrito;
+    private String nombreUsuario;
     private Integer idRepartidor;
+    private String nombreRepartidor;
+    private List<DetallePedidoDTO> detallesPedido;
+
+    public PedidoDTO() {
+    }
+
+    public PedidoDTO(Integer idPedido, LocalDate fecha, LocalTime hora, Integer idUsuario, String nombreUsuario, Integer idRepartidor, String nombreRepartidor, List<DetallePedidoDTO> detallesPedido) {
+        this.idPedido = idPedido;
+        this.fecha = fecha;
+        this.hora = hora;
+        this.idUsuario = idUsuario;
+        this.nombreUsuario = nombreUsuario;
+        this.idRepartidor = idRepartidor;
+        this.nombreRepartidor = nombreRepartidor;
+        this.detallesPedido = detallesPedido;
+    }
 
     public Integer getIdPedido() {
         return idPedido;
@@ -43,12 +60,12 @@ public class PedidoDTO {
         this.idUsuario = idUsuario;
     }
 
-    public Integer getIdCarrito() {
-        return idCarrito;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setIdCarrito(Integer idCarrito) {
-        this.idCarrito = idCarrito;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
     public Integer getIdRepartidor() {
@@ -57,5 +74,21 @@ public class PedidoDTO {
 
     public void setIdRepartidor(Integer idRepartidor) {
         this.idRepartidor = idRepartidor;
+    }
+
+    public String getNombreRepartidor() {
+        return nombreRepartidor;
+    }
+
+    public void setNombreRepartidor(String nombreRepartidor) {
+        this.nombreRepartidor = nombreRepartidor;
+    }
+
+    public List<DetallePedidoDTO> getDetallesPedido() {
+        return detallesPedido;
+    }
+
+    public void setDetallesPedido(List<DetallePedidoDTO> detallesPedido) {
+        this.detallesPedido = detallesPedido;
     }
 }

@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.Config;
+package com.farmaline.farmaline.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.dto;
+package com.farmaline.farmaline.dto;
 
 public class VehiculoDTO {
     private Integer idVehiculo;
@@ -8,7 +8,8 @@ public class VehiculoDTO {
     private String modelo;
     private Integer anio;
 
-    public VehiculoDTO() {}
+    public VehiculoDTO() {
+    }
 
     public VehiculoDTO(Integer idVehiculo, String placa, String categoria, String marca, String modelo, Integer anio) {
         this.idVehiculo = idVehiculo;
@@ -18,8 +19,6 @@ public class VehiculoDTO {
         this.modelo = modelo;
         this.anio = anio;
     }
-
-    // Getters y Setters
 
     public Integer getIdVehiculo() {
         return idVehiculo;

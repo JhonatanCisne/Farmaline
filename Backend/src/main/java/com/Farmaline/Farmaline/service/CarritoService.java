@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.service;
+package com.farmaline.farmaline.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,87 +8,82 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.Farmaline.Farmaline.dto.CarritoDTO;
-import com.Farmaline.Farmaline.model.Carrito;
-import com.Farmaline.Farmaline.model.Usuario;
-import com.Farmaline.Farmaline.repository.CarritoRepository;
-import com.Farmaline.Farmaline.repository.UsuarioRepository;
+import com.farmaline.farmaline.dto.CarritoDTO;
+import com.farmaline.farmaline.model.Carrito;
+import com.farmaline.farmaline.model.Usuario;
+import com.farmaline.farmaline.repository.CarritoRepository;
+import com.farmaline.farmaline.repository.UsuarioRepository;
 
 @Service
 public class CarritoService {
 
     private final CarritoRepository carritoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CarritoAnadidoService carritoAnadidoService;
 
     @Autowired
-    public CarritoService(CarritoRepository carritoRepository, UsuarioRepository usuarioRepository) {
+    public CarritoService(CarritoRepository carritoRepository, UsuarioRepository usuarioRepository, CarritoAnadidoService carritoAnadidoService) {
         this.carritoRepository = carritoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.carritoAnadidoService = carritoAnadidoService;
     }
 
-    private CarritoDTO convertToDto(Carrito carrito) {
-        if (carrito == null) {
-            return null;
+    public List<CarritoDTO> obtenerTodosCarritos() {
+        return carritoRepository.findAll().stream()
+                .map(this::convertirACarritoDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<CarritoDTO> obtenerCarritoPorId(Integer id) {
+        return carritoRepository.findById(id)
+                .map(this::convertirACarritoDTO);
+    }
+
+    public Optional<CarritoDTO> obtenerCarritoPorIdUsuario(Integer idUsuario) {
+        return carritoRepository.findByUsuarioIdUsuario(idUsuario)
+                .map(this::convertirACarritoDTO);
+    }
+
+    @Transactional
+    public CarritoDTO crearCarrito(CarritoDTO carritoDTO) {
+        Carrito carrito = new Carrito();
+        Usuario usuario = usuarioRepository.findById(carritoDTO.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        carrito.setUsuario(usuario);
+        carrito = carritoRepository.save(carrito);
+        return convertirACarritoDTO(carrito);
+    }
+
+    @Transactional
+    public Optional<CarritoDTO> actualizarCarrito(Integer id, CarritoDTO carritoDTO) {
+        return carritoRepository.findById(id)
+                .map(carritoExistente -> {
+                    if (carritoDTO.getIdUsuario() != null) {
+                        Usuario usuario = usuarioRepository.findById(carritoDTO.getIdUsuario())
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                        carritoExistente.setUsuario(usuario);
+                    }
+                    return convertirACarritoDTO(carritoRepository.save(carritoExistente));
+                });
+    }
+
+    @Transactional
+    public boolean eliminarCarrito(Integer id) {
+        if (carritoRepository.existsById(id)) {
+            carritoRepository.deleteById(id);
+            return true;
         }
+        return false;
+    }
+
+    private CarritoDTO convertirACarritoDTO(Carrito carrito) {
         CarritoDTO dto = new CarritoDTO();
         dto.setIdCarrito(carrito.getIdCarrito());
         if (carrito.getUsuario() != null) {
             dto.setIdUsuario(carrito.getUsuario().getIdUsuario());
+            dto.setNombreUsuario(carrito.getUsuario().getNombre() + " " + carrito.getUsuario().getApellido());
         }
+        dto.setItemsCarrito(carritoAnadidoService.obtenerItemsCarritoPorIdCarrito(carrito.getIdCarrito()));
         return dto;
-    }
-
-    private Carrito convertToEntity(CarritoDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        Carrito carrito = new Carrito();
-
-        if (dto.getIdUsuario() != null) {
-            Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getIdUsuario()));
-            carrito.setUsuario(usuario);
-        } else {
-            throw new IllegalArgumentException("ID de usuario es obligatorio para crear un carrito.");
-        }
-        return carrito;
-    }
-
-    @Transactional(readOnly = true)
-    public List<CarritoDTO> findAllCarritos() {
-        return carritoRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<CarritoDTO> findCarritoById(Integer id) {
-        return carritoRepository.findById(id)
-                .map(this::convertToDto);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<CarritoDTO> findCarritoByUsuarioId(Integer usuarioId) {
-        return carritoRepository.findByUsuarioIdUsuario(usuarioId)
-                .map(this::convertToDto);
-    }
-
-    @Transactional
-    public CarritoDTO createCarrito(CarritoDTO carritoDTO) {
-        if (carritoRepository.existsByUsuarioIdUsuario(carritoDTO.getIdUsuario())) {
-            throw new IllegalStateException("El usuario con ID " + carritoDTO.getIdUsuario() + " ya tiene un carrito.");
-        }
-
-        Carrito carrito = convertToEntity(carritoDTO);
-        Carrito savedCarrito = carritoRepository.save(carrito);
-        return convertToDto(savedCarrito);
-    }
-
-    @Transactional
-    public void deleteCarritoById(Integer id) {
-        if (!carritoRepository.existsById(id)) {
-            throw new RuntimeException("Carrito con ID " + id + " no encontrado para eliminar.");
-        }
-        carritoRepository.deleteById(id);
     }
 }

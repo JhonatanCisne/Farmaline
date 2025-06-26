@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +31,7 @@ public class Repartidor {
     @Column(name="Contrasena")
     private String contrasena;
 
-    @OneToOne	
+    @OneToOne   
     @JoinColumn(name = "ID_Vehiculo", referencedColumnName = "ID_Vehiculo")
     private Vehiculo vehiculo;
 
@@ -40,15 +40,15 @@ public class Repartidor {
     private Administrador administrador;
 
     public Integer getIdRepartidor() {
-    return idRepartidor;
+        return idRepartidor;
     }
 
     public void setIdRepartidor(Integer idRepartidor) {
-    this.idRepartidor = idRepartidor;
+        this.idRepartidor = idRepartidor;
     }
 
     public String getNombre() {
-    return nombre;
+        return nombre;
     }
 
     public void setNombre(String nombre) {
@@ -94,5 +94,4 @@ public class Repartidor {
     public void setAdministrador(Administrador administrador) {
         this.administrador = administrador;
     }
-
 }

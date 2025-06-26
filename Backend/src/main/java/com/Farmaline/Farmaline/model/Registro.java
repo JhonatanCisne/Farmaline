@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +26,7 @@ public class Registro {
     private Doble_Verificacion dobleVerificacion;
 
     public Integer getIdRegistro() {
-    return idRegistro;
+        return idRegistro;
     }
 
     public void setIdRegistro(Integer idRegistro) {
@@ -48,5 +48,4 @@ public class Registro {
     public void setDobleVerificacion(Doble_Verificacion dobleVerificacion) {
         this.dobleVerificacion = dobleVerificacion;
     }
-
 }

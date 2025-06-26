@@ -1,19 +1,11 @@
-package com.Farmaline.Farmaline.repository;
+package com.farmaline.farmaline.repository;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository; // Importar si necesitas buscar por el objeto Usuario directamente
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.Farmaline.Farmaline.model.Carrito;
-import com.Farmaline.Farmaline.model.Usuario;
+import com.farmaline.farmaline.model.Carrito;
 
-@Repository
 public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
-
-    Optional<Carrito> findByUsuario(Usuario usuario);
-
-    Optional<Carrito> findByUsuarioIdUsuario(Integer usuarioId);
-
-    boolean existsByUsuarioIdUsuario(Integer usuarioId);
+    Optional<Carrito> findByUsuarioIdUsuario(Integer idUsuario);
 }

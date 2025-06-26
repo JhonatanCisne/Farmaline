@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.service;
+package com.farmaline.farmaline.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,152 +10,134 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.Farmaline.Farmaline.dto.PedidoDTO;
-import com.Farmaline.Farmaline.model.Carrito;
-import com.Farmaline.Farmaline.model.Pedido;
-import com.Farmaline.Farmaline.model.Repartidor;
-import com.Farmaline.Farmaline.model.Usuario;
-import com.Farmaline.Farmaline.repository.CarritoRepository;
-import com.Farmaline.Farmaline.repository.PedidoRepository;
-import com.Farmaline.Farmaline.repository.RepartidorRepository;
-import com.Farmaline.Farmaline.repository.UsuarioRepository;
+import com.farmaline.farmaline.dto.CarritoAnadidoDTO;
+import com.farmaline.farmaline.dto.DetallePedidoDTO;
+import com.farmaline.farmaline.dto.PedidoDTO;
+import com.farmaline.farmaline.model.Pedido;
+import com.farmaline.farmaline.model.Producto;
+import com.farmaline.farmaline.model.Usuario;
+import com.farmaline.farmaline.repository.PedidoRepository;
+import com.farmaline.farmaline.repository.ProductoRepository;
+import com.farmaline.farmaline.repository.RepartidorRepository;
+import com.farmaline.farmaline.repository.UsuarioRepository;
 
 @Service
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
-    private final CarritoRepository carritoRepository;
     private final RepartidorRepository repartidorRepository;
+    private final DetallePedidoService detallePedidoService;
+    private final CarritoAnadidoService carritoAnadidoService;
+    private final ProductoRepository productoRepository;
 
     @Autowired
-    public PedidoService(
-            PedidoRepository pedidoRepository,
-            UsuarioRepository usuarioRepository,
-            CarritoRepository carritoRepository,
-            RepartidorRepository repartidorRepository) {
+    public PedidoService(PedidoRepository pedidoRepository,
+                         UsuarioRepository usuarioRepository,
+                         RepartidorRepository repartidorRepository,
+                         DetallePedidoService detallePedidoService,
+                         CarritoAnadidoService carritoAnadidoService,
+                         ProductoRepository productoRepository) {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.carritoRepository = carritoRepository;
         this.repartidorRepository = repartidorRepository;
+        this.detallePedidoService = detallePedidoService;
+        this.carritoAnadidoService = carritoAnadidoService;
+        this.productoRepository = productoRepository;
     }
 
-    private PedidoDTO convertToDto(Pedido pedido) {
-        if (pedido == null) {
-            return null;
+    public List<PedidoDTO> obtenerTodosPedidos() {
+        return pedidoRepository.findAll().stream()
+                .map(this::convertirAPedidoDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<PedidoDTO> obtenerPedidoPorId(Integer id) {
+        return pedidoRepository.findById(id)
+                .map(this::convertirAPedidoDTO);
+    }
+
+    @Transactional
+    public PedidoDTO crearPedidoDesdeCarrito(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<CarritoAnadidoDTO> itemsCarrito = carritoAnadidoService.obtenerItemsCarritoPorIdCarrito(usuario.getCarrito().getIdCarrito());
+        if (itemsCarrito.isEmpty()) {
+            throw new RuntimeException("El carrito del usuario está vacío, no se puede crear un pedido.");
         }
+
+        Pedido pedido = new Pedido();
+        pedido.setFecha(LocalDate.now());
+        pedido.setHora(LocalTime.now());
+        pedido.setUsuario(usuario);
+        pedido.setRepartidor(null);
+
+        pedido = pedidoRepository.save(pedido);
+
+        for (CarritoAnadidoDTO item : itemsCarrito) {
+            DetallePedidoDTO detalleDTO = new DetallePedidoDTO();
+            detalleDTO.setIdPedido(pedido.getIdPedido());
+            detalleDTO.setIdProducto(item.getIdProducto());
+            detalleDTO.setCantidad(item.getCantidad());
+
+            Producto producto = productoRepository.findById(item.getIdProducto())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado durante la creación del detalle del pedido"));
+            detalleDTO.setPrecioUnitarioAlMomentoCompra(producto.getPrecioFinal());
+
+            detallePedidoService.crearDetallePedido(detalleDTO);
+        }
+
+        carritoAnadidoService.limpiarItemsDeCarrito(usuario.getCarrito().getIdCarrito());
+
+        return convertirAPedidoDTO(pedido);
+    }
+
+    @Transactional
+    public Optional<PedidoDTO> actualizarPedido(Integer id, PedidoDTO pedidoDTO) {
+        return pedidoRepository.findById(id)
+                .map(pedidoExistente -> {
+                    pedidoExistente.setFecha(pedidoDTO.getFecha());
+                    pedidoExistente.setHora(pedidoDTO.getHora());
+
+                    if (pedidoDTO.getIdUsuario() != null) {
+                        Usuario usuario = usuarioRepository.findById(pedidoDTO.getIdUsuario())
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                        pedidoExistente.setUsuario(usuario);
+                    }
+
+                    if (pedidoDTO.getIdRepartidor() != null) {
+                        var repartidor = repartidorRepository.findById(pedidoDTO.getIdRepartidor())
+                                .orElseThrow(() -> new RuntimeException("Repartidor no encontrado"));
+                        pedidoExistente.setRepartidor(repartidor);
+                    }
+
+                    return convertirAPedidoDTO(pedidoRepository.save(pedidoExistente));
+                });
+    }
+
+    public boolean eliminarPedido(Integer id) {
+        if (pedidoRepository.existsById(id)) {
+            pedidoRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    private PedidoDTO convertirAPedidoDTO(Pedido pedido) {
         PedidoDTO dto = new PedidoDTO();
         dto.setIdPedido(pedido.getIdPedido());
         dto.setFecha(pedido.getFecha());
         dto.setHora(pedido.getHora());
         if (pedido.getUsuario() != null) {
             dto.setIdUsuario(pedido.getUsuario().getIdUsuario());
-        }
-        if (pedido.getCarrito() != null) {
-            dto.setIdCarrito(pedido.getCarrito().getIdCarrito());
+            dto.setNombreUsuario(pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido());
         }
         if (pedido.getRepartidor() != null) {
             dto.setIdRepartidor(pedido.getRepartidor().getIdRepartidor());
+            dto.setNombreRepartidor(pedido.getRepartidor().getNombre() + " " + pedido.getRepartidor().getApellido());
         }
+        dto.setDetallesPedido(detallePedidoService.obtenerDetallesPorIdPedido(pedido.getIdPedido()));
         return dto;
-    }
-
-    private Pedido convertToEntity(PedidoDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        Pedido pedido = new Pedido();
-        pedido.setFecha(dto.getFecha() != null ? dto.getFecha() : LocalDate.now());
-        pedido.setHora(dto.getHora() != null ? dto.getHora() : LocalTime.now());
-
-        if (dto.getIdUsuario() != null) {
-            Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getIdUsuario()));
-            pedido.setUsuario(usuario);
-        } else {
-            throw new IllegalArgumentException("ID de usuario es obligatorio para el pedido.");
-        }
-
-        if (dto.getIdCarrito() != null) {
-            Carrito carrito = carritoRepository.findById(dto.getIdCarrito())
-                    .orElseThrow(() -> new RuntimeException("Carrito no encontrado con ID: " + dto.getIdCarrito()));
-            pedido.setCarrito(carrito);
-        } else {
-            throw new IllegalArgumentException("ID de carrito es obligatorio para el pedido.");
-        }
-
-        if (dto.getIdRepartidor() != null) {
-            Repartidor repartidor = repartidorRepository.findById(dto.getIdRepartidor())
-                    .orElseThrow(() -> new RuntimeException("Repartidor no encontrado con ID: " + dto.getIdRepartidor()));
-            pedido.setRepartidor(repartidor);
-        } else {
-            pedido.setRepartidor(null);
-        }
-        return pedido;
-    }
-
-    @Transactional(readOnly = true)
-    public List<PedidoDTO> findAllPedidos() {
-        return pedidoRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<PedidoDTO> findPedidoById(Integer id) {
-        return pedidoRepository.findById(id)
-                .map(this::convertToDto);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PedidoDTO> findPedidosByUsuarioId(Integer usuarioId) {
-        return pedidoRepository.findByUsuarioIdUsuario(usuarioId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<PedidoDTO> findPedidosByRepartidorId(Integer repartidorId) {
-        return pedidoRepository.findByRepartidorIdRepartidor(repartidorId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<PedidoDTO> findPedidosByFecha(LocalDate fecha) {
-        return pedidoRepository.findByFecha(fecha).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public PedidoDTO createPedido(PedidoDTO pedidoDTO) {
-        if (pedidoDTO.getIdCarrito() != null && pedidoRepository.findByCarritoIdCarrito(pedidoDTO.getIdCarrito()).isPresent()) {
-            throw new IllegalStateException("El carrito con ID " + pedidoDTO.getIdCarrito() + " ya está asociado a un pedido.");
-        }
-
-        Pedido pedido = convertToEntity(pedidoDTO);
-        Pedido savedPedido = pedidoRepository.save(pedido);
-        return convertToDto(savedPedido);
-    }
-
-    @Transactional
-    public PedidoDTO assignRepartidorToPedido(Integer pedidoId, Integer repartidorId) {
-        return pedidoRepository.findById(pedidoId)
-            .map(pedido -> {
-                Repartidor repartidor = repartidorRepository.findById(repartidorId)
-                    .orElseThrow(() -> new RuntimeException("Repartidor no encontrado con ID: " + repartidorId));
-                pedido.setRepartidor(repartidor);
-                Pedido updatedPedido = pedidoRepository.save(pedido);
-                return convertToDto(updatedPedido);
-            }).orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + pedidoId));
-    }
-
-    @Transactional
-    public void deletePedido(Integer id) {
-        if (!pedidoRepository.existsById(id)) {
-            throw new RuntimeException("Pedido con ID " + id + " no encontrado para eliminar.");
-        }
-        pedidoRepository.deleteById(id);
     }
 }

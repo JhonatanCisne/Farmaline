@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ public class Carrito {
     @Column(name="ID_Carrito")
     private Integer idCarrito;
     
-    @OneToOne	
+    @OneToOne   
     @JoinColumn(name = "ID_usuario")
     private Usuario usuario;
 
@@ -36,5 +36,4 @@ public class Carrito {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-
 }

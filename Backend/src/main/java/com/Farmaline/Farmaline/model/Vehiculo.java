@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +31,7 @@ public class Vehiculo {
     private Integer anio;
     
     public Integer getIdVehiculo() {
-    return idVehiculo;
+        return idVehiculo;
     }
 
     public void setIdVehiculo(Integer idVehiculo) {
@@ -77,5 +77,4 @@ public class Vehiculo {
     public void setAnio(Integer anio) {
         this.anio = anio;
     }
-
 }

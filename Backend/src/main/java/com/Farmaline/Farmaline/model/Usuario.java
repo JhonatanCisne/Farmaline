@@ -1,10 +1,11 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,6 +33,9 @@ public class Usuario {
     
     @Column(name="Contrasena", nullable=false)
     private String contrasena;
+
+    @OneToOne(mappedBy = "usuario")
+    private Carrito carrito;
 
     public Integer getIdUsuario(){
         return idUsuario;
@@ -87,5 +91,13 @@ public class Usuario {
 
     public void setContrasena(String contrasena){
         this.contrasena=contrasena;
+    }
+
+    public Carrito getCarrito() {
+        return carrito;
+    }
+
+    public void setCarrito(Carrito carrito) {
+        this.carrito = carrito;
     }
 }

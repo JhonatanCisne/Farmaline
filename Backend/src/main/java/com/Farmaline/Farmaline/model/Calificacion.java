@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,5 +60,4 @@ public class Calificacion {
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
-
 }

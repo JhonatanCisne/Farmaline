@@ -1,7 +1,8 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,12 +34,11 @@ public class Pedido {
     private Usuario usuario;
 
     @ManyToOne 
-    @JoinColumn(name = "ID_Carrito", referencedColumnName = "ID_Carrito")
-    private Carrito carrito;
-
-    @ManyToOne 
     @JoinColumn(name = "ID_Repartidor", referencedColumnName = "ID_Repartidor")
     private Repartidor repartidor;
+
+    @OneToMany(mappedBy = "pedido")
+    private Set<DetallePedido> detallesPedido;
 
     public Integer getIdPedido() {
         return idPedido;
@@ -71,19 +72,19 @@ public class Pedido {
         this.usuario = usuario;
     }
 
-    public Carrito getCarrito() {
-        return carrito;
-    }
-
-    public void setCarrito(Carrito carrito) {
-        this.carrito = carrito;
-    }
-
     public Repartidor getRepartidor() {
         return repartidor;
     }
 
     public void setRepartidor(Repartidor repartidor) {
         this.repartidor = repartidor;
+    }
+
+    public Set<DetallePedido> getDetallesPedido() {
+        return detallesPedido;
+    }
+
+    public void setDetallesPedido(Set<DetallePedido> detallesPedido) {
+        this.detallesPedido = detallesPedido;
     }
 }

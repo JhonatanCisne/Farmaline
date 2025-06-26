@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.model;
+package com.farmaline.farmaline.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +18,6 @@ public class Carrito_Anadido {
     @Column(name="ID_Carrito_Anadido")
     private Integer idCarritoAnadido;
 
-
     @Column(name="Cantidad")
     private int cantidad;
 
@@ -29,9 +28,9 @@ public class Carrito_Anadido {
     @ManyToOne 
     @JoinColumn(name = "ID_Carrito", referencedColumnName = "ID_Carrito")
     private Carrito carrito;
-
+    
     public Integer getIdCarritoAnadido() {
-    return idCarritoAnadido;
+        return idCarritoAnadido;
     }
 
     public void setIdCarritoAnadido(Integer idCarritoAnadido) {

@@ -1,4 +1,4 @@
-package com.Farmaline.Farmaline.service;
+package com.farmaline.farmaline.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,139 +8,97 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.Farmaline.Farmaline.dto.CalificacionDTO;
-import com.Farmaline.Farmaline.model.Calificacion;
-import com.Farmaline.Farmaline.model.Producto;
-import com.Farmaline.Farmaline.model.Usuario;
-import com.Farmaline.Farmaline.repository.CalificacionRepository;
-import com.Farmaline.Farmaline.repository.ProductoRepository;
-import com.Farmaline.Farmaline.repository.UsuarioRepository;
+import com.farmaline.farmaline.dto.CalificacionDTO;
+import com.farmaline.farmaline.model.Calificacion;
+import com.farmaline.farmaline.model.Producto;
+import com.farmaline.farmaline.model.Usuario;
+import com.farmaline.farmaline.repository.CalificacionRepository;
+import com.farmaline.farmaline.repository.ProductoRepository;
+import com.farmaline.farmaline.repository.UsuarioRepository;
 
 @Service
 public class CalificacionService {
 
     private final CalificacionRepository calificacionRepository;
     private final UsuarioRepository usuarioRepository;
-    private final ProductoRepository productoRepository; 
+    private final ProductoRepository productoRepository;
 
     @Autowired
-    public CalificacionService(
-            CalificacionRepository calificacionRepository,
-            UsuarioRepository usuarioRepository,
-            ProductoRepository productoRepository) {
+    public CalificacionService(CalificacionRepository calificacionRepository, UsuarioRepository usuarioRepository, ProductoRepository productoRepository) {
         this.calificacionRepository = calificacionRepository;
         this.usuarioRepository = usuarioRepository;
         this.productoRepository = productoRepository;
     }
 
-    private CalificacionDTO convertToDto(Calificacion calificacion) {
-        if (calificacion == null) {
-            return null;
+    public List<CalificacionDTO> obtenerTodasCalificaciones() {
+        return calificacionRepository.findAll().stream()
+                .map(this::convertirACalificacionDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<CalificacionDTO> obtenerCalificacionPorId(Integer id) {
+        return calificacionRepository.findById(id)
+                .map(this::convertirACalificacionDTO);
+    }
+
+    @Transactional
+    public CalificacionDTO crearCalificacion(CalificacionDTO calificacionDTO) {
+        Calificacion calificacion = new Calificacion();
+        calificacion.setPuntuacion(calificacionDTO.getPuntuacion());
+
+        Usuario usuario = usuarioRepository.findById(calificacionDTO.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        calificacion.setUsuario(usuario);
+
+        Producto producto = productoRepository.findById(calificacionDTO.getIdProducto())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        calificacion.setProducto(producto);
+
+        calificacion = calificacionRepository.save(calificacion);
+        return convertirACalificacionDTO(calificacion);
+    }
+
+    @Transactional
+    public Optional<CalificacionDTO> actualizarCalificacion(Integer id, CalificacionDTO calificacionDTO) {
+        return calificacionRepository.findById(id)
+                .map(calificacionExistente -> {
+                    calificacionExistente.setPuntuacion(calificacionDTO.getPuntuacion());
+
+                    if (calificacionDTO.getIdUsuario() != null) {
+                        Usuario usuario = usuarioRepository.findById(calificacionDTO.getIdUsuario())
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                        calificacionExistente.setUsuario(usuario);
+                    }
+
+                    if (calificacionDTO.getIdProducto() != null) {
+                        Producto producto = productoRepository.findById(calificacionDTO.getIdProducto())
+                                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                        calificacionExistente.setProducto(producto);
+                    }
+                    return convertirACalificacionDTO(calificacionRepository.save(calificacionExistente));
+                });
+    }
+
+    public boolean eliminarCalificacion(Integer id) {
+        if (calificacionRepository.existsById(id)) {
+            calificacionRepository.deleteById(id);
+            return true;
         }
+        return false;
+    }
+
+    private CalificacionDTO convertirACalificacionDTO(Calificacion calificacion) {
         CalificacionDTO dto = new CalificacionDTO();
         dto.setIdCalificacion(calificacion.getIdCalificacion());
         dto.setPuntuacion(calificacion.getPuntuacion());
         if (calificacion.getUsuario() != null) {
             dto.setIdUsuario(calificacion.getUsuario().getIdUsuario());
+            dto.setNombreUsuario(calificacion.getUsuario().getNombre() + " " + calificacion.getUsuario().getApellido());
         }
         if (calificacion.getProducto() != null) {
             dto.setIdProducto(calificacion.getProducto().getIdProducto());
+            dto.setNombreProducto(calificacion.getProducto().getNombre());
         }
         return dto;
-    }
-
-    private Calificacion convertToEntity(CalificacionDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        Calificacion calificacion = new Calificacion();
-        calificacion.setPuntuacion(dto.getPuntuacion());
-
-        if (dto.getIdUsuario() != null) {
-            Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getIdUsuario()));
-            calificacion.setUsuario(usuario);
-        } else {
-            throw new IllegalArgumentException("ID de usuario es obligatorio para la calificación.");
-        }
-
-        if (dto.getIdProducto() != null) {
-            Producto producto = productoRepository.findById(dto.getIdProducto())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + dto.getIdProducto()));
-            calificacion.setProducto(producto);
-        } else {
-            throw new IllegalArgumentException("ID de producto es obligatorio para la calificación.");
-        }
-        return calificacion;
-    }
-
-    @Transactional(readOnly = true)
-    public List<CalificacionDTO> findAllCalificaciones() {
-        return calificacionRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<CalificacionDTO> findCalificacionById(Integer id) {
-        return calificacionRepository.findById(id)
-                .map(this::convertToDto);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CalificacionDTO> findCalificacionesByProductoId(Integer productoId) {
-        return calificacionRepository.findByProductoIdProducto(productoId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<CalificacionDTO> findCalificacionesByUsuarioId(Integer usuarioId) {
-        return calificacionRepository.findByUsuarioIdUsuario(usuarioId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<CalificacionDTO> findCalificacionByUsuarioAndProducto(Integer usuarioId, Integer productoId) {
-        return calificacionRepository.findByUsuarioIdUsuarioAndProductoIdProducto(usuarioId, productoId)
-                .map(this::convertToDto);
-    }
-
-    @Transactional
-    public CalificacionDTO saveCalificacion(CalificacionDTO calificacionDTO) {
-        if (calificacionDTO.getPuntuacion() < 1 || calificacionDTO.getPuntuacion() > 5) {
-            throw new IllegalArgumentException("La puntuación debe estar entre 1 y 5.");
-        }
-
-        if (calificacionRepository.findByUsuarioIdUsuarioAndProductoIdProducto(
-                calificacionDTO.getIdUsuario(), calificacionDTO.getIdProducto()).isPresent()) {
-            throw new IllegalStateException("El usuario ya ha calificado este producto.");
-        }
-
-        Calificacion calificacion = convertToEntity(calificacionDTO);
-        Calificacion savedCalificacion = calificacionRepository.save(calificacion);
-        return convertToDto(savedCalificacion);
-    }
-
-    @Transactional
-    public CalificacionDTO updateCalificacion(Integer id, CalificacionDTO calificacionDTO) {
-        return calificacionRepository.findById(id)
-            .map(calificacion -> {
-                if (calificacionDTO.getPuntuacion() != null && (calificacionDTO.getPuntuacion() < 1 || calificacionDTO.getPuntuacion() > 5)) {
-                    throw new IllegalArgumentException("La puntuación debe estar entre 1 y 5.");
-                }
-                calificacion.setPuntuacion(calificacionDTO.getPuntuacion());
-                Calificacion updatedCalificacion = calificacionRepository.save(calificacion);
-                return convertToDto(updatedCalificacion);
-            }).orElseThrow(() -> new RuntimeException("Calificación no encontrada con ID: " + id));
-    }
-
-    @Transactional
-    public void deleteCalificacionById(Integer id) {
-        if (!calificacionRepository.existsById(id)) {
-            throw new RuntimeException("Calificación con ID " + id + " no encontrada para eliminar.");
-        }
-        calificacionRepository.deleteById(id);
     }
 }
