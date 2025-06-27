@@ -7,12 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name="Repartidor")
-
 public class Repartidor {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -25,18 +23,17 @@ public class Repartidor {
     @Column(name="Apellido")
     private String apellido;
 
+    @Column(name="Correo_Electronico")
+    private String correo_Electronico;
+
     @Column(name="Telefono")
     private String telefono;
 
     @Column(name="Contrasena")
     private String contrasena;
 
-    @OneToOne   
-    @JoinColumn(name = "ID_Vehiculo", referencedColumnName = "ID_Vehiculo")
-    private Vehiculo vehiculo;
-
     @ManyToOne
-    @JoinColumn(name = "ID_Administrador", referencedColumnName = "ID_Administrador") 
+    @JoinColumn(name = "ID_Administrador", referencedColumnName = "ID_Administrador")
     private Administrador administrador;
 
     public Integer getIdRepartidor() {
@@ -63,6 +60,14 @@ public class Repartidor {
         this.apellido = apellido;
     }
 
+    public String getCorreo_Electronico() {
+        return correo_Electronico;
+    }
+
+    public void setCorreo_Electronico(String correo_Electronico) {
+        this.correo_Electronico = correo_Electronico;
+    }
+
     public String getTelefono() {
         return telefono;
     }
@@ -77,14 +82,6 @@ public class Repartidor {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
-    }
-
-    public Vehiculo getVehiculo() {
-        return vehiculo;
-    }
-
-    public void setVehiculo(Vehiculo vehiculo) {
-        this.vehiculo = vehiculo;
     }
 
     public Administrador getAdministrador() {
