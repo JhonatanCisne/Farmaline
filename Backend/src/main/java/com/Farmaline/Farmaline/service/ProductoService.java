@@ -1,5 +1,6 @@
 package com.farmaline.farmaline.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -104,5 +105,27 @@ public class ProductoService {
         producto.setIgv(dto.getIgv());
         producto.setPrecioFinal(dto.getPrecioFinal());
         return producto;
+    }
+
+    public List<ProductoDTO> obtenerProductosConFiltros(String nombre, Integer stockMinimo, Integer stockMaximo, LocalDate fechaCaducidadHasta) {
+        List<Producto> productos = productoRepository.findProductosByFilters(nombre, stockMinimo, stockMaximo, fechaCaducidadHasta);
+        return productos.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private ProductoDTO convertToDto(Producto producto) {
+        return new ProductoDTO(
+            producto.getIdProducto(),
+            producto.getNombre(),
+            producto.getDescripcion(),
+            producto.getStockDisponible(),
+            producto.getPrecio(),
+            producto.getImagen(),
+            producto.getFechaCaducidad(),
+            producto.getFechaIngreso(),
+            producto.getIgv(),
+            producto.getPrecioFinal()
+        );
     }
 }

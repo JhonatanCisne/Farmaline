@@ -1,9 +1,11 @@
 package com.farmaline.farmaline.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +33,14 @@ public class ProductoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductoDTO>> obtenerTodosProductos() {
-        List<ProductoDTO> productos = productoService.obtenerTodosProductos();
+    public ResponseEntity<List<ProductoDTO>> obtenerTodosProductos(
+        @RequestParam(required = false) String nombre,
+        @RequestParam(required = false) Integer stockMinimo,
+        @RequestParam(required = false) Integer stockMaximo,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCaducidadHasta) {
+
+        List<ProductoDTO> productos = productoService.obtenerProductosConFiltros(nombre, stockMinimo, stockMaximo, fechaCaducidadHasta);
+
         if (productos.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

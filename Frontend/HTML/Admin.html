@@ -9,6 +9,7 @@
     <link href="../CSS/admin.css" rel="stylesheet">
 </head>
 <body>
+<!-- Barra lateral inicio-->
     <div class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="mb-2">
@@ -35,19 +36,19 @@
                         <span>Repartidores</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Login.html" id="logout-sidebar">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrrar Sesión</span>
+                    </a>
+                </li>
             </ul>
         </nav>
-        
-        <div class="sidebar-footer">
-            <a href="../HTML/Index.html" class="btn btn-outline-light btn-sm w-100 mb-2">
-                <i class="fas fa-home"></i> <span>Volver al sitio</span>
-            </a>
-            <a href="#" class="btn btn-danger btn-sm w-100" id="logout">
-                <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
-            </a>
-        </div>
     </div>
 
+    <!-- Barra lateral final-->
+
+    <!-- Barra responsive inicio -->
     <div class="main-content" id="main-content">
         <header class="admin-header">
             <div class="d-flex justify-content-between align-items-center">
@@ -55,23 +56,16 @@
                     <button class="btn btn-outline-secondary me-3" id="toggle-sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h2 class="mb-0" id="page-title">Inicio</h2>
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="dropdown">
-                        <button class="btn btn-teal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i> Administrador
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" id="logout-header"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-                        </ul>
-                    </div>
+                    <h2 class="mb-0" id="page-title">Menú</h2>
                 </div>
             </div>
         </header>
+    <!-- Barra responsive final-->
+
 
         <div class="content-area">
             <div class="content-section active" id="inicio-section">
+                <!-- Inicio -->
                 <div class="row mb-4">
                     <div class="col-md-3 mb-3">
                         <div class="card stats-card clickable-card" data-action="productos" data-filter="">
@@ -134,74 +128,121 @@
                         </div>
                     </div>
                 </div>
+                <!-- Inicio final -->
 
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                Últimos Movimientos
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted text-center py-4">
-                                    <i class="fas fa-info-circle fa-2x mb-2"></i><br>
-                                    No hay movimientos recientes.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="content-section" id="productos-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3>Gestión de Productos</h3>
-                    <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modalProducto" id="btn-nuevo-producto">
-                        <i class="fas fa-plus"></i> Añadir Nuevo Producto
-                    </button>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Filtros</h5>
-                        <small id="filter-indicator" class="text-muted"></small>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-outline-primary category-btn active" data-category="" onclick="adminPanel.filtrarPorCategoria('')">Todos</button>
-                            <button class="btn btn-outline-primary category-btn" data-category="medicamentos" onclick="adminPanel.filtrarPorCategoria('medicamentos')">Medicamentos</button>
-                            <button class="btn btn-outline-primary category-btn" data-category="cuidadoPersonal" onclick="adminPanel.filtrarPorCategoria('cuidadoPersonal')">Cuidado Personal</button>
-                            <button class="btn btn-outline-primary category-btn" data-category="vitaminas" onclick="adminPanel.filtrarPorCategoria('vitaminas')">Vitaminas</button>
-                            <button class="btn btn-outline-primary category-btn" data-category="bebes" onclick="adminPanel.filtrarPorCategoria('bebes')">Bebés</button>
-                            <button class="btn btn-outline-primary category-btn" data-category="primerosAuxilios" onclick="adminPanel.filtrarPorCategoria('primerosAuxilios')">Primeros Auxilios</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
+                <!-- Cuadro estadisticas -->
+                <div class="row mb-4">
+                <div class="col-12">
+                <div class="card summary-table-card">
                     <div class="card-header">
-                        <h5>Listado de Productos</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead>
+                        <h5 class="mb-0">Resumen General de Ventas y Envíos</h5>
+                        </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0">
+                                    <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Categoría</th>
-                                        <th>Stock</th>
-                                        <th>Precio</th>
-                                        <th>Fecha Caducidad</th>
-                                        <th>Acciones</th>
+                                    <th>Métrica</th>
+                                    <th>Valor</th>
+                                    <th>Detalle</th>
                                     </tr>
-                                </thead>
-                                <tbody id="tabla-productos">
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                        <td><i class="fas fa-dollar-sign text-success me-2"></i>Ventas Totales</td>
+                                        <td id="total-ventas">$0.00</td>
+                                        <td>Ganancias acumuladas de todos los pedidos</td>
+                                        </tr>
+                                        <tr>
+                                        <td><i class="fas fa-shopping-cart text-primary me-2"></i>Productos Vendidos</td>
+                                        <td id="cantidad-productos-vendidos">0 unidades</td>
+                                        <td>Número total de ítems despachados</td>
+                                        </tr>
+                                        <tr>
+                                        <td><i class="fas fa-truck text-info me-2"></i>Repartidor Estrella</td>
+                                        <td id="repartidor-mas-envios">N/A</td>
+                                        <td>Repartidor con más envíos completados</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            </div>
+                <!-- cuadro estadisticas final  -->
+
+                <!-- productos inicio  -->  
+<div class="content-section" id="productos-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Gestión de Productos</h3>
+        <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modalProducto" id="btn-nuevo-producto">
+            <i class="fas fa-plus"></i> Añadir Nuevo Producto
+        </button>
+    </div>
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Filtros</h5>
+        <small id="filter-indicator" class="text-muted"></small>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="filter-nombre" placeholder="Filtrar por Nombre">
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <select class="form-select" id="filter-cantidad-opcion">
+                        <option value="mayor">Mayor que</option>
+                        <option value="menor">Menor que</option>
+                    </select>
+                    <input type="number" class="form-control" id="filter-cantidad" placeholder="Cantidad">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="filter-fecha-caducidad" class="form-label d-block text-muted-small">Fecha de Caducidad</label>
+                <input type="date" class="form-control" id="filter-fecha-caducidad">
+            </div>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-primary" id="apply-filters-btn">Aplicar Filtros</button>
+            <button class="btn btn-outline-secondary ms-2" id="clear-filters-btn">Limpiar Filtros</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Listado de Productos</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Stock</th>
+                        <th>Precio</th>
+                        <th>Imagen</th>
+                        <th>Fecha Caducidad</th>
+                        <th>Fecha Ingreso</th>
+                        <th>IGV</th>
+                        <th>Precio Final</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-productos">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+<!-- productos final  -->  
+            <!-- repartidores incio  -->  
 
             <div class="content-section" id="repartidores-section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -223,7 +264,7 @@
                                         <th>ID</th>
                                         <th>Nombre Completo</th>
                                         <th>Teléfono</th>
-                                        <th>Vehículo (ID - Placa)</th> 
+                                        <th>Placa</th> 
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -234,9 +275,10 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
+            <!-- repartidores final  -->  
+
+<!-- modal incio agregar stock -->  
     <div class="modal fade" id="modalStock" tabindex="-1" aria-labelledby="modalStockLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -246,6 +288,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="formStock">
+                
                         <input type="hidden" id="producto-id-stock">
                         <div class="mb-3">
                             <label for="producto-nombre-stock" class="form-label">Producto</label>
@@ -272,6 +315,7 @@
             </div>
         </div>
     </div>
+<!-- modal incio agregar stock -->  
 
 <div class="modal fade" id="modalRepartidor" tabindex="-1" aria-labelledby="modalRepartidorLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -321,69 +365,64 @@
     </div>
 </div>
 
-    <div class="modal fade" id="modalProducto" tabindex="-1" aria-labelledby="modalProductoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-teal text-white">
-                    <h5 class="modal-title" id="modalProductoLabel">Gestión de Producto</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formProducto">
-                        <input type="hidden" id="producto-id">
-                        <div class="mb-3">
-                            <label for="producto-nombre" class="form-label">Nombre del Producto</label>
-                            <input type="text" class="form-control" id="producto-nombre" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-descripcion" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="producto-descripcion" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-categoria" class="form-label">Categoría</label>
-                            <select class="form-select" id="producto-categoria" required>
-                                <option value="">Selecciona una categoría</option>
-                                <option value="medicamentos">Medicamentos</option>
-                                <option value="cuidadoPersonal">Cuidado Personal</option>
-                                <option value="vitaminas">Vitaminas</option>
-                                <option value="bebes">Bebés</option>
-                                <option value="primerosAuxilios">Primeros Auxilios</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-stock" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="producto-stock" min="0" value="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-precio" class="form-label">Precio (Sin IGV)</label>
-                            <input type="number" class="form-control" id="producto-precio" step="0.01" min="0.01" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-fecha-caducidad" class="form-label">Fecha de Caducidad</label>
-                            <input type="date" class="form-control" id="producto-fecha-caducidad">
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-igv" class="form-label">IGV (%)</label>
-                            <input type="number" class="form-control" id="producto-igv" step="0.01" min="0" value="0.18" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-precio-final" class="form-label">Precio Final (Con IGV)</label>
-                            <input type="number" class="form-control" id="producto-precio-final" step="0.01" min="0.01" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="producto-imagen" class="form-label">Imagen del Producto (URL)</label>
-                            <input type="text" class="form-control" id="producto-imagen">
-                            <small class="form-text text-muted">Introduce la URL de la imagen del producto.</small>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-teal" id="guardar-producto-btn">Guardar Producto</button>
-                </div>
+<button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modalProducto" id="btn-nuevo-producto">
+    <i class="fas fa-plus"></i> Añadir Nuevo Producto
+</button>
+
+<div class="modal fade" id="modalProducto" tabindex="-1" aria-labelledby="modalProductoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-teal text-white">
+                <h5 class="modal-title" id="modalProductoLabel">Gestión de Producto</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formProducto">
+                    <input type="hidden" id="producto-id">
+                    <div class="mb-3">
+                        <label for="producto-nombre" class="form-label">Nombre del Producto</label>
+                        <input type="text" class="form-control" id="producto-nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="producto-descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="producto-descripcion" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="producto-stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="producto-stock" min="0" value="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="producto-precio" class="form-label">Precio (Sin IGV)</label>
+                        <input type="number" class="form-control" id="producto-precio" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="producto-fecha-caducidad" class="form-label">Fecha de Caducidad</label>
+                        <input type="date" class="form-control" id="producto-fecha-caducidad">
+                    </div>
+                    <div class="mb-3">
+                        <label for="producto-igv" class="form-label">IGV (%)</label>
+                        <input type="number" class="form-control" id="producto-igv" step="0.01" min="0" value="0.18" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="producto-precio-final" class="form-label">Precio Final (Con IGV)</label>
+                        <input type="number" class="form-control" id="producto-precio-final" step="0.01" min="0.01" required readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="producto-imagen-file" class="form-label">Imagen del Producto</label>
+                        <input type="file" class="form-control" id="producto-imagen-file" accept="image/*">
+                        <input type="hidden" id="producto-imagen-url">
+                        <small class="form-text text-muted">Selecciona un archivo de imagen.</small>
+                        <div id="imagen-preview" class="mt-2"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-teal" id="guardar-producto-btn">Guardar Producto</button>
             </div>
         </div>
     </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../JS/admin.js"></script> 
