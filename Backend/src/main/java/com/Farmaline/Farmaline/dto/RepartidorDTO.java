@@ -6,9 +6,8 @@ public class RepartidorDTO {
     private String apellido;
     private String correo_Electronico;
     private String telefono;
+    private String placa;
     private String contrasena;
-    private Integer idAdministrador;
-    private String nombreAdministrador;
 
     public Integer getIdRepartidor() {
         return idRepartidor;
@@ -58,19 +57,11 @@ public class RepartidorDTO {
         this.contrasena = contrasena;
     }
 
-    public Integer getIdAdministrador() {
-        return idAdministrador;
+    public String getPlaca() {
+        return placa;
     }
 
-    public void setIdAdministrador(Integer idAdministrador) {
-        this.idAdministrador = idAdministrador;
-    }
-
-    public String getNombreAdministrador() {
-        return nombreAdministrador;
-    }
-
-    public void setNombreAdministrador(String nombreAdministrador) {
-        this.nombreAdministrador = nombreAdministrador;
+    public void setPlaca(String placa) {
+        this.placa = placa;
     }
 }

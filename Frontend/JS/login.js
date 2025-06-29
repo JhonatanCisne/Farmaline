@@ -141,33 +141,6 @@ async function handleAdminLogin(e) {
         } else {
             showAlert("danger", "Credenciales de administrador incorrectas.", adminModalElement.querySelector(".modal-body"));
         }
-        // --- FIN DEL EJEMPLO DE SIMULACIÓN ---
-
-        // Si tuvieras un endpoint real para admin:
-        /*
-        const response = await fetch(`${API_BASE_URL}/api/admin/login`, { // Asumiendo un endpoint para admin
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: adminName, password: adminPassword }),
-        });
-
-        if (response.ok) {
-            const adminData = await response.json(); // Si el backend devuelve datos del admin
-            localStorage.setItem("farmalineAdminId", adminData.username || adminName); // Guarda el ID/nombre
-            // Puedes guardar más datos del admin si es necesario
-            adminModal.hide();
-            showAlert("success", `¡Bienvenido, ${adminData.username || adminName}! Acceso de administrador concedido.`);
-            setTimeout(() => {
-                window.location.href = "admin-panel.html";
-            }, 1500);
-        } else if (response.status === 401) {
-            showAlert("danger", "Credenciales de administrador incorrectas.", adminModalElement.querySelector(".modal-body"));
-        } else {
-            const errorData = await response.text();
-            showAlert("danger", `Error de acceso de administrador: ${errorData || response.statusText}.`, adminModalElement.querySelector(".modal-body"));
-            console.error("Admin login error (server response):", response.status, errorData);
-        }
-        */
 
     } catch (error) {
         showAlert("danger", "Error de conexión. No se pudo comunicar con el servidor de administrador.", adminModalElement.querySelector(".modal-body"));

@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,12 +27,11 @@ public class Repartidor {
     @Column(name="Telefono")
     private String telefono;
 
+    @Column(name="Placa")
+    private String placa;
+
     @Column(name="Contrasena")
     private String contrasena;
-
-    @ManyToOne
-    @JoinColumn(name = "ID_Administrador", referencedColumnName = "ID_Administrador")
-    private Administrador administrador;
 
     public Integer getIdRepartidor() {
         return idRepartidor;
@@ -84,11 +81,11 @@ public class Repartidor {
         this.contrasena = contrasena;
     }
 
-    public Administrador getAdministrador() {
-        return administrador;
+    public String getPlaca() {
+        return placa;
     }
 
-    public void setAdministrador(Administrador administrador) {
-        this.administrador = administrador;
+    public void setPlaca(String placa) {
+        this.placa = placa;
     }
 }

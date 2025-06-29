@@ -89,12 +89,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    const toggleSidebarBtn = document.getElementById('toggle-sidebar');
     const sidebar = document.getElementById('sidebar');
     const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
     const contentSections = document.querySelectorAll('.content-section');
     const pageTitle = document.getElementById('page-title');
-    const tablaProductosBody = document.getElementById('tabla-productos');
 
     function updatePageTitle(title) {
         if (pageTitle) {
@@ -102,48 +100,293 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    async function cargarProductos() {
-        try {
-            const response = await fetch('http://localhost:8080/api/productos');
-            if (!response.ok) {
-                if (response.status === 204) {
-                    tablaProductosBody.innerHTML = '<tr><td colspan="11" class="text-center py-4">No hay productos disponibles.</td></tr>';
-                    return;
-                }
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const productos = await response.json();
-            
-            tablaProductosBody.innerHTML = ''; // Limpiar tabla antes de añadir nuevos datos
+    navLinks.forEach(link => {
+        if (link.dataset.section === undefined) {
+            return;
+        }
 
-            if (productos.length === 0) {
-                tablaProductosBody.innerHTML = '<tr><td colspan="11" class="text-center py-4">No hay productos disponibles.</td></tr>';
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            navLinks.forEach(item => {
+                if (item.dataset.section !== undefined) {
+                    item.classList.remove('active');
+                }
+            });
+            contentSections.forEach(section => section.classList.remove('active'));
+
+            this.classList.add('active');
+
+            const targetSectionId = this.dataset.section;
+            const targetSection = document.getElementById(targetSectionId + '-section');
+
+            if (targetSection) {
+                targetSection.classList.add('active');
+                updatePageTitle(this.querySelector('span').textContent);
+
+
+            }
+
+            if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                document.body.classList.remove('sidebar-open');
+            }
+        });
+    });
+
+    // Lógica para establecer la sección inicial activa al cargar la página
+    const initialActiveLink = document.querySelector('.sidebar-nav .nav-link.active[data-section]');
+    if (initialActiveLink) {
+        const initialTargetSectionId = initialActiveLink.dataset.section;
+        const initialTargetSection = document.getElementById(initialTargetSectionId + '-section');
+        if (initialTargetSection) {
+            initialTargetSection.classList.add('active');
+            updatePageTitle(initialActiveLink.querySelector('span').textContent);
+            // Si necesitas cargar datos para la sección inicial, hazlo aquí
+            // if (initialTargetSectionId === 'productos') {
+            //     // cargarProductos();
+            // }
+        }
+    } else {
+        // Si no hay ninguna sección activa predefinida, activa la de "inicio" por defecto
+        const firstNavLink = document.querySelector('.sidebar-nav .nav-link[data-section="inicio"]');
+        if (firstNavLink) {
+            firstNavLink.classList.add('active');
+            const firstContentSection = document.getElementById('inicio-section');
+            if (firstContentSection) {
+                firstContentSection.classList.add('active');
+                updatePageTitle(firstNavLink.querySelector('span').textContent);
+            }
+        }
+    }
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Lógica para Repartidores (asumiendo que ya la tienes en tu archivo) ---
+    const repartidorManagement = {
+        API_BASE_URL: 'http://localhost:8080/api',
+        elements: {
+            btnNuevoRepartidor: document.getElementById('btn-nuevo-repartidor'),
+            modalRepartidor: new bootstrap.Modal(document.getElementById('modalRepartidor')),
+            formRepartidor: document.getElementById('formRepartidor'),
+            repartidorId: document.getElementById('repartidor-id'),
+            repartidorNombre: document.getElementById('repartidor-nombre'),
+            repartidorApellido: document.getElementById('repartidor-apellido'),
+            repartidorCorreo: document.getElementById('repartidor-correo-electronico'),
+            repartidorTelefono: document.getElementById('repartidor-telefono'),
+            repartidorPlaca: document.getElementById('repartidor-placa'),
+            repartidorContrasena: document.getElementById('repartidor-contrasena'),
+            repartidorContrasenaGroup: document.getElementById('repartidor-contrasena-group'),
+            guardarRepartidorBtn: document.getElementById('guardar-repartidor-btn'),
+
+            filtroRepartidorNombre: document.getElementById('filtro-repartidor-nombre'),
+            filtroRepartidorApellido: document.getElementById('filtro-repartidor-apellido'),
+            filtroRepartidorCorreo: document.getElementById('filtro-repartidor-correo-electronico'),
+            tablaRepartidoresBody: document.getElementById('tabla-repartidores-body'),
+            btnAplicarFiltrosRepartidor: document.getElementById('btn-aplicar-filtros-repartidor'),
+            btnClearFiltrosRepartidor: document.getElementById('btn-clear-filtros-repartidor')
+        },
+
+        state: {
+            repartidores: [],
+            selectedRepartidorId: null
+        },
+
+        init: function() {
+            this.setupEventListeners();
+            this.fetchRepartidores();
+        },
+
+        setupEventListeners: function() {
+            if (this.elements.btnNuevoRepartidor) {
+                this.elements.btnNuevoRepartidor.addEventListener('click', () => this.openRepartidorModal());
+            }
+            if (this.elements.guardarRepartidorBtn) {
+                this.elements.guardarRepartidorBtn.addEventListener('click', () => this.saveRepartidor());
+            }
+            
+            if (this.elements.btnAplicarFiltrosRepartidor) {
+                this.elements.btnAplicarFiltrosRepartidor.addEventListener('click', () => this.aplicarFiltrosRepartidor());
+            }
+            if (this.elements.filtroRepartidorNombre) {
+                this.elements.filtroRepartidorNombre.addEventListener('input', () => this.aplicarFiltrosRepartidor());
+            }
+            if (this.elements.filtroRepartidorApellido) {
+                this.elements.filtroRepartidorApellido.addEventListener('input', () => this.aplicarFiltrosRepartidor());
+            }
+            if (this.elements.filtroRepartidorCorreo) {
+                this.elements.filtroRepartidorCorreo.addEventListener('input', () => this.aplicarFiltrosRepartidor());
+            }
+            if (this.elements.btnClearFiltrosRepartidor) {
+                this.elements.btnClearFiltrosRepartidor.addEventListener('click', () => this.clearFiltersRepartidor());
+            }
+        },
+
+        openRepartidorModal: function(repartidorId = null) {
+            this.elements.formRepartidor.reset();
+            this.state.selectedRepartidorId = repartidorId;
+            this.elements.repartidorId.value = '';
+            
+            this.elements.repartidorContrasenaGroup.style.display = 'block'; 
+            this.elements.repartidorContrasena.value = '';
+
+            if (repartidorId) {
+                const repartidor = this.state.repartidores.find(r => r.idRepartidor === repartidorId);
+                if (repartidor) {
+                    this.elements.repartidorId.value = repartidor.idRepartidor;
+                    this.elements.repartidorNombre.value = repartidor.nombre;
+                    this.elements.repartidorApellido.value = repartidor.apellido;
+                    this.elements.repartidorCorreo.value = repartidor.correo_Electronico;
+                    this.elements.repartidorTelefono.value = repartidor.telefono;
+                    this.elements.repartidorPlaca.value = repartidor.placa || '';
+                }
+            }
+            this.elements.modalRepartidor.show();
+        },
+
+        saveRepartidor: async function() {
+            const repartidorId = this.elements.repartidorId.value;
+            const isEditing = !!repartidorId;
+
+            const repartidorData = {
+                nombre: this.elements.repartidorNombre.value,
+                apellido: this.elements.repartidorApellido.value,
+                correo_Electronico: this.elements.repartidorCorreo.value,
+                telefono: this.elements.repartidorTelefono.value,
+                placa: this.elements.repartidorPlaca.value
+            };
+
+            if (this.elements.repartidorContrasena.value) {
+                repartidorData.contrasena = this.elements.repartidorContrasena.value;
+            } else if (!isEditing) {
+                alert('La contraseña es obligatoria para nuevos repartidores.');
                 return;
             }
 
-            productos.forEach(producto => {
+            try {
+                const url = isEditing ? `${this.API_BASE_URL}/repartidores/${repartidorId}` : `${this.API_BASE_URL}/repartidores`;
+                const method = isEditing ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(repartidorData)
+                });
+
+                if (!response.ok) {
+                    let errorMessage = 'Error al guardar repartidor.';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || response.statusText;
+                    } catch (e) { errorMessage = response.statusText; }
+                    throw new Error(errorMessage);
+                }
+
+                this.elements.modalRepartidor.hide();
+                await this.fetchRepartidores();
+                this.aplicarFiltrosRepartidor();
+                alert('Repartidor guardado exitosamente.');
+            } catch (error) {
+                console.error('Error al guardar repartidor:', error);
+                alert('Error al guardar repartidor: ' + error.message);
+            }
+        },
+
+        fetchRepartidores: async function() {
+            try {
+                const response = await fetch(`${this.API_BASE_URL}/repartidores`);
+                if (!response.ok) { throw new Error('Error al obtener repartidores'); }
+                this.state.repartidores = await response.json();
+                this.renderRepartidores(this.state.repartidores);
+            } catch (error) {
+                console.error('Error fetching repartidores:', error);
+                alert('Error al cargar los repartidores.');
+            }
+        },
+
+        renderRepartidores: function(repartidoresToRender) {
+            this.elements.tablaRepartidoresBody.innerHTML = '';
+            if (repartidoresToRender.length === 0) {
+                this.elements.tablaRepartidoresBody.innerHTML = `<tr><td colspan="6" class="text-center">No hay repartidores disponibles o que coincidan con el filtro.</td></tr>`;
+                return;
+            }
+            repartidoresToRender.forEach(repartidor => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${producto.idProducto}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.descripcion}</td>
-                    <td>${producto.stockDisponible}</td>
-                    <td>$${producto.precio.toFixed(2)}</td>
-                    <td><img src="${producto.imagen}" alt="${producto.nombre}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
-                    <td>${producto.fechaCaducidad}</td>
-                    <td>${producto.fechaIngreso}</td>
-                    <td>${(producto.igv * 100).toFixed(0)}%</td>
-                    <td>$${producto.precioFinal.toFixed(2)}</td>
+                    <td>${repartidor.idRepartidor}</td>
+                    <td>${repartidor.nombre} ${repartidor.apellido}</td>
+                    <td>${repartidor.correo_Electronico}</td>
+                    <td>${repartidor.telefono}</td>
+                    <td>${repartidor.placa || 'N/A'}</td>
                     <td>
-                        <button class="btn btn-sm btn-info edit-btn" data-id="${producto.idProducto}"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-danger delete-btn" data-id="${producto.idProducto}"><i class="fas fa-trash-alt"></i></button>
+                        <button class="btn btn-sm btn-info editar-repartidor-btn" data-id="${repartidor.idRepartidor}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger eliminar-repartidor-btn" data-id="${repartidor.idRepartidor}"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
-                tablaProductosBody.appendChild(row);
+                this.elements.tablaRepartidoresBody.appendChild(row);
             });
-        } catch (error) {
-            console.error('Error al cargar productos:', error);
-            tablaProductosBody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-danger">Error al cargar los productos. Intente de nuevo más tarde.</td></tr>';
+            this.elements.tablaRepartidoresBody.querySelectorAll('.editar-repartidor-btn').forEach(button => {
+                button.addEventListener('click', (e) => this.openRepartidorModal(parseInt(e.currentTarget.dataset.id)));
+            });
+            this.elements.tablaRepartidoresBody.querySelectorAll('.eliminar-repartidor-btn').forEach(button => {
+                button.addEventListener('click', (e) => this.deleteRepartidor(parseInt(e.currentTarget.dataset.id)));
+            });
+        },
+
+        aplicarFiltrosRepartidor: function() {
+            const nombreFiltro = this.elements.filtroRepartidorNombre ? this.elements.filtroRepartidorNombre.value.toLowerCase() : '';
+            const apellidoFiltro = this.elements.filtroRepartidorApellido ? this.elements.filtroRepartidorApellido.value.toLowerCase() : '';
+            const correoFiltro = this.elements.filtroRepartidorCorreo ? this.elements.filtroRepartidorCorreo.value.toLowerCase() : '';
+
+            const repartidoresFiltrados = this.state.repartidores.filter(repartidor => {
+                const nombreCoincide = repartidor.nombre.toLowerCase().includes(nombreFiltro);
+                const apellidoCoincide = repartidor.apellido.toLowerCase().includes(apellidoFiltro);
+                const correoCoincide = repartidor.correo_Electronico.toLowerCase().includes(correoFiltro);
+                return nombreCoincide && apellidoCoincide && correoCoincide;
+            });
+            this.renderRepartidores(repartidoresFiltrados);
+        },
+
+        clearFiltersRepartidor: function() {
+            if (this.elements.filtroRepartidorNombre) this.elements.filtroRepartidorNombre.value = '';
+            if (this.elements.filtroRepartidorApellido) this.elements.filtroRepartidorApellido.value = '';
+            if (this.elements.filtroRepartidorCorreo) this.elements.filtroRepartidorCorreo.value = '';
+            this.aplicarFiltrosRepartidor();
+        },
+
+        deleteRepartidor: async function(repartidorId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este repartidor?')) { return; }
+            try {
+                const response = await fetch(`${this.API_BASE_URL}/repartidores/${repartidorId}`, { method: 'DELETE' });
+                if (!response.ok) {
+                    let errorMessage = 'Error al eliminar repartidor.';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || response.statusText;
+                    } catch (e) { errorMessage = response.statusText; }
+                    throw new Error(errorMessage);
+                }
+                await this.fetchRepartidores();
+                this.aplicarFiltrosRepartidor();
+                alert('Repartidor eliminado exitosamente.');
+            } catch (error) {
+                console.error('Error deleting repartidor:', error);
+                alert('Error al eliminar repartidor: ' + error.message);
+            }
+        }
+    };
+
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+    const sidebar = document.getElementById('sidebar');
+    const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const pageTitle = document.getElementById('page-title');
+
+    function updatePageTitle(title) {
+        if (pageTitle) {
+            pageTitle.textContent = title;
         }
     }
 
@@ -178,10 +421,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 targetSection.classList.add('active');
                 updatePageTitle(this.querySelector('span').textContent);
 
-                // Cargar productos si la sección activa es 'productos'
+                // Llama a la función de carga/limpieza de filtros para la sección correspondiente
                 if (targetSectionId === 'productos') {
-                    cargarProductos();
+                    productoManagement.clearFiltersProductos(); // Limpiar y cargar productos al entrar a la sección
+                } else if (targetSectionId === 'repartidores') {
+                    repartidorManagement.clearFiltersRepartidor(); // Limpiar y cargar repartidores al entrar a la sección
                 }
+                // Añade aquí más condiciones para otras secciones si las tienes
             }
 
             if (window.innerWidth <= 992 && sidebar.classList.contains('active')) {
@@ -191,6 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Lógica para cargar la sección inicial al cargar la página
     const initialActiveLink = document.querySelector('.sidebar-nav .nav-link.active[data-section]');
     if (initialActiveLink) {
         const initialTargetSectionId = initialActiveLink.dataset.section;
@@ -199,11 +446,13 @@ document.addEventListener('DOMContentLoaded', function() {
             initialTargetSection.classList.add('active');
             updatePageTitle(initialActiveLink.querySelector('span').textContent);
             if (initialTargetSectionId === 'productos') {
-                cargarProductos();
+                productoManagement.clearFiltersProductos();
+            } else if (initialTargetSectionId === 'repartidores') {
+                repartidorManagement.clearFiltersRepartidor();
             }
         }
     } else {
-        const firstNavLink = document.querySelector('.sidebar-nav .nav-link[data-section="inicio"]');
+        const firstNavLink = document.querySelector('.sidebar-nav .nav-link[data-section="inicio"]'); // Puedes cambiar "inicio" a la sección por defecto que quieras
         if (firstNavLink) {
             firstNavLink.classList.add('active');
             const firstContentSection = document.getElementById('inicio-section');
@@ -230,8 +479,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.remove('sidebar-open');
         }
     });
-});
 
+    // Inicializar la gestión de repartidores y productos
+    repartidorManagement.init();
+    productoManagement.init();
+});
 document.addEventListener('DOMContentLoaded', function() {
     const toggleSidebarBtn = document.getElementById('toggle-sidebar');
     const sidebar = document.getElementById('sidebar');
