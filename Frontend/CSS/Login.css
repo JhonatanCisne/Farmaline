@@ -1,260 +1,491 @@
-/* Estilos para la página de login */
-.bg-teal {
-  background-color: #20b2aa !important;
+/* Reiniciamos los márgenes, el padding y establecemos el estilo de caja para todos los elementos */
+* {
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
 }
 
+/* Estilos adicionales para corregir problemas de visualización */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.footer-section {
+  margin-top: 0;
+}
+
+/* Asegurar que el contenedor de login tenga el tamaño correcto */
+.contenedor {
+  margin: 40px auto;
+}
+
+/* Corregir z-index para que el menú esté por encima */
+.navbar {
+  z-index: 2000;
+}
+
+/* Estilo del contenedor principal - MÁS GRANDE */
+.contenedor {
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+  width: 1000px; /* Aumentado de 768px */
+  max-width: 100%;
+  min-height: 600px; /* Aumentado de 480px */
+}
+
+/* Estilos de texto en el contenedor */
+.contenedor p {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.3px;
+  margin: 15px 0; /* Reducido de 20px */
+}
+
+.contenedor span {
+  font-size: 12px;
+}
+
+.contenedor a {
+  color: #333;
+  font-size: 13px;
+  text-decoration: none;
+  margin: 10px 0; /* Reducido de 15px */
+}
+
+.contenedor button {
+  background-color: #20b2aa;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.contenedor button.oculto {
+  background-color: transparent;
+  border-color: #fff;
+}
+
+/* Estilo del formulario */
+.contenedor form {
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 30px; /* Reducido de 40px */
+  height: 100%;
+}
+
+.contenedor input {
+  background-color: white !important; /* CAMBIADO: sin fondo gris */
+  border: 2px solid #e9ecef; /* CAMBIADO: borde más visible */
+  margin: 4px 0; /* Reducido de 8px */
+  padding: 8px 12px; /* Reducido de 10px 15px */
+  font-size: 12px; /* Reducido de 13px */
+  border-radius: 6px; /* Reducido de 8px */
+  width: 100%;
+  outline: none;
+}
+
+/* Configuración de contenedor de formularios */
+.formulario-contenedor {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+}
+
+.inicio-sesion {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+
+.contenedor.activo .inicio-sesion {
+  transform: translateX(100%);
+}
+
+.registro {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
+
+.contenedor.activo .registro {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+  animation: mover 0.6s;
+}
+
+@keyframes mover {
+  0%,
+  49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+  50%,
+  100% {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+/* Configuración del contenedor de la opción de alternar */
+.contenedor-toggle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: all 0.6s ease-in-out;
+  border-radius: 150px 0 0 100px;
+  z-index: 1000;
+}
+
+.contenedor.activo .contenedor-toggle {
+  transform: translateX(-100%);
+  border-radius: 0 150px 100px 0;
+}
+
+.toggle {
+  background-color: #20b2aa;
+  height: 100%;
+  background: linear-gradient(to right, #20b2aa, #17a2b8);
+  color: #fff;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: all 0.6s ease-in-out;
+}
+
+.contenedor.activo .toggle {
+  transform: translateX(50%);
+}
+
+/* Configuración de los paneles de alternancia */
+.panel-toggle {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 30px;
+  text-align: center;
+  top: 0;
+  transform: translateX(0);
+  transition: all 0.6s ease-in-out;
+}
+
+.panel-izquierdo {
+  transform: translateX(-200%);
+}
+
+.contenedor.activo .panel-izquierdo {
+  transform: translateX(0);
+}
+
+.panel-derecho {
+  right: 0;
+  transform: translateX(0);
+}
+
+.contenedor.activo .panel-derecho {
+  transform: translateX(200%);
+}
+
+/* NUEVA ESTRUCTURA SIMPLIFICADA PARA INPUTS */
+
+/* Grupo de input simplificado */
+.input-group {
+  width: 100%;
+  position: relative;
+  margin-bottom: 15px; /* Más espacio para mensajes de error */
+}
+
+.input-group input {
+  width: 100%;
+  background-color: white !important;
+  border: 2px solid #e9ecef;
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #20b2aa;
+  box-shadow: 0 0 0 0.2rem rgba(32, 178, 170, 0.25);
+}
+
+.input-group input.error {
+  border-color: #e74c3c;
+}
+
+.input-group input.success {
+  border-color: #2ecc71;
+}
+
+/* Mensajes de error más visibles */
+.error-message {
+  color: #e74c3c;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 3px;
+  display: block;
+  min-height: 14px; /* Reservar espacio para el mensaje */
+  line-height: 1.2;
+}
+
+.error-message:empty {
+  display: none;
+}
+
+/* Nombre y Apellido lado a lado */
+.name-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.name-row .input-group {
+  flex: 1;
+}
+
+/* Contraseñas lado a lado */
+.password-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.password-row .input-group {
+  flex: 1;
+}
+
+/* Contenedor para input de contraseña con icono */
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-container input {
+  padding-right: 35px !important; /* Espacio para el icono */
+}
+
+/* Icono de ojo para mostrar/ocultar contraseña */
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 12px; /* Posición fija */
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s ease;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.toggle-password:hover {
+  color: #20b2aa;
+}
+
+/* ESTILOS ESPECÍFICOS PARA MODALES */
+.modal .password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.modal .password-input-container input {
+  padding-right: 35px !important;
+}
+
+.modal .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 12px;
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s ease;
+  z-index: 10;
+}
+
+.modal .toggle-password:hover {
+  color: #20b2aa;
+}
+
+/* Checkbox styling */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 11px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+  margin-bottom: 0;
+}
+
+.checkbox-container label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkbox-container a {
+  color: #20b2aa;
+  margin: 0;
+}
+
+/* Hover effects para botones */
+.contenedor button:hover {
+  background-color: #1a9a92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(32, 178, 170, 0.3);
+}
+
+.contenedor button.oculto:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Links hover */
+.contenedor a:hover {
+  color: #20b2aa;
+}
+
+/* Modal button styling */
 .btn-teal {
   background-color: #20b2aa;
   border-color: #20b2aa;
   color: white;
-  transition: all 0.3s ease;
 }
 
 .btn-teal:hover {
   background-color: #1a9a92;
   border-color: #1a9a92;
   color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(32, 178, 170, 0.3);
 }
 
-/* Card styling */
-.card {
-  border: none;
-  border-radius: 15px;
-  overflow: hidden;
+/* Estilos para los botones de acceso rápido */
+.access-buttons-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 15px 0;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 20px;
 }
 
-.card-header {
-  border-bottom: none;
-  padding: 1.5rem;
-}
-
-/* Tabs styling */
-.nav-tabs {
-  border-bottom: 2px solid #e9ecef;
-}
-
-.nav-tabs .nav-link {
-  border: none;
-  color: #6c757d;
-  font-weight: 500;
-  padding: 1rem 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.nav-tabs .nav-link:hover {
-  border: none;
-  color: #20b2aa;
-}
-
-.nav-tabs .nav-link.active {
-  background-color: transparent;
-  border: none;
-  border-bottom: 3px solid #20b2aa;
-  color: #20b2aa;
+.access-btn {
+  padding: 12px 25px;
   font-weight: 600;
-}
-
-/* Form styling */
-.form-control {
-  border-radius: 8px;
-  border: 2px solid #e9ecef;
-  padding: 0.75rem 1rem;
+  font-size: 14px;
+  border-radius: 25px;
+  margin: 0 10px;
   transition: all 0.3s ease;
+  border: 2px solid transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.form-control:focus {
-  border-color: #20b2aa;
-  box-shadow: 0 0 0 0.2rem rgba(32, 178, 170, 0.25);
-}
-
-.form-label {
-  font-weight: 500;
-  color: #495057;
-  margin-bottom: 0.5rem;
-}
-
-/* Input group styling */
-.input-group .btn {
-  border-color: #e9ecef;
-  color: #6c757d;
-}
-
-.input-group .btn:hover {
-  background-color: #f8f9fa;
-  border-color: #20b2aa;
-  color: #20b2aa;
-}
-
-/* Validation styling */
-.was-validated .form-control:valid {
-  border-color: #28a745;
-}
-
-.was-validated .form-control:invalid {
+.admin-btn {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
   border-color: #dc3545;
 }
 
-.invalid-feedback {
-  display: block;
-  font-size: 0.875rem;
-  color: #dc3545;
-  margin-top: 0.25rem;
+.admin-btn:hover {
+  background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+  color: white;
 }
 
-.valid-feedback {
-  display: block;
-  font-size: 0.875rem;
-  color: #28a745;
-  margin-top: 0.25rem;
+.delivery-btn {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+  color: white;
+  border-color: #28a745;
 }
 
-/* Checkbox styling */
-.form-check-input:checked {
-  background-color: #20b2aa;
-  border-color: #20b2aa;
+.delivery-btn:hover {
+  background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+  color: white;
 }
 
-.form-check-input:focus {
-  border-color: #20b2aa;
-  box-shadow: 0 0 0 0.25rem rgba(32, 178, 170, 0.25);
+.access-btn i {
+  margin-right: 8px;
 }
 
-/* Links */
-a {
-  color: #20b2aa;
-  text-decoration: none;
+/* Centrar modales verticalmente */
+.modal-dialog {
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - 60px);
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
-a:hover {
-  color: #1a9a92;
-  text-decoration: underline;
+.modal.fade .modal-dialog {
+  transform: translate(0, -25px);
 }
 
-/* Password strength indicator */
-.password-strength {
-  height: 4px;
-  border-radius: 2px;
-  margin-top: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.password-strength.weak {
-  background-color: #dc3545;
-  width: 33%;
-}
-
-.password-strength.medium {
-  background-color: #ffc107;
-  width: 66%;
-}
-
-.password-strength.strong {
-  background-color: #28a745;
-  width: 100%;
-}
-
-/* Loading state */
-.btn.loading {
-  position: relative;
-  color: transparent;
-}
-
-.btn.loading::after {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  top: 50%;
-  left: 50%;
-  margin-left: -8px;
-  margin-top: -8px;
-  border: 2px solid transparent;
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Success message */
-.alert-success {
-  background-color: #d4edda;
-  border-color: #c3e6cb;
-  color: #155724;
-  border-radius: 8px;
-}
-
-.alert-danger {
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-  color: #721c24;
-  border-radius: 8px;
-}
-
-/* Modal styling */
-.modal-content {
-  border-radius: 15px;
-  border: none;
-}
-
-.modal-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-  border-radius: 15px 15px 0 0;
+.modal.show .modal-dialog {
+  transform: translate(0, 0);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .container {
-    padding: 1rem;
+  .access-btn {
+    padding: 10px 20px;
+    font-size: 12px;
+    margin: 5px;
   }
 
-  .card-body {
-    padding: 1.5rem !important;
+  /* En móviles, los campos se apilan verticalmente */
+  .name-row,
+  .password-row {
+    flex-direction: column;
+    gap: 0;
   }
 
-  .nav-tabs .nav-link {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+  .name-row .input-group,
+  .password-row .input-group {
+    margin-bottom: 15px;
   }
-}
-
-/* Animation for tab switching */
-.tab-pane {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Icon styling */
-.fas {
-  color: #20b2aa;
-}
-
-.form-label .fas {
-  color: #6c757d;
-}
-
-/* Focus states */
-.form-control:focus + .input-group-text,
-.form-control:focus ~ .input-group-text {
-  border-color: #20b2aa;
 }
