@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos - Panel de Repartidor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../CSS/admin.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="mb-2">
+            <h4>PANEL REPARTIDOR</h4>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="repartidor-inicio.html">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="repartidor-pedidos.html">
+                        <i class="fas fa-box"></i>
+                        <span>Mis Pedidos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="repartidor-historial.html">
+                        <i class="fas fa-history"></i>
+                        <span>Historial</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="repartidor-perfil.html">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="Index.html" class="btn btn-outline-light btn-sm w-100 mb-2">
+                <i class="fas fa-home"></i> <span>Volver al sitio</span>
+            </a>
+            <a href="Login.html" class="btn btn-danger btn-sm w-100" id="logout">
+                <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="admin-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-3" id="toggle-sidebar-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="mb-0">Mis Pedidos</h2>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Mis Pedidos Asignados</h3>
+                <div>
+                    <button class="btn btn-outline-teal me-2" onclick="actualizarPedidos()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-teal active" onclick="filtrarPedidos('todos')">Todos</button>
+                        <button class="btn btn-outline-teal" onclick="filtrarPedidos('pendientes')">Pendientes</button>
+                        <button class="btn btn-outline-teal" onclick="filtrarPedidos('en-camino')">En camino</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="buscar-pedido" placeholder="Buscar pedidos...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="filtro-zona">
+                                <option value="">Todas las zonas</option>
+                                <option value="norte">Zona Norte</option>
+                                <option value="sur">Zona Sur</option>
+                                <option value="este">Zona Este</option>
+                                <option value="oeste">Zona Oeste</option>
+                                <option value="centro">Centro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="filtro-urgencia">
+                                <option value="">Todas las urgencias</option>
+                                <option value="normal">Normal</option>
+                                <option value="urgente">Urgente</option>
+                                <option value="express">Express</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pedido #</th>
+                                    <th>Cliente</th>
+                                    <th>Dirección</th>
+                                    <th>Productos</th>
+                                    <th>Hora Estimada</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-pedidos">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">No hay pedidos asignados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Detalles Pedido -->
+    <div class="modal fade" id="modalDetallesPedido" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-box me-2"></i>
+                        Detalles del Pedido #<span id="detalle-pedido-id">0000</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Información del Cliente</h6>
+                            <p>
+                                <strong>Nombre:</strong> <span id="detalle-cliente-nombre">-</span><br>
+                                <strong>Teléfono:</strong> <span id="detalle-cliente-telefono">-</span><br>
+                                <strong>Email:</strong> <span id="detalle-cliente-email">-</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Información de Entrega</h6>
+                            <p>
+                                <strong>Dirección:</strong> <span id="detalle-direccion">-</span><br>
+                                <strong>Referencia:</strong> <span id="detalle-referencia">-</span><br>
+                                <strong>Hora estimada:</strong> <span id="detalle-hora">-</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <h6>Productos</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detalle-productos">
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay productos</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td><strong id="detalle-total">S/. 0.00</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Entrega -->
+    <div class="modal fade" id="modalConfirmarEntrega" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Confirmar Entrega
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Estás a punto de confirmar la entrega del pedido <strong>#<span id="confirmar-pedido-id">0000</span></strong>.</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de confirmación</label>
+                        <select class="form-select" id="tipo-confirmacion">
+                            <option value="cliente">Entregado al cliente</option>
+                            <option value="familiar">Entregado a un familiar</option>
+                            <option value="portero">Entregado al portero/recepcionista</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="div-nombre-receptor" style="display: none;">
+                        <label class="form-label">Nombre de quien recibe</label>
+                        <input type="text" class="form-control" id="nombre-receptor">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones (opcional)</label>
+                        <textarea class="form-control" id="observaciones-entrega" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="confirmar-pago" checked>
+                        <label class="form-check-label" for="confirmar-pago">
+                            Confirmo que he recibido el pago (si aplica)
+                        </label>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Importante:</strong> Esta acción no se puede deshacer.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="finalizarEntrega()">
+                        <i class="fas fa-check me-2"></i>
+                        Confirmar entrega
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/repartidor.js"></script>
+    <script src="../JS/repartidor-pedidos.js"></script>
+</body>
+</html>

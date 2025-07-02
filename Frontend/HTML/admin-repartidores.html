@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repartidores - Panel de Administración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../CSS/admin.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barra lateral -->
+    <div class="admin-sidebar" id="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="mb-2">
+            <h4>ADMIN PANEL</h4>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="admin-inicio.html">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="admin-productos.html">
+                        <i class="fas fa-pills"></i>
+                        <span>Productos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="admin-repartidores.html">
+                        <i class="fas fa-truck"></i>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Login.html" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <header class="admin-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-3" id="toggle-sidebar-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="mb-0">Gestión de Repartidores</h2>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Repartidores</h3>
+                <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modal-repartidor" id="btn-nuevo-repartidor">
+                    <i class="fas fa-user-plus"></i> Añadir Nuevo Repartidor
+                </button>
+            </div>
+
+            <!-- Filtros de Repartidores -->
+            <div class="card mb-4" id="repartidores-filtros-card">
+                <div class="card-header">
+                    <h5>Filtros de Repartidores</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="repartidores-filtro-nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="repartidores-filtro-nombre" placeholder="Filtrar por nombre">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="repartidores-filtro-apellido" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="repartidores-filtro-apellido" placeholder="Filtrar por apellido">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="repartidores-filtro-correo" class="form-label">Correo</label>
+                            <input type="text" class="form-control" id="repartidores-filtro-correo" placeholder="Filtrar por correo">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary me-2" id="repartidores-apply-filters-btn">Aplicar Filtros</button>
+                        <button class="btn btn-secondary" id="repartidores-clear-filters-btn">Limpiar Filtros</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Repartidores -->
+            <div class="card" id="repartidores-table-card">
+                <div class="card-header">
+                    <h5>Listado de Repartidores</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped" id="repartidores-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Teléfono</th>
+                                    <th>Placa</th>
+                                    <th>Administrador</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="repartidores-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Repartidor -->
+    <div class="modal fade" id="modal-repartidor" tabindex="-1" aria-labelledby="modal-repartidor-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-teal text-white">
+                    <h5 class="modal-title" id="modal-repartidor-label">Gestión de Repartidor</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-repartidor">
+                        <input type="hidden" id="repartidor-id-input">
+                        <div class="mb-3">
+                            <label for="repartidor-nombre-input" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="repartidor-nombre-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="repartidor-apellido-input" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="repartidor-apellido-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="repartidor-correo-input" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="repartidor-correo-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="repartidor-telefono-input" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="repartidor-telefono-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="repartidor-placa-input" class="form-label">Placa</label>
+                            <input type="text" class="form-control" id="repartidor-placa-input">
+                        </div>
+                        <div class="mb-3" id="repartidor-contrasena-group">
+                            <label for="repartidor-contrasena-input" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="repartidor-contrasena-input">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-teal" id="guardar-repartidor-btn">Guardar Repartidor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/admin.js"></script>
+    <script src="../JS/admin-repartidores.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Panel de Administración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../CSS/admin.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barra lateral -->
+    <div class="admin-sidebar" id="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="mb-2">
+            <h4>ADMIN PANEL</h4>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="admin-inicio.html">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="admin-productos.html">
+                        <i class="fas fa-pills"></i>
+                        <span>Productos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="admin-repartidores.html">
+                        <i class="fas fa-truck"></i>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Login.html" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <header class="admin-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-3" id="toggle-sidebar-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="mb-0">Gestión de Productos</h2>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Productos</h3>
+                <button class="btn btn-teal" data-bs-toggle="modal" data-bs-target="#modal-producto" id="btn-nuevo-producto">
+                    <i class="fas fa-plus"></i> Añadir Nuevo Producto
+                </button>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4" id="productos-filtros-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Filtros</h5>
+                    <small id="productos-filter-indicator" class="text-muted">Sin filtros aplicados</small>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="productos-filter-nombre" placeholder="Filtrar por Nombre">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <select class="form-select" id="productos-filter-cantidad-opcion">
+                                    <option value="mayor">Mayor que</option>
+                                    <option value="menor">Menor que</option>
+                                </select>
+                                <input type="number" class="form-control" id="productos-filter-cantidad" placeholder="Cantidad">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="productos-filter-fecha-caducidad" class="form-label d-block text-muted-small">Fecha de Caducidad</label>
+                            <input type="date" class="form-control" id="productos-filter-fecha-caducidad">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" id="productos-apply-filters-btn">Aplicar Filtros</button>
+                        <button class="btn btn-outline-secondary ms-2" id="productos-clear-filters-btn">Limpiar Filtros</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de productos -->
+            <div class="card" id="productos-table-card">
+                <div class="card-header">
+                    <h5>Listado de Productos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped" id="productos-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Stock</th>
+                                    <th>Precio</th>
+                                    <th>Imagen</th>
+                                    <th>Fecha Caducidad</th>
+                                    <th>Fecha Ingreso</th>
+                                    <th>IGV</th>
+                                    <th>Precio Final</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productos-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Producto -->
+    <div class="modal fade" id="modal-producto" tabindex="-1" aria-labelledby="modal-producto-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-teal text-white">
+                    <h5 class="modal-title" id="modal-producto-label">Gestión de Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-producto">
+                        <input type="hidden" id="producto-id-input">
+                        <div class="mb-3">
+                            <label for="producto-nombre-input" class="form-label">Nombre del Producto</label>
+                            <input type="text" class="form-control" id="producto-nombre-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-descripcion-input" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="producto-descripcion-input" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-stock-input" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="producto-stock-input" min="0" value="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-precio-input" class="form-label">Precio (Sin IGV)</label>
+                            <input type="number" class="form-control" id="producto-precio-input" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-fecha-caducidad-input" class="form-label">Fecha de Caducidad</label>
+                            <input type="date" class="form-control" id="producto-fecha-caducidad-input">
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-igv-input" class="form-label">IGV (%)</label>
+                            <input type="number" class="form-control" id="producto-igv-input" step="0.01" min="0" value="0.18" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-precio-final-input" class="form-label">Precio Final (Con IGV)</label>
+                            <input type="number" class="form-control" id="producto-precio-final-input" step="0.01" min="0.01" required readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="producto-imagen-file-input" class="form-label">Imagen del Producto</label>
+                            <input type="file" class="form-control" id="producto-imagen-file-input" accept="image/*">
+                            <input type="hidden" id="producto-imagen-url-input">
+                            <small class="form-text text-muted">Selecciona un archivo de imagen.</small>
+                            <div id="producto-imagen-preview" class="mt-2"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-teal" id="guardar-producto-btn">Guardar Producto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/admin.js"></script>
+    <script src="../JS/admin-productos.js"></script>
+</body>
+</html>

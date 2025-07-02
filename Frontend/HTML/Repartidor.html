@@ -6,38 +6,38 @@
     <title>Panel de Repartidor - Farmaline</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../CSS/Admin.css" rel="stylesheet">
+    <link href="../CSS/admin.css" rel="stylesheet">
 </head>
 <body>
     <!-- Sidebar -->
     <div class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="/placeholder.svg?height=40&width=120" alt="Farmaline Logo" height="40" class="mb-2">
+            <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="mb-2">
             <h4>PANEL REPARTIDOR</h4>
         </div>
         
         <nav class="sidebar-nav">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#inicio" data-section="inicio">
+                    <a class="nav-link active" href="repartidor-inicio.html">
                         <i class="fas fa-home"></i>
                         <span>Inicio</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#pedidos" data-section="pedidos">
+                    <a class="nav-link" href="repartidor-pedidos.html">
                         <i class="fas fa-box"></i>
                         <span>Mis Pedidos</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#historial" data-section="historial">
+                    <a class="nav-link" href="repartidor-historial.html">
                         <i class="fas fa-history"></i>
                         <span>Historial</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#perfil" data-section="perfil">
+                    <a class="nav-link" href="repartidor-perfil.html">
                         <i class="fas fa-user"></i>
                         <span>Mi Perfil</span>
                     </a>
@@ -46,10 +46,10 @@
         </nav>
         
         <div class="sidebar-footer">
-            <a href="../HTML/Index.html" class="btn btn-outline-light btn-sm w-100 mb-2">
+            <a href="Index.html" class="btn btn-outline-light btn-sm w-100 mb-2">
                 <i class="fas fa-home"></i> <span>Volver al sitio</span>
             </a>
-            <a href="#" class="btn btn-danger btn-sm w-100" id="logout">
+            <a href="Login.html" class="btn btn-danger btn-sm w-100" id="logout">
                 <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
             </a>
         </div>
@@ -64,853 +64,62 @@
                     <button class="btn btn-outline-secondary me-3" id="toggle-sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h2 class="mb-0" id="page-title">Inicio</h2>
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="dropdown">
-                        <button class="btn btn-teal dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i> <span id="repartidor-nombre">Carlos Mendoza</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-section="perfil"><i class="fas fa-user"></i> Mi Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" id="logout-header"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-                        </ul>
-                    </div>
+                    <h2 class="mb-0" id="page-title">Panel de Repartidor</h2>
                 </div>
             </div>
         </header>
 
-        <!-- Content Area -->
         <div class="content-area">
-            <!-- Inicio Section -->
-            <div class="content-section active" id="inicio-section">
-                <div class="row mb-4">
-                    <div class="col-md-3 mb-3">
-                        <div class="card stats-card clickable-card" data-action="pedidos" data-filter="">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h3 id="total-pedidos" class="mb-1">3</h3>
-                                        <p class="mb-0">Pedidos Pendientes</p>
-                                    </div>
-                                    <div>
-                                        <i class="fas fa-box fa-2x opacity-75"></i>
-                                    </div>
-                                </div>
+            <div class="welcome-section text-center py-5">
+                <h1>Bienvenido al Panel de Repartidor</h1>
+                <p class="lead">Selecciona una opción del menú lateral para comenzar</p>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                                <h5>Inicio</h5>
+                                <p>Ver estadísticas y próximas entregas</p>
+                                <a href="repartidor-inicio.html" class="btn btn-primary">Ir a Inicio</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card stats-card warning clickable-card" data-action="pedidos" data-filter="en-camino">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h3 id="en-camino" class="mb-1">2</h3>
-                                        <p class="mb-0">En Camino</p>
-                                    </div>
-                                    <div>
-                                        <i class="fas fa-shipping-fast fa-2x opacity-75"></i>
-                                    </div>
-                                </div>
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-box fa-3x text-success mb-3"></i>
+                                <h5>Mis Pedidos</h5>
+                                <p>Gestionar pedidos asignados</p>
+                                <a href="repartidor-pedidos.html" class="btn btn-success">Ver Pedidos</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card stats-card success clickable-card" data-action="historial" data-filter="entregados">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h3 id="entregados-hoy" class="mb-1">5</h3>
-                                        <p class="mb-0">Entregados Hoy</p>
-                                    </div>
-                                    <div>
-                                        <i class="fas fa-check-circle fa-2x opacity-75"></i>
-                                    </div>
-                                </div>
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-history fa-3x text-info mb-3"></i>
+                                <h5>Historial</h5>
+                                <p>Ver entregas completadas</p>
+                                <a href="repartidor-historial.html" class="btn btn-info">Ver Historial</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card stats-card info clickable-card" data-action="perfil" data-filter="">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h3 id="zona-actual" class="mb-1">Sur</h3>
-                                        <p class="mb-0">Mi Zona</p>
-                                    </div>
-                                    <div>
-                                        <i class="fas fa-map-marker-alt fa-2x opacity-75"></i>
-                                    </div>
-                                </div>
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-user fa-3x text-warning mb-3"></i>
+                                <h5>Mi Perfil</h5>
+                                <p>Ver información personal</p>
+                                <a href="repartidor-perfil.html" class="btn btn-warning">Ver Perfil</a>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Próximas entregas -->
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">
-                            <i class="fas fa-clock me-2"></i>
-                            Próximas Entregas
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Pedido #</th>
-                                        <th>Cliente</th>
-                                        <th>Dirección</th>
-                                        <th>Hora Estimada</th>
-                                        <th>Estado</th>
-                                        <th>Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>#1089</strong></td>
-                                        <td>María Rodríguez</td>
-                                        <td>
-                                            <div>Av. Arequipa 1520, Lince</div>
-                                            <small class="text-muted">Ref: Frente al parque</small>
-                                        </td>
-                                        <td>10:30 AM</td>
-                                        <td><span class="badge bg-warning">En preparación</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-teal" disabled>
-                                                <i class="fas fa-truck"></i> En espera
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1092</strong></td>
-                                        <td>Juan Pérez</td>
-                                        <td>
-                                            <div>Jr. Huáscar 1810, Jesús María</div>
-                                            <small class="text-muted">Ref: Edificio azul, apto 302</small>
-                                        </td>
-                                        <td>11:15 AM</td>
-                                        <td><span class="badge bg-teal">Listo para entrega</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-teal" onclick="iniciarEntrega(1092)">
-                                                <i class="fas fa-truck"></i> Iniciar entrega
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1087</strong></td>
-                                        <td>Carlos Mendoza</td>
-                                        <td>
-                                            <div>Av. La Marina 2540, San Miguel</div>
-                                            <small class="text-muted">Ref: Cerca al centro comercial</small>
-                                        </td>
-                                        <td>12:00 PM</td>
-                                        <td><span class="badge bg-info">En camino</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-success" onclick="confirmarEntrega(1087)">
-                                                <i class="fas fa-check"></i> Confirmar entrega
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pedidos Section -->
-            <div class="content-section" id="pedidos-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3>Mis Pedidos Asignados</h3>
-                    <div>
-                        <button class="btn btn-outline-teal me-2" onclick="actualizarPedidos()">
-                            <i class="fas fa-sync-alt"></i> Actualizar
-                        </button>
-                        <div class="btn-group">
-                            <button class="btn btn-outline-teal active" onclick="filtrarPedidos('todos')">Todos</button>
-                            <button class="btn btn-outline-teal" onclick="filtrarPedidos('pendientes')">Pendientes</button>
-                            <button class="btn btn-outline-teal" onclick="filtrarPedidos('en-camino')">En camino</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white">
-                                        <i class="fas fa-search text-muted"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="buscar-pedido" placeholder="Buscar pedidos...">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <select class="form-select" id="filtro-zona">
-                                    <option value="">Todas las zonas</option>
-                                    <option value="norte">Zona Norte</option>
-                                    <option value="sur" selected>Zona Sur</option>
-                                    <option value="este">Zona Este</option>
-                                    <option value="oeste">Zona Oeste</option>
-                                    <option value="centro">Centro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <select class="form-select" id="filtro-urgencia">
-                                    <option value="">Todas las urgencias</option>
-                                    <option value="normal">Normal</option>
-                                    <option value="urgente">Urgente</option>
-                                    <option value="express">Express</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Pedido #</th>
-                                        <th>Cliente</th>
-                                        <th>Dirección</th>
-                                        <th>Productos</th>
-                                        <th>Hora Estimada</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabla-pedidos">
-                                    <tr>
-                                        <td><strong>#1089</strong></td>
-                                        <td>María Rodríguez</td>
-                                        <td>
-                                            <div>Av. Arequipa 1520, Lince</div>
-                                            <small class="text-muted">Ref: Frente al parque</small>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-secondary" onclick="verDetallesPedido(1089)">
-                                                Ver 3 productos
-                                            </button>
-                                        </td>
-                                        <td>10:30 AM</td>
-                                        <td><span class="badge bg-warning">En preparación</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-teal" disabled>
-                                                <i class="fas fa-truck"></i> En espera
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1092</strong></td>
-                                        <td>Juan Pérez</td>
-                                        <td>
-                                            <div>Jr. Huáscar 1810, Jesús María</div>
-                                            <small class="text-muted">Ref: Edificio azul, apto 302</small>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-secondary" onclick="verDetallesPedido(1092)">
-                                                Ver 5 productos
-                                            </button>
-                                        </td>
-                                        <td>11:15 AM</td>
-                                        <td><span class="badge bg-teal">Listo para entrega</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-teal" onclick="iniciarEntrega(1092)">
-                                                <i class="fas fa-truck"></i> Iniciar entrega
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1087</strong></td>
-                                        <td>Carlos Mendoza</td>
-                                        <td>
-                                            <div>Av. La Marina 2540, San Miguel</div>
-                                            <small class="text-muted">Ref: Cerca al centro comercial</small>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-secondary" onclick="verDetallesPedido(1087)">
-                                                Ver 2 productos
-                                            </button>
-                                        </td>
-                                        <td>12:00 PM</td>
-                                        <td><span class="badge bg-info">En camino</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-success" onclick="confirmarEntrega(1087)">
-                                                <i class="fas fa-check"></i> Confirmar entrega
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Historial Section -->
-            <div class="content-section" id="historial-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3>Historial de Entregas</h3>
-                    <div>
-                        <div class="input-group">
-                            <input type="date" class="form-control" id="fecha-desde" value="2024-06-01">
-                            <span class="input-group-text bg-light">hasta</span>
-                            <input type="date" class="form-control" id="fecha-hasta" value="2024-06-03">
-                            <button class="btn btn-teal" onclick="filtrarPorFecha()">
-                                <i class="fas fa-filter"></i> Filtrar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Entregas Completadas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Pedido #</th>
-                                        <th>Cliente</th>
-                                        <th>Dirección</th>
-                                        <th>Fecha</th>
-                                        <th>Hora Entrega</th>
-                                        <th>Estado</th>
-                                        <th>Confirmación</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>#1085</strong></td>
-                                        <td>Ana López</td>
-                                        <td>Av. Brasil 1234, Jesús María</td>
-                                        <td>03/06/2024</td>
-                                        <td>09:45 AM</td>
-                                        <td><span class="badge bg-success">Entregado</span></td>
-                                        <td><span class="badge bg-success"><i class="fas fa-check"></i> Confirmado</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1084</strong></td>
-                                        <td>Pedro Gómez</td>
-                                        <td>Jr. Huancavelica 567, Cercado</td>
-                                        <td>03/06/2024</td>
-                                        <td>08:30 AM</td>
-                                        <td><span class="badge bg-success">Entregado</span></td>
-                                        <td><span class="badge bg-success"><i class="fas fa-check"></i> Confirmado</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1083</strong></td>
-                                        <td>Lucía Mendoza</td>
-                                        <td>Av. Benavides 1590, Miraflores</td>
-                                        <td>03/06/2024</td>
-                                        <td>08:15 AM</td>
-                                        <td><span class="badge bg-success">Entregado</span></td>
-                                        <td><span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> Pendiente</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1080</strong></td>
-                                        <td>Roberto Sánchez</td>
-                                        <td>Av. Aviación 3540, San Borja</td>
-                                        <td>02/06/2024</td>
-                                        <td>16:20 PM</td>
-                                        <td><span class="badge bg-success">Entregado</span></td>
-                                        <td><span class="badge bg-success"><i class="fas fa-check"></i> Confirmado</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#1079</strong></td>
-                                        <td>Carmen Flores</td>
-                                        <td>Jr. Camaná 780, Cercado</td>
-                                        <td>02/06/2024</td>
-                                        <td>15:10 PM</td>
-                                        <td><span class="badge bg-success">Entregado</span></td>
-                                        <td><span class="badge bg-success"><i class="fas fa-check"></i> Confirmado</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Perfil Section - MODIFICADO: Datos administrados por el administrador -->
-            <div class="content-section" id="perfil-section">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <h5 class="mb-0">Información Personal</h5>
-                                <small class="text-muted">Los datos son administrados por el administrador del sistema</small>
-                            </div>
-                            <div class="card-body">
-                                <form id="form-perfil">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">ID de Repartidor</label>
-                                            <input type="text" class="form-control" value="REP001" readonly>
-                                            <small class="text-muted">Asignado por el administrador</small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Nombre completo</label>
-                                            <input type="text" class="form-control" value="Carlos Mendoza" readonly>
-                                            <small class="text-muted">Registrado por el administrador</small>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">DNI</label>
-                                            <input type="text" class="form-control" value="45678912" readonly>
-                                            <small class="text-muted">Verificado por el administrador</small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Teléfono</label>
-                                            <input type="tel" class="form-control" value="987654321" readonly>
-                                            <small class="text-muted">Solo el administrador puede modificar</small>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Email</label>
-                                            <input type="email" class="form-control" value="carlos.mendoza@farmaline.com" readonly>
-                                            <small class="text-muted">Cuenta corporativa asignada</small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Contraseña</label>
-                                            <div class="input-group">
-                                                <input type="password" class="form-control" value="********" readonly>
-                                                <button class="btn btn-outline-secondary" type="button" disabled>
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                            </div>
-                                            <small class="text-muted">Contacta al administrador para cambios</small>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Zona asignada</label>
-                                            <select class="form-select" disabled>
-                                                <option>Zona Sur</option>
-                                            </select>
-                                            <small class="text-muted">Asignación realizada por el administrador</small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Vehículo</label>
-                                            <select class="form-select" disabled>
-                                                <option>Motocicleta</option>
-                                            </select>
-                                            <small class="text-muted">Registrado por el administrador</small>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Dirección</label>
-                                        <input type="text" class="form-control" value="Av. Los Jazmines 456, Surco" readonly>
-                                        <small class="text-muted">Dirección registrada por el administrador</small>
-                                    </div>
-                                    
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <strong>Nota:</strong> Para modificar cualquier información personal, contacta al administrador del sistema.
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Ver Detalles Pedido -->
-    <div class="modal fade" id="modalDetallesPedido" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-box me-2"></i>
-                        Detalles del Pedido #<span id="detalle-pedido-id">1092</span>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <h6>Información del Cliente</h6>
-                            <p>
-                                <strong>Nombre:</strong> <span id="detalle-cliente-nombre">Juan Pérez</span><br>
-                                <strong>Teléfono:</strong> <span id="detalle-cliente-telefono">987654321</span><br>
-                                <strong>Email:</strong> <span id="detalle-cliente-email">juan.perez@email.com</span>
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6>Información de Entrega</h6>
-                            <p>
-                                <strong>Dirección:</strong> <span id="detalle-direccion">Jr. Huáscar 1810, Jesús María</span><br>
-                                <strong>Referencia:</strong> <span id="detalle-referencia">Edificio azul, apto 302</span><br>
-                                <strong>Hora estimada:</strong> <span id="detalle-hora">11:15 AM</span>
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <h6>Productos</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio</th>
-                                    <th>Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Paracetamol 500mg</td>
-                                    <td>2</td>
-                                    <td>S/. 6.50</td>
-                                    <td>S/. 13.00</td>
-                                </tr>
-                                <tr>
-                                    <td>Vitamina C 1000mg</td>
-                                    <td>1</td>
-                                    <td>S/. 15.90</td>
-                                    <td>S/. 15.90</td>
-                                </tr>
-                                <tr>
-                                    <td>Ibuprofeno 800mg</td>
-                                    <td>1</td>
-                                    <td>S/. 9.50</td>
-                                    <td>S/. 9.50</td>
-                                </tr>
-                                <tr>
-                                    <td>Loratadina 10mg</td>
-                                    <td>1</td>
-                                    <td>S/. 8.90</td>
-                                    <td>S/. 8.90</td>
-                                </tr>
-                                <tr>
-                                    <td>Alcohol en Gel 500ml</td>
-                                    <td>1</td>
-                                    <td>S/. 12.50</td>
-                                    <td>S/. 12.50</td>
-                                </tr>
-                            </tbody>
-                            <tfoot class="table-light">
-                                <tr>
-                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                    <td><strong>S/. 59.80</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Nota:</strong> El cliente ha solicitado que se le llame 5 minutos antes de llegar.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-teal" onclick="iniciarEntrega(1092)">
-                        <i class="fas fa-truck me-2"></i>
-                        Iniciar entrega
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Confirmar Entrega -->
-    <div class="modal fade" id="modalConfirmarEntrega" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-check-circle me-2"></i>
-                        Confirmar Entrega
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Estás a punto de confirmar la entrega del pedido <strong>#<span id="confirmar-pedido-id">1087</span></strong> a <strong><span id="confirmar-cliente">Carlos Mendoza</span></strong>.</p>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de confirmación</label>
-                        <select class="form-select" id="tipo-confirmacion">
-                            <option value="cliente">Entregado al cliente</option>
-                            <option value="familiar">Entregado a un familiar</option>
-                            <option value="portero">Entregado al portero/recepcionista</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                    </div>
-                    
-                    <div class="mb-3" id="div-nombre-receptor" style="display: none;">
-                        <label class="form-label">Nombre de quien recibe</label>
-                        <input type="text" class="form-control" id="nombre-receptor">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Observaciones (opcional)</label>
-                        <textarea class="form-control" id="observaciones-entrega" rows="2"></textarea>
-                    </div>
-                    
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="confirmar-pago" checked>
-                        <label class="form-check-label" for="confirmar-pago">
-                            Confirmo que he recibido el pago (si aplica)
-                        </label>
-                    </div>
-                    
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Importante:</strong> Esta acción no se puede deshacer. Asegúrate de haber entregado correctamente el pedido.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" onclick="finalizarEntrega()">
-                        <i class="fas fa-check me-2"></i>
-                        Confirmar entrega
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Variables globales
-        let currentSection = 'inicio';
-        const bootstrap = window.bootstrap;
-
-        // Inicializar la página
-        document.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            
-            // Mostrar tipo de confirmación si no es "cliente"
-            document.getElementById('tipo-confirmacion').addEventListener('change', function() {
-                const divNombreReceptor = document.getElementById('div-nombre-receptor');
-                divNombreReceptor.style.display = this.value !== 'cliente' ? 'block' : 'none';
-            });
-        });
-
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Navegación del sidebar
-            document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const section = e.target.closest('.nav-link').dataset.section;
-                    cambiarSeccion(section);
-                });
-            });
-
-            // Cards clickeables del dashboard
-            document.querySelectorAll('.clickable-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    const action = card.dataset.action;
-                    const filter = card.dataset.filter;
-                    navegarDesdeCard(action, filter);
-                });
-            });
-
-            // Toggle sidebar
-            document.getElementById('toggle-sidebar').addEventListener('click', () => {
-                toggleSidebar();
-            });
-
-            // Logout
-            document.getElementById('logout').addEventListener('click', (e) => {
-                e.preventDefault();
-                logout();
-            });
-
-            document.getElementById('logout-header')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                logout();
-            });
-        }
-
-        // Cambiar sección activa
-        function cambiarSeccion(section) {
-            // Actualizar navegación
-            document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.querySelector(`[data-section="${section}"]`).classList.add('active');
-
-            // Actualizar contenido
-            document.querySelectorAll('.content-section').forEach(sec => {
-                sec.classList.remove('active');
-            });
-            document.getElementById(`${section}-section`).classList.add('active');
-
-            // Actualizar título
-            const titles = {
-                inicio: 'Inicio',
-                pedidos: 'Mis Pedidos',
-                historial: 'Historial de Entregas',
-                perfil: 'Mi Perfil'
-            };
-            document.getElementById('page-title').textContent = titles[section];
-
-            currentSection = section;
-        }
-
-        // Navegar desde una card del dashboard
-        function navegarDesdeCard(action, filter) {
-            cambiarSeccion(action);
-            
-            if (filter) {
-                // Aplicar filtro específico según la card
-                console.log(`Aplicando filtro: ${filter}`);
-                // Aquí iría la lógica para aplicar el filtro
-            }
-        }
-
-        // Toggle sidebar
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-        }
-
-        // Ver detalles de un pedido
-        function verDetallesPedido(pedidoId) {
-            // Aquí se cargarían los detalles del pedido desde el servidor
-            document.getElementById('detalle-pedido-id').textContent = pedidoId;
-            
-            // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('modalDetallesPedido'));
-            modal.show();
-        }
-
-        // Iniciar entrega
-        function iniciarEntrega(pedidoId) {
-            // Aquí se actualizaría el estado del pedido a "En camino"
-            alert(`Iniciando entrega del pedido #${pedidoId}`);
-            
-            // Cerrar modal si está abierto
-            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalDetallesPedido'));
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-            
-            // Actualizar la interfaz
-            actualizarPedidos();
-        }
-
-        // Confirmar entrega (mostrar modal)
-        function confirmarEntrega(pedidoId) {
-            // Configurar el modal con los datos del pedido
-            document.getElementById('confirmar-pedido-id').textContent = pedidoId;
-            
-            // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('modalConfirmarEntrega'));
-            modal.show();
-        }
-
-        // Finalizar entrega (confirmar en el modal)
-        function finalizarEntrega() {
-            const pedidoId = document.getElementById('confirmar-pedido-id').textContent;
-            const tipoConfirmacion = document.getElementById('tipo-confirmacion').value;
-            const nombreReceptor = document.getElementById('nombre-receptor').value;
-            const observaciones = document.getElementById('observaciones-entrega').value;
-            const confirmaPago = document.getElementById('confirmar-pago').checked;
-            
-            // Aquí se enviaría la información al servidor
-            console.log(`Finalizando entrega del pedido #${pedidoId}`);
-            console.log(`Tipo de confirmación: ${tipoConfirmacion}`);
-            console.log(`Nombre del receptor: ${nombreReceptor}`);
-            console.log(`Observaciones: ${observaciones}`);
-            console.log(`Confirma pago: ${confirmaPago}`);
-            
-            // Cerrar modal
-            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarEntrega'));
-            modalInstance.hide();
-            
-            // Mostrar notificación
-            mostrarNotificacion(`Pedido #${pedidoId} entregado correctamente`, 'success');
-            
-            // Actualizar la interfaz
-            actualizarPedidos();
-        }
-
-        // Actualizar lista de pedidos
-        function actualizarPedidos() {
-            // Aquí se actualizaría la lista de pedidos desde el servidor
-            console.log('Actualizando lista de pedidos...');
-            
-            // Simular actualización
-            mostrarNotificacion('Lista de pedidos actualizada', 'info');
-        }
-
-        // Filtrar pedidos
-        function filtrarPedidos(filtro) {
-            // Aquí se filtrarían los pedidos según el criterio
-            console.log(`Filtrando pedidos: ${filtro}`);
-            
-            // Actualizar botones activos
-            document.querySelectorAll('.btn-group .btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
-
-        // Filtrar por fecha
-        function filtrarPorFecha() {
-            const fechaDesde = document.getElementById('fecha-desde').value;
-            const fechaHasta = document.getElementById('fecha-hasta').value;
-            
-            // Aquí se filtrarían los pedidos por fecha
-            console.log(`Filtrando por fecha: ${fechaDesde} hasta ${fechaHasta}`);
-            
-            // Mostrar notificación
-            mostrarNotificacion(`Mostrando entregas del ${fechaDesde} al ${fechaHasta}`, 'info');
-        }
-
-        // Mostrar notificación
-        function mostrarNotificacion(mensaje, tipo = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${tipo} position-fixed`;
-            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            
-            const iconos = {
-                success: 'check-circle',
-                danger: 'exclamation-circle',
-                warning: 'exclamation-triangle',
-                info: 'info-circle'
-            };
-            
-            notification.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-${iconos[tipo]} me-2"></i>
-                    <div>${mensaje}</div>
-                    <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Auto-remove después de 4 segundos
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 4000);
-        }
-
-        // Logout
-        function logout() {
-            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                window.location.href = '../HTML/Index.html';
-            }
-        }
-    </script>
+    <script src="../JS/repartidor.js"></script>
 </body>
 </html>
