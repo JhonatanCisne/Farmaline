@@ -1,30 +1,29 @@
 package com.farmaline.farmaline.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.List; 
 
 public class PedidoDTO {
     private Integer idPedido;
     private LocalDate fecha;
     private LocalTime hora;
+    private BigDecimal montoTotalPedido;
     private Integer idUsuario;
-    private String nombreUsuario;
-    private Integer idRepartidor;
-    private String nombreRepartidor;
-    private List<DetallePedidoDTO> detallesPedido;
+    private Integer idRepartidor; 
+    private List<DetallePedidoDTO> detallesPedido; 
 
     public PedidoDTO() {
     }
 
-    public PedidoDTO(Integer idPedido, LocalDate fecha, LocalTime hora, Integer idUsuario, String nombreUsuario, Integer idRepartidor, String nombreRepartidor, List<DetallePedidoDTO> detallesPedido) {
+    public PedidoDTO(Integer idPedido, LocalDate fecha, LocalTime hora, BigDecimal montoTotalPedido, Integer idUsuario, Integer idRepartidor, List<DetallePedidoDTO> detallesPedido) {
         this.idPedido = idPedido;
         this.fecha = fecha;
         this.hora = hora;
+        this.montoTotalPedido = montoTotalPedido;
         this.idUsuario = idUsuario;
-        this.nombreUsuario = nombreUsuario;
         this.idRepartidor = idRepartidor;
-        this.nombreRepartidor = nombreRepartidor;
         this.detallesPedido = detallesPedido;
     }
 
@@ -52,6 +51,14 @@ public class PedidoDTO {
         this.hora = hora;
     }
 
+    public BigDecimal getMontoTotalPedido() {
+        return montoTotalPedido;
+    }
+
+    public void setMontoTotalPedido(BigDecimal montoTotalPedido) {
+        this.montoTotalPedido = montoTotalPedido;
+    }
+
     public Integer getIdUsuario() {
         return idUsuario;
     }
@@ -60,28 +67,12 @@ public class PedidoDTO {
         this.idUsuario = idUsuario;
     }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
-
     public Integer getIdRepartidor() {
         return idRepartidor;
     }
 
     public void setIdRepartidor(Integer idRepartidor) {
         this.idRepartidor = idRepartidor;
-    }
-
-    public String getNombreRepartidor() {
-        return nombreRepartidor;
-    }
-
-    public void setNombreRepartidor(String nombreRepartidor) {
-        this.nombreRepartidor = nombreRepartidor;
     }
 
     public List<DetallePedidoDTO> getDetallesPedido() {

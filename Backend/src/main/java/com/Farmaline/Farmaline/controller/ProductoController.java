@@ -1,4 +1,4 @@
-package com.farmaline.farmaline.controller;
+package com.Farmaline.farmaline.controller;
 
 import java.time.LocalDate;
 import java.util.List;

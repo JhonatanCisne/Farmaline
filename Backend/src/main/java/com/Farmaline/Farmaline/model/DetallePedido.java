@@ -1,5 +1,7 @@
 package com.farmaline.farmaline.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Detalle_Pedido")
@@ -19,18 +20,21 @@ public class DetallePedido {
     private Integer idDetallePedido;
 
     @ManyToOne
-    @JoinColumn(name = "ID_Pedido", referencedColumnName = "ID_Pedido")
+    @JoinColumn(name = "ID_Pedido", referencedColumnName = "ID_Pedido", nullable = false)
     private Pedido pedido;
 
     @ManyToOne
-    @JoinColumn(name = "ID_Producto", referencedColumnName = "ID_Producto")
+    @JoinColumn(name = "ID_Producto", referencedColumnName = "ID_Producto", nullable = false)
     private Producto producto;
 
-    @Column(name = "Cantidad")
+    @Column(name = "Cantidad", nullable = false)
     private int cantidad;
 
-    @Column(name = "Precio_Unitario_Al_Momento_Compra", precision = 10, scale = 2)
+    @Column(name = "Precio_Unitario_Al_Momento_Compra", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioUnitarioAlMomentoCompra;
+
+    @Column(name = "Subtotal_Detalle", nullable = false, precision = 10, scale = 2)
+    private BigDecimal subtotalDetalle;
 
     public Integer getIdDetallePedido() {
         return idDetallePedido;
@@ -70,5 +74,13 @@ public class DetallePedido {
 
     public void setPrecioUnitarioAlMomentoCompra(BigDecimal precioUnitarioAlMomentoCompra) {
         this.precioUnitarioAlMomentoCompra = precioUnitarioAlMomentoCompra;
+    }
+
+    public BigDecimal getSubtotalDetalle() {
+        return subtotalDetalle;
+    }
+
+    public void setSubtotalDetalle(BigDecimal subtotalDetalle) {
+        this.subtotalDetalle = subtotalDetalle;
     }
 }

@@ -1,4 +1,4 @@
-package com.farmaline.farmaline.controller;
+package com.Farmaline.farmaline.controller;
 
 import java.io.IOException;
 import java.nio.file.Files;

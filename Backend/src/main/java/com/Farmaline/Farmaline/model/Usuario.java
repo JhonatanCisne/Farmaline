@@ -16,22 +16,22 @@ public class Usuario {
     @Column(name="ID_Usuario")
     private Integer idUsuario;
 
-    @Column(name="Nombre", nullable=false)
+    @Column(name="Nombre", nullable=false, length=50)
     private String nombre;
 
-    @Column(name="Apellido", nullable=false)
+    @Column(name="Apellido", nullable=false, length=50)
     private String apellido;
 
-    @Column(name="Correo_Electronico", nullable=false, unique = true)
+    @Column(name="Correo_Electronico", nullable=false, unique = true, length=100)
     private String correoElectronico;
 
-    @Column(name="Domicilio", nullable=false)
+    @Column(name="Domicilio", nullable=false, length=255)
     private String domicilio;
 
-    @Column(name="Telefono", nullable=false, unique = true)
+    @Column(name="Telefono", nullable=false, unique = true, length=20)
     private String telefono;
     
-    @Column(name="Contrasena", nullable=false)
+    @Column(name="Contrasena", nullable=false, length=100) // Se recomienda almacenar contraseñas hasheadas
     private String contrasena;
 
     @OneToOne(mappedBy = "usuario")

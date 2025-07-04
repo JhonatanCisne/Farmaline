@@ -7,8 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id; 
-import jakarta.persistence.Table; 
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="Producto")
@@ -45,39 +45,10 @@ public class Producto {
     @Column(name = "Precio_Final", nullable = false, precision=10, scale=2)
     private BigDecimal precioFinal;
 
+    @Column(name = "Laboratorio", nullable = true, length = 100) 
+    private String laboratorio;
+
     public Producto() {
-    }
-
-    public LocalDate getFechaCaducidad() {
-        return fechaCaducidad;
-    }
-
-    public void setFechaCaducidad(LocalDate fechaCaducidad) {
-        this.fechaCaducidad = fechaCaducidad;
-    }
-
-    public LocalDate getFechaIngreso() {
-        return fechaIngreso;
-    }
-
-    public void setFechaIngreso(LocalDate fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
-    }
-
-    public BigDecimal getIgv() {
-        return igv;
-    }
-
-    public void setIgv(BigDecimal igv) {
-        this.igv = igv;
-    }
-
-    public BigDecimal getPrecioFinal() {
-        return precioFinal;
-    }
-
-    public void setPrecioFinal(BigDecimal precioFinal) {
-        this.precioFinal = precioFinal;
     }
 
     public Integer getIdProducto() {
@@ -126,5 +97,45 @@ public class Producto {
 
     public void setImagen(String imagen) {
         this.imagen = imagen;
+    }
+
+    public LocalDate getFechaCaducidad() {
+        return fechaCaducidad;
+    }
+
+    public void setFechaCaducidad(LocalDate fechaCaducidad) {
+        this.fechaCaducidad = fechaCaducidad;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
+    }
+
+    public BigDecimal getIgv() {
+        return igv;
+    }
+
+    public void setIgv(BigDecimal igv) {
+        this.igv = igv;
+    }
+
+    public BigDecimal getPrecioFinal() {
+        return precioFinal;
+    }
+
+    public void setPrecioFinal(BigDecimal precioFinal) {
+        this.precioFinal = precioFinal;
+    }
+
+    public String getLaboratorio() {
+        return laboratorio;
+    }
+
+    public void setLaboratorio(String laboratorio) {
+        this.laboratorio = laboratorio;
     }
 }

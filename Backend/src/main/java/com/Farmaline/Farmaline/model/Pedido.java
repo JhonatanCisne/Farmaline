@@ -1,5 +1,6 @@
 package com.farmaline.farmaline.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
@@ -16,25 +17,27 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="Pedido")
-
 public class Pedido {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="ID_Pedido")
     private Integer idPedido;
 
-    @Column(name="Fecha")
+    @Column(name="Fecha", nullable = false)
     private LocalDate fecha;
 
-    @Column(name="Hora")
+    @Column(name="Hora", nullable = false)
     private LocalTime hora;
 
+    @Column(name="Monto_Total_Pedido", nullable = false, precision = 10, scale = 2)
+    private BigDecimal montoTotalPedido;
+
     @ManyToOne 
-    @JoinColumn(name = "ID_Usuario", referencedColumnName = "ID_Usuario")
+    @JoinColumn(name = "ID_Usuario", referencedColumnName = "ID_Usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne 
-    @JoinColumn(name = "ID_Repartidor", referencedColumnName = "ID_Repartidor")
+    @JoinColumn(name = "ID_Repartidor", referencedColumnName = "ID_Repartidor", nullable = true)
     private Repartidor repartidor;
 
     @OneToMany(mappedBy = "pedido")
@@ -62,6 +65,14 @@ public class Pedido {
 
     public void setHora(LocalTime hora) {
         this.hora = hora;
+    }
+
+    public BigDecimal getMontoTotalPedido() {
+        return montoTotalPedido;
+    }
+
+    public void setMontoTotalPedido(BigDecimal montoTotalPedido) {
+        this.montoTotalPedido = montoTotalPedido;
     }
 
     public Usuario getUsuario() {

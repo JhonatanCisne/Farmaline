@@ -14,11 +14,12 @@ public class ProductoDTO {
     private LocalDate fechaIngreso;
     private BigDecimal igv;
     private BigDecimal precioFinal;
+    private String laboratorio;
 
     public ProductoDTO() {
     }
 
-    public ProductoDTO(Integer idProducto, String nombre, String descripcion, Integer stockDisponible, BigDecimal precio, String imagen, LocalDate fechaCaducidad, LocalDate fechaIngreso, BigDecimal igv, BigDecimal precioFinal) {
+    public ProductoDTO(Integer idProducto, String nombre, String descripcion, Integer stockDisponible, BigDecimal precio, String imagen, LocalDate fechaCaducidad, LocalDate fechaIngreso, BigDecimal igv, BigDecimal precioFinal, String laboratorio) {
         this.idProducto = idProducto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -29,6 +30,7 @@ public class ProductoDTO {
         this.fechaIngreso = fechaIngreso;
         this.igv = igv;
         this.precioFinal = precioFinal;
+        this.laboratorio = laboratorio;
     }
 
     public Integer getIdProducto() {
@@ -109,5 +111,13 @@ public class ProductoDTO {
 
     public void setPrecioFinal(BigDecimal precioFinal) {
         this.precioFinal = precioFinal;
+    }
+
+    public String getLaboratorio() {
+        return laboratorio;
+    }
+
+    public void setLaboratorio(String laboratorio) {
+        this.laboratorio = laboratorio;
     }
 }

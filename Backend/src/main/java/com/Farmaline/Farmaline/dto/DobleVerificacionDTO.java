@@ -1,35 +1,31 @@
 package com.farmaline.farmaline.dto;
 
 public class DobleVerificacionDTO {
-    private Integer idDobleVerificacion;
+    private Integer idDobleVerifiacion;
     private String estadoUsuario;
     private String estadoRepartidor;
-    private Integer idUsuario;
-    private String nombreUsuario;
-    private Integer idRepartidor;
-    private String nombreRepartidor;
-    private Integer idPedido;
+    private Integer idUsuario;   // ID del usuario involucrado en la verificación
+    private Integer idRepartidor; // ID del repartidor involucrado en la verificación
+    private Integer idPedido;    // ID del pedido que se está verificando
 
     public DobleVerificacionDTO() {
     }
 
-    public DobleVerificacionDTO(Integer idDobleVerificacion, String estadoUsuario, String estadoRepartidor, Integer idUsuario, String nombreUsuario, Integer idRepartidor, String nombreRepartidor, Integer idPedido) {
-        this.idDobleVerificacion = idDobleVerificacion;
+    public DobleVerificacionDTO(Integer idDobleVerifiacion, String estadoUsuario, String estadoRepartidor, Integer idUsuario, Integer idRepartidor, Integer idPedido) {
+        this.idDobleVerifiacion = idDobleVerifiacion;
         this.estadoUsuario = estadoUsuario;
         this.estadoRepartidor = estadoRepartidor;
         this.idUsuario = idUsuario;
-        this.nombreUsuario = nombreUsuario;
         this.idRepartidor = idRepartidor;
-        this.nombreRepartidor = nombreRepartidor;
         this.idPedido = idPedido;
     }
 
-    public Integer getIdDobleVerificacion() {
-        return idDobleVerificacion;
+    public Integer getIdDobleVerifiacion() {
+        return idDobleVerifiacion;
     }
 
-    public void setIdDobleVerificacion(Integer idDobleVerificacion) {
-        this.idDobleVerificacion = idDobleVerificacion;
+    public void setIdDobleVerifiacion(Integer idDobleVerifiacion) {
+        this.idDobleVerifiacion = idDobleVerifiacion;
     }
 
     public String getEstadoUsuario() {
@@ -56,28 +52,12 @@ public class DobleVerificacionDTO {
         this.idUsuario = idUsuario;
     }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
-
     public Integer getIdRepartidor() {
         return idRepartidor;
     }
 
     public void setIdRepartidor(Integer idRepartidor) {
         this.idRepartidor = idRepartidor;
-    }
-
-    public String getNombreRepartidor() {
-        return nombreRepartidor;
-    }
-
-    public void setNombreRepartidor(String nombreRepartidor) {
-        this.nombreRepartidor = nombreRepartidor;
     }
 
     public Integer getIdPedido() {

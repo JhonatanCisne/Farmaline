@@ -15,13 +15,16 @@ public class Administrador {
     @Column(name="ID_Administrador")
     private Integer idAdministrador;
     
-    @Column(name="Nombre")
+    @Column(name="Nombre", nullable = false, length = 50)
     private String nombre;
 
-    @Column(name="Apellido")
+    @Column(name="Apellido", nullable = false, length = 50)
     private String apellido;
 
-    @Column(name="Contraseña")
+    @Column(name="Usuario", nullable = false, unique = true, length = 50)
+    private String usuario;
+
+    @Column(name="Contraseña", nullable = false, length = 100) 
     private String contrasena;
 
     public Integer getIdAdministrador() {
@@ -46,6 +49,14 @@ public class Administrador {
 
     public void setApellido(String apellido) {
         this.apellido = apellido;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 
     public String getContrasena() {

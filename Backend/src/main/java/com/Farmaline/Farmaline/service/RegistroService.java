@@ -1,4 +1,4 @@
-package com.farmaline.farmaline.service;
+package com.Farmaline.farmaline.service;
 
 import java.util.List;
 import java.util.Optional;

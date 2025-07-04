@@ -17,8 +17,8 @@ public class Carrito {
     @Column(name="ID_Carrito")
     private Integer idCarrito;
     
-    @OneToOne   
-    @JoinColumn(name = "ID_usuario")
+    @OneToOne 
+    @JoinColumn(name = "ID_Usuario", unique = true, nullable = false)
     private Usuario usuario;
 
     public Integer getIdCarrito() {

@@ -12,29 +12,28 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="Doble_Verificacion")
-
 public class Doble_Verificacion {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="ID_Doble_Verificacion")
     private Integer idDobleVerifiacion;
 
-    @Column(name="Estado_Usuario")
+    @Column(name="Estado_Usuario", nullable = false, length = 50)
     private String estadoUsuario;
 
-    @Column(name="Estado_Repartidor")
+    @Column(name="Estado_Repartidor", nullable = false, length = 50) 
     private String estadoRepartidor;
 
     @ManyToOne 
-    @JoinColumn(name = "ID_Usuario", referencedColumnName = "ID_Usuario")
+    @JoinColumn(name = "ID_Usuario", referencedColumnName = "ID_Usuario", nullable = false) 
     private Usuario usuario;
 
     @ManyToOne 
-    @JoinColumn(name = "ID_Repartidor", referencedColumnName = "ID_Repartidor")
+    @JoinColumn(name = "ID_Repartidor", referencedColumnName = "ID_Repartidor", nullable = false) 
     private Repartidor repartidor;
 
     @OneToOne 
-    @JoinColumn(name = "ID_Pedido", referencedColumnName = "ID_Pedido")
+    @JoinColumn(name = "ID_Pedido", referencedColumnName = "ID_Pedido", nullable = false, unique = true)
     private Pedido pedido;
 
     public Integer getIdDobleVerifiacion() {

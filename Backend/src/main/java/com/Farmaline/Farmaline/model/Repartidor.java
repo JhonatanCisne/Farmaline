@@ -15,22 +15,22 @@ public class Repartidor {
     @Column(name="ID_Repartidor")
     private Integer idRepartidor;
 
-    @Column(name="Nombre")
+    @Column(name="Nombre", nullable = false, length = 50)
     private String nombre;
 
-    @Column(name="Apellido")
+    @Column(name="Apellido", nullable = false, length = 50)
     private String apellido;
 
-    @Column(name="Correo_Electronico")
+    @Column(name="Correo_Electronico", nullable = false, unique = true, length = 100)
     private String correo_Electronico;
 
-    @Column(name="Telefono")
+    @Column(name="Telefono", nullable = false, unique = true, length = 20)
     private String telefono;
 
-    @Column(name="Placa")
+    @Column(name="Placa", nullable = false, unique = true, length = 10)
     private String placa;
 
-    @Column(name="Contrasena")
+    @Column(name="Contrasena", nullable = false, length = 100) // Se recomienda almacenar contraseñas hasheadas
     private String contrasena;
 
     public Integer getIdRepartidor() {

@@ -1,4 +1,4 @@
-package com.farmaline.farmaline.controller;
+package com.Farmaline.farmaline.controller;
 
 import com.farmaline.farmaline.dto.UsuarioDTO;
 import com.farmaline.farmaline.service.UsuarioService;

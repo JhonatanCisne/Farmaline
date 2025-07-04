@@ -1,4 +1,4 @@
-package com.farmaline.farmaline.controller;
+package com.Farmaline.farmaline.controller;
 
 import java.util.List;
 import java.util.Map;

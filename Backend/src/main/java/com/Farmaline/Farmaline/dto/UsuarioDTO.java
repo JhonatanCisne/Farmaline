@@ -7,13 +7,12 @@ public class UsuarioDTO {
     private String correoElectronico;
     private String domicilio;
     private String telefono;
-    private String contrasena;
-    private Integer idCarrito;
+    private String contrasena; 
 
     public UsuarioDTO() {
     }
 
-    public UsuarioDTO(Integer idUsuario, String nombre, String apellido, String correoElectronico, String domicilio, String telefono, String contrasena, Integer idCarrito) {
+    public UsuarioDTO(Integer idUsuario, String nombre, String apellido, String correoElectronico, String domicilio, String telefono, String contrasena) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -21,7 +20,6 @@ public class UsuarioDTO {
         this.domicilio = domicilio;
         this.telefono = telefono;
         this.contrasena = contrasena;
-        this.idCarrito = idCarrito;
     }
 
     public Integer getIdUsuario() {
@@ -78,13 +76,5 @@ public class UsuarioDTO {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
-    }
-
-    public Integer getIdCarrito() {
-        return idCarrito;
-    }
-
-    public void setIdCarrito(Integer idCarrito) {
-        this.idCarrito = idCarrito;
     }
 }

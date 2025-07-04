@@ -4,15 +4,17 @@ public class AdministradorDTO {
     private Integer idAdministrador;
     private String nombre;
     private String apellido;
+    private String usuario; 
     private String contrasena;
 
     public AdministradorDTO() {
     }
 
-    public AdministradorDTO(Integer idAdministrador, String nombre, String apellido, String contrasena) {
+    public AdministradorDTO(Integer idAdministrador, String nombre, String apellido, String usuario, String contrasena) {
         this.idAdministrador = idAdministrador;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.usuario = usuario;
         this.contrasena = contrasena;
     }
 
@@ -38,6 +40,14 @@ public class AdministradorDTO {
 
     public void setApellido(String apellido) {
         this.apellido = apellido;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 
     public String getContrasena() {

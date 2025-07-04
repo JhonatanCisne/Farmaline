@@ -18,11 +18,11 @@ public class Registro {
     private Integer idRegistro;
 
     @OneToOne 
-    @JoinColumn(name = "ID_Pedido", referencedColumnName = "ID_Pedido")
+    @JoinColumn(name = "ID_Pedido", referencedColumnName = "ID_Pedido", nullable = false, unique = true)
     private Pedido pedido;
 
     @OneToOne 
-    @JoinColumn(name = "ID_Doble_Verificacion", referencedColumnName = "ID_Doble_Verificacion")
+    @JoinColumn(name = "ID_Doble_Verificacion", referencedColumnName = "ID_Doble_Verificacion", nullable = false, unique = true)
     private Doble_Verificacion dobleVerificacion;
 
     public Integer getIdRegistro() {

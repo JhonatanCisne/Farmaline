@@ -34,7 +34,7 @@ public class RegistroDTO {
         return idDobleVerificacion;
     }
 
-    public void setIdDobleVerificacion(Integer idDobleVerificacion) {
+    public void setDobleVerificacion(Integer idDobleVerificacion) {
         this.idDobleVerificacion = idDobleVerificacion;
     }
 }

@@ -11,22 +11,21 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="Carrito_Anadido")
-
 public class Carrito_Anadido {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="ID_Carrito_Anadido")
     private Integer idCarritoAnadido;
 
-    @Column(name="Cantidad")
+    @Column(name="Cantidad", nullable = false)
     private int cantidad;
 
     @ManyToOne
-    @JoinColumn(name = "ID_Producto", referencedColumnName = "ID_Producto")
+    @JoinColumn(name = "ID_Producto", referencedColumnName = "ID_Producto", nullable = false)
     private Producto producto;
 
     @ManyToOne 
-    @JoinColumn(name = "ID_Carrito", referencedColumnName = "ID_Carrito")
+    @JoinColumn(name = "ID_Carrito", referencedColumnName = "ID_Carrito", nullable = false)
     private Carrito carrito;
     
     public Integer getIdCarritoAnadido() {
