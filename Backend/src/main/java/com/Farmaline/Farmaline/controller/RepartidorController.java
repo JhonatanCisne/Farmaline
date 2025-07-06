@@ -68,7 +68,7 @@ public class RepartidorController {
 
     @PostMapping("/login")
     public ResponseEntity<RepartidorDTO> authenticateRepartidor(@RequestBody RepartidorDTO loginRequest) {
-        String correoElectronico = loginRequest.getCorreo_Electronico();
+        String correoElectronico = loginRequest.getCorreoElectronico();
         String contrasena = loginRequest.getContrasena();
 
         return repartidorService.authenticateRepartidor(correoElectronico, contrasena)

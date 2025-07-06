@@ -22,7 +22,7 @@ public class Repartidor {
     private String apellido;
 
     @Column(name="Correo_Electronico", nullable = false, unique = true, length = 100)
-    private String correo_Electronico;
+    private String correoElectronico;
 
     @Column(name="Telefono", nullable = false, unique = true, length = 20)
     private String telefono;
@@ -57,12 +57,12 @@ public class Repartidor {
         this.apellido = apellido;
     }
 
-    public String getCorreo_Electronico() {
-        return correo_Electronico;
+    public String getCorreoElectronico() {
+        return correoElectronico;
     }
 
-    public void setCorreo_Electronico(String correo_Electronico) {
-        this.correo_Electronico = correo_Electronico;
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
     }
 
     public String getTelefono() {

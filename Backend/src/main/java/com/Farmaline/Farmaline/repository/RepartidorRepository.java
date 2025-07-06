@@ -10,13 +10,13 @@ import com.farmaline.farmaline.model.Repartidor;
 @Repository
 public interface RepartidorRepository extends JpaRepository<Repartidor, Integer> {
 
-    Optional<Repartidor> findByCorreo_Electronico(String correo_Electronico);
+    Optional<Repartidor> findByCorreoElectronico(String correoElectronico);
 
     Optional<Repartidor> findByTelefono(String telefono);
 
     Optional<Repartidor> findByPlaca(String placa);
 
-    boolean existsByCorreo_Electronico(String correo_Electronico);
+    boolean existsByCorreoElectronico(String correoElectronico);
 
     boolean existsByTelefono(String telefono);
 

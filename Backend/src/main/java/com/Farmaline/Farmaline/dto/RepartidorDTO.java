@@ -4,7 +4,7 @@ public class RepartidorDTO {
     private Integer idRepartidor;
     private String nombre;
     private String apellido;
-    private String correo_Electronico;
+    private String correoElectronico;
     private String telefono;
     private String placa;
     private String contrasena; 
@@ -12,11 +12,11 @@ public class RepartidorDTO {
     public RepartidorDTO() {
     }
 
-    public RepartidorDTO(Integer idRepartidor, String nombre, String apellido, String correo_Electronico, String telefono, String placa, String contrasena) {
+    public RepartidorDTO(Integer idRepartidor, String nombre, String apellido, String correoElectronico, String telefono, String placa, String contrasena) {
         this.idRepartidor = idRepartidor;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.correo_Electronico = correo_Electronico;
+        this.correoElectronico = correoElectronico;
         this.telefono = telefono;
         this.placa = placa;
         this.contrasena = contrasena;
@@ -46,12 +46,12 @@ public class RepartidorDTO {
         this.apellido = apellido;
     }
 
-    public String getCorreo_Electronico() {
-        return correo_Electronico;
+    public String getCorreoElectronico() {
+        return correoElectronico;
     }
 
-    public void setCorreo_Electronico(String correo_Electronico) {
-        this.correo_Electronico = correo_Electronico;
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
     }
 
     public String getTelefono() {

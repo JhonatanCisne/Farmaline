@@ -38,7 +38,7 @@ public class RepartidorService {
 
     @Transactional
     public RepartidorDTO createRepartidor(RepartidorDTO repartidorDTO) {
-        if (repartidorRepository.existsByCorreo_Electronico(repartidorDTO.getCorreo_Electronico())) {
+        if (repartidorRepository.existsByCorreoElectronico(repartidorDTO.getCorreoElectronico())) {
             throw new IllegalArgumentException("El correo electrónico ya está registrado para otro repartidor.");
         }
         if (repartidorRepository.existsByTelefono(repartidorDTO.getTelefono())) {
@@ -57,8 +57,8 @@ public class RepartidorService {
     @Transactional
     public Optional<RepartidorDTO> updateRepartidor(Integer id, RepartidorDTO repartidorDTO) {
         return repartidorRepository.findById(id).map(existingRepartidor -> {
-            if (!existingRepartidor.getCorreo_Electronico().equals(repartidorDTO.getCorreo_Electronico()) &&
-                repartidorRepository.existsByCorreo_Electronico(repartidorDTO.getCorreo_Electronico())) {
+            if (!existingRepartidor.getCorreoElectronico().equals(repartidorDTO.getCorreoElectronico()) &&
+                repartidorRepository.existsByCorreoElectronico(repartidorDTO.getCorreoElectronico())) {
                 throw new IllegalArgumentException("El nuevo correo electrónico ya está en uso por otro repartidor.");
             }
             if (!existingRepartidor.getTelefono().equals(repartidorDTO.getTelefono()) &&
@@ -72,7 +72,7 @@ public class RepartidorService {
 
             existingRepartidor.setNombre(repartidorDTO.getNombre());
             existingRepartidor.setApellido(repartidorDTO.getApellido());
-            existingRepartidor.setCorreo_Electronico(repartidorDTO.getCorreo_Electronico()); // Asumo que en la Entidad es camelCase, DTO es snake_case
+            existingRepartidor.setCorreoElectronico(repartidorDTO.getCorreoElectronico()); // Asumo que en la Entidad es camelCase, DTO es snake_case
             existingRepartidor.setTelefono(repartidorDTO.getTelefono());
             existingRepartidor.setPlaca(repartidorDTO.getPlaca());
 
@@ -99,7 +99,7 @@ public class RepartidorService {
     }
 
     public Optional<RepartidorDTO> authenticateRepartidor(String correoElectronico, String contrasena) {
-        return repartidorRepository.findByCorreo_Electronico(correoElectronico) 
+        return repartidorRepository.findByCorreoElectronico(correoElectronico) 
                 .filter(repartidor -> contrasena.equals(repartidor.getContrasena())) 
                 .map(this::convertToDTO);
     }
@@ -109,7 +109,7 @@ public class RepartidorService {
         dto.setIdRepartidor(repartidor.getIdRepartidor());
         dto.setNombre(repartidor.getNombre());
         dto.setApellido(repartidor.getApellido());
-        dto.setCorreo_Electronico(repartidor.getCorreo_Electronico());
+        dto.setCorreoElectronico(repartidor.getCorreoElectronico());
         dto.setTelefono(repartidor.getTelefono());
         dto.setPlaca(repartidor.getPlaca());
         return dto;
@@ -120,7 +120,7 @@ public class RepartidorService {
         repartidor.setIdRepartidor(repartidorDTO.getIdRepartidor());
         repartidor.setNombre(repartidorDTO.getNombre());
         repartidor.setApellido(repartidorDTO.getApellido());
-        repartidor.setCorreo_Electronico(repartidorDTO.getCorreo_Electronico());
+        repartidor.setCorreoElectronico(repartidorDTO.getCorreoElectronico());
         repartidor.setTelefono(repartidorDTO.getTelefono());
         repartidor.setPlaca(repartidorDTO.getPlaca());
         repartidor.setContrasena(repartidorDTO.getContrasena());

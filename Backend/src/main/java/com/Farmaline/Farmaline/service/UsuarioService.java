@@ -91,8 +91,6 @@ public class UsuarioService {
     public boolean deleteUsuario(Integer id) {
         if (usuarioRepository.existsById(id)) {
 
-            registroRepository.deleteByUsuario_IdUsuario(id);
-
             calificacionRepository.deleteByUsuario_IdUsuario(id);
 
             dobleVerificacionRepository.deleteByUsuario_IdUsuario(id);
@@ -109,7 +107,7 @@ public class UsuarioService {
 
     public Optional<UsuarioDTO> authenticateUsuario(String correoElectronico, String contrasena) {
         return usuarioRepository.findByCorreoElectronico(correoElectronico)
-                .filter(usuario -> contrasena.equals(usuario.getContrasena())) // Comparación directa (TEMPORAL)
+                .filter(usuario -> contrasena.equals(usuario.getContrasena())) 
                 .map(this::convertToDTO);
     }
 

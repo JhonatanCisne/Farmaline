@@ -25,7 +25,4 @@ public interface RegistroRepository extends JpaRepository<Registro, Integer> {
     @Transactional
     void deleteByDobleVerificacion_IdDobleVerifiacion(Integer idDobleVerificacion);
 
-    @Transactional
-    void deleteByUsuario_IdUsuario(Integer idUsuario);
-
 }

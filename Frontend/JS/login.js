@@ -2,8 +2,6 @@ let currentUser = null;
 const bootstrap = window.bootstrap;
 
 const API_BASE_URL = "http://localhost:8080";
-const LOGIN_ENDPOINT = `${API_BASE_URL}/api/usuarios/login`;
-const REGISTER_ENDPOINT = `${API_BASE_URL}/api/usuarios/registrar`;
 
 document.addEventListener("DOMContentLoaded", () => {
     initializeLoginPage();
@@ -19,12 +17,14 @@ function initializeLoginPage() {
     if (registrarseBtn && contenedor) {
         registrarseBtn.addEventListener("click", () => {
             contenedor.classList.add("activo");
+            clearFormErrors(document.getElementById('formularioInicioSesion'));
         });
     }
 
     if (iniciarSesionBtn && contenedor) {
         iniciarSesionBtn.addEventListener("click", () => {
             contenedor.classList.remove("activo");
+            clearFormErrors(document.getElementById('formularioRegistro'));
         });
     }
 }
@@ -32,14 +32,14 @@ function initializeLoginPage() {
 function setupEventListeners() {
     const loginForm = document.getElementById("formularioInicioSesion");
     if (loginForm) {
-        loginForm.addEventListener("submit", handleLogin);
+        loginForm.addEventListener("submit", handleUserLogin); // Cambiado a handleUserLogin
     } else {
         console.error("No se encontró el formulario de inicio de sesión con ID 'formularioInicioSesion'.");
     }
 
     const registerForm = document.getElementById("formularioRegistro");
     if (registerForm) {
-        registerForm.addEventListener("submit", handleRegister);
+        registerForm.addEventListener("submit", handleUserRegistration); // Cambiado a handleUserRegistration
     } else {
         console.error("No se encontró el formulario de registro con ID 'formularioRegistro'.");
     }
@@ -49,19 +49,25 @@ function setupEventListeners() {
         forgotPasswordForm.addEventListener("submit", handleForgotPassword);
     }
 
-    // --- NUEVO: Manejo del formulario de Administrador ---
     const adminForm = document.getElementById("adminForm");
     if (adminForm) {
         adminForm.addEventListener("submit", handleAdminLogin);
     } else {
         console.warn("No se encontró el formulario de administrador con ID 'adminForm'.");
     }
-    // --- FIN NUEVO ---
+
+    const deliveryForm = document.getElementById("deliveryForm"); // Añadido para el repartidor
+    if (deliveryForm) {
+        deliveryForm.addEventListener("submit", handleDeliveryLogin);
+    } else {
+        console.warn("No se encontró el formulario de repartidor con ID 'deliveryForm'.");
+    }
 
     setupRealTimeValidation();
 
-    const confirmPasswordInput = document.getElementById("contraseña");
     const registerPasswordInput = document.getElementById("contraseña");
+    const confirmPasswordInput = document.getElementById("confirmarContraseña"); // Asegúrate de que este ID exista en tu HTML
+
     if (confirmPasswordInput && registerPasswordInput) {
         confirmPasswordInput.addEventListener("input", checkPasswordMatch);
         registerPasswordInput.addEventListener("input", function() {
@@ -69,6 +75,13 @@ function setupEventListeners() {
             checkPasswordMatch();
         });
     }
+
+    // Configurar toggles de contraseña para todos los campos relevantes
+    setupPasswordToggle("togglePasswordInicio", "contraseñaInicio");
+    setupPasswordToggle("togglePasswordRegistro", "contraseña");
+    setupPasswordToggle("toggleConfirmPasswordRegistro", "confirmarContraseña");
+    setupPasswordToggle("toggleAdminPassword", "adminPassword");
+    setupPasswordToggle("toggleDeliveryPassword", "deliveryPassword");
 }
 
 function setupPasswordToggle(buttonId, inputId) {
@@ -91,26 +104,37 @@ function setupPasswordToggle(buttonId, inputId) {
     }
 }
 
-// --- NUEVO: Función para manejar el login del Administrador ---
+function clearFormErrors(form) {
+    form.querySelectorAll('.is-invalid').forEach(el => {
+        el.classList.remove('is-invalid');
+        const formControl = el.closest(".form-control");
+        const small = formControl ? formControl.querySelector("small") : null;
+        if (formControl) formControl.classList.remove("error");
+        if (small) small.innerText = "";
+    });
+    // También elimina las alertas dentro del formulario
+    form.querySelectorAll(".alert").forEach(alert => alert.remove());
+}
+
+
 async function handleAdminLogin(e) {
     e.preventDefault();
-
-    const adminEmailInput = document.getElementById("adminEmail"); // Este será el "nombre" del administrador
+    const adminEmailInput = document.getElementById("adminEmail");
     const adminPasswordInput = document.getElementById("adminPassword");
     const adminModalElement = document.getElementById("adminModal");
     const adminModal = bootstrap.Modal.getInstance(adminModalElement) || new bootstrap.Modal(adminModalElement);
+    const adminModalBody = adminModalElement.querySelector(".modal-body");
 
-    const adminName = adminEmailInput.value.trim();
-    const adminPassword = adminPasswordInput.value.trim();
+    clearFormErrors(adminForm);
 
-    // Validación básica: asegura que ambos campos no estén vacíos
+    const usuario = adminEmailInput.value.trim();
+    const contrasena = adminPasswordInput.value.trim();
+
     let isValid = true;
-    if (adminName === "") {
-        showAlert("danger", "El nombre de administrador no puede estar vacío.", adminModalElement.querySelector(".modal-body"));
+    if (!validateField(adminEmailInput, usuario !== "", "El usuario es obligatorio.")) {
         isValid = false;
     }
-    if (adminPassword === "") {
-        showAlert("danger", "La contraseña de administrador no puede estar vacía.", adminModalElement.querySelector(".modal-body"));
+    if (!validateField(adminPasswordInput, contrasena !== "", "La contraseña es obligatoria.")) {
         isValid = false;
     }
 
@@ -120,43 +144,123 @@ async function handleAdminLogin(e) {
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     setLoadingState(submitBtn, true);
-    showAlert("info", "Iniciando sesión de administrador...", adminModalElement.querySelector(".modal-body"));
+    showAlert("info", "Iniciando sesión de administrador...", adminModalBody);
 
     try {
-        // --- AQUÍ DEBERÍAS REEMPLAZAR CON TU LÓGICA DE AUTENTICACIÓN REAL DEL ADMINISTRADOR ---
-        // Ejemplo de simulación:
-        await simulateAPICall(); // Simula una llamada a la API
-        
-        // Simulación de credenciales: Reemplaza esto con una llamada a tu backend real
-        const MOCK_ADMIN_USER = "admin";
-        const MOCK_ADMIN_PASS = "admin123"; // Cambia esto por una contraseña segura o un hash
+        const response = await fetch(`${API_BASE_URL}/api/administradores/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ usuario, contrasena })
+        });
 
-        if (adminName === MOCK_ADMIN_USER && adminPassword === MOCK_ADMIN_PASS) {
-            localStorage.setItem("farmalineAdminId", adminName); // Guarda el nombre como ID en localStorage
-            adminModal.hide(); // Oculta el modal
-            showAlert("success", `¡Bienvenido, ${adminName}! Acceso de administrador concedido.`);
+        if (response.ok) {
+            const adminData = await response.json();
+            localStorage.setItem('userRole', 'administrador');
+            localStorage.setItem('userData', JSON.stringify(adminData));
+            console.log("Admin Data:", adminData); // Para depuración, muestra todo el DTO
+            if (adminData.idAdministrador) { // Asume que el DTO tiene un campo idAdministrador
+                localStorage.setItem("farmalineAdminId", adminData.idAdministrador);
+            }
+            showAlert("success", `¡Bienvenido, Administrador ${adminData.usuario || adminData.nombre || ''}! Acceso concedido.`, adminModalBody);
             setTimeout(() => {
-                window.location.href = "Admin.html"; // Redirige al panel de administrador
+                adminModal.hide();
+                window.location.href = "admin-inicio.html";
             }, 1500);
+        } else if (response.status === 401) {
+            showAlert("danger", "Credenciales incorrectas para Administrador.", adminModalBody);
+            validateField(adminEmailInput, false, "Usuario o contraseña incorrectos.");
+            validateField(adminPasswordInput, false, "Usuario o contraseña incorrectos.");
         } else {
-            showAlert("danger", "Credenciales de administrador incorrectas.", adminModalElement.querySelector(".modal-body"));
+            const errorData = await response.text();
+            showAlert("danger", `Error al iniciar sesión de administrador: ${errorData || response.statusText}`, adminModalBody);
+            console.error("Admin login error (server response):", response.status, errorData);
         }
-
     } catch (error) {
-        showAlert("danger", "Error de conexión. No se pudo comunicar con el servidor de administrador.", adminModalElement.querySelector(".modal-body"));
+        showAlert("danger", "Error de conexión. No se pudo comunicar con el servidor.", adminModalBody);
         console.error("Admin login fetch error:", error);
     } finally {
         setLoadingState(submitBtn, false);
     }
 }
-// --- FIN NUEVO ---
 
-async function handleLogin(e) {
+async function handleDeliveryLogin(e) {
+    e.preventDefault();
+    const deliveryEmailInput = document.getElementById("deliveryEmail");
+    const deliveryPasswordInput = document.getElementById("deliveryPassword");
+    const deliveryModalElement = document.getElementById("deliveryModal");
+    const deliveryModal = bootstrap.Modal.getInstance(deliveryModalElement) || new bootstrap.Modal(deliveryModalElement);
+    const deliveryModalBody = deliveryModalElement.querySelector(".modal-body");
+
+    clearFormErrors(deliveryForm);
+
+    const correoElectronico = deliveryEmailInput.value.trim();
+    const contrasena = deliveryPasswordInput.value.trim();
+
+    let isValid = true;
+    if (!validateField(deliveryEmailInput, isEmail(correoElectronico), "Ingrese un correo válido.")) {
+        isValid = false;
+    }
+    if (!validateField(deliveryPasswordInput, contrasena !== "", "La contraseña es obligatoria.")) {
+        isValid = false;
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setLoadingState(submitBtn, true);
+    showAlert("info", "Iniciando sesión de repartidor...", deliveryModalBody);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/repartidores/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ correoElectronico, contrasena })
+        });
+
+        if (response.ok) {
+            const deliveryData = await response.json();
+            localStorage.setItem('userRole', 'repartidor');
+            localStorage.setItem('userData', JSON.stringify(deliveryData));
+            console.log("Delivery Data:", deliveryData); // Para depuración
+            if (deliveryData.idRepartidor) { // Asume que el DTO tiene un campo idRepartidor
+                localStorage.setItem("farmalineRepartidorId", deliveryData.idRepartidor);
+            }
+            showAlert("success", `¡Bienvenido, Repartidor ${deliveryData.nombre || deliveryData.correoElectronico || ''}! Acceso concedido.`, deliveryModalBody);
+            setTimeout(() => {
+                deliveryModal.hide();
+                window.location.href = "repartidor-inicio.html";
+            }, 1500);
+        } else if (response.status === 401) {
+            showAlert("danger", "Credenciales incorrectas para Repartidor.", deliveryModalBody);
+            validateField(deliveryEmailInput, false, "Correo o contraseña incorrectos.");
+            validateField(deliveryPasswordInput, false, "Correo o contraseña incorrectos.");
+        } else {
+            const errorData = await response.text();
+            showAlert("danger", `Error al iniciar sesión de repartidor: ${errorData || response.statusText}`, deliveryModalBody);
+            console.error("Delivery login error (server response):", response.status, errorData);
+        }
+    } catch (error) {
+        showAlert("danger", "Error de conexión. No se pudo comunicar con el servidor.", deliveryModalBody);
+        console.error("Delivery login fetch error:", error);
+    } finally {
+        setLoadingState(submitBtn, false);
+    }
+}
+
+async function handleUserLogin(e) { // Renombrado de handleLogin a handleUserLogin
     e.preventDefault();
 
     const form = e.target;
     const emailInput = document.getElementById("correoInicio");
     const passwordInput = document.getElementById("contraseñaInicio");
+
+    clearFormErrors(form);
 
     let isFormValid = true;
     if (!validateField(emailInput, isEmail(emailInput.value.trim()), "Correo no válido.")) {
@@ -170,31 +274,33 @@ async function handleLogin(e) {
         return;
     }
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
+    const correoElectronico = emailInput.value.trim();
+    const contrasena = passwordInput.value.trim();
 
     const submitBtn = form.querySelector('button[type="submit"]');
     setLoadingState(submitBtn, true);
     showAlert("info", "Iniciando sesión...");
 
     try {
-        const response = await fetch(LOGIN_ENDPOINT, {
+        const response = await fetch(`${API_BASE_URL}/api/usuarios/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ correoElectronico: email, contrasena: password }),
+            body: JSON.stringify({ correoElectronico, contrasena }),
         });
 
         if (response.ok) {
             const userData = await response.json();
-            sessionStorage.setItem("farmalineUser", JSON.stringify(userData));
-            if (userData.idUsuario) {
+            localStorage.setItem('userRole', 'usuario');
+            localStorage.setItem("userData", JSON.stringify(userData));
+            console.log("User Data:", userData); // Para depuración
+            if (userData.idUsuario) { // Asume que el DTO tiene un campo idUsuario
                 localStorage.setItem("farmalineUserId", userData.idUsuario);
             }
             currentUser = userData;
 
-            showAlert("success", `¡Bienvenido, ${userData.nombre || userData.email || userData.correoElectronico}! Inicio de sesión exitoso.`);
+            showAlert("success", `¡Bienvenido, ${userData.nombre || userData.correoElectronico}! Inicio de sesión exitoso.`);
 
             setTimeout(() => {
                 window.location.href = "Index.html";
@@ -202,6 +308,8 @@ async function handleLogin(e) {
 
         } else if (response.status === 401) {
             showAlert("danger", "Credenciales incorrectas. Por favor verifica tu email y contraseña.");
+            validateField(emailInput, false, "Correo o contraseña incorrectos.");
+            validateField(passwordInput, false, "Correo o contraseña incorrectos.");
         } else {
             const errorData = await response.text();
             showAlert("danger", `Error al iniciar sesión: ${errorData || response.statusText}.`);
@@ -215,22 +323,31 @@ async function handleLogin(e) {
     }
 }
 
-async function handleRegister(e) {
+async function handleUserRegistration(e) { // Renombrado de handleRegister a handleUserRegistration
     e.preventDefault();
 
     const form = e.target;
     const nombreInput = document.getElementById("nombre");
+    const apellidoInput = document.getElementById("apellido"); // Asegúrate de que este ID exista
     const correoInput = document.getElementById("correo");
-    const passwordInput = document.getElementById("contraseña");
+    const domicilioInput = document.getElementById("direccion"); // Asegúrate de que este ID exista
+    const contrasenaInput = document.getElementById("contraseña");
+    const confirmarContrasenaInput = document.getElementById("confirmarContraseña"); // Asegúrate de que este ID exista
+    const telefonoInput = document.getElementById("telefono"); // Asegúrate de que este ID exista
+    const terminosInput = document.getElementById("terminos"); // Asegúrate de que este ID exista
+
+    clearFormErrors(form);
 
     let isFormValid = true;
-    if (!validateField(nombreInput, nombreInput.value.trim() !== "", "El nombre no puede estar vacío.")) {
-        isFormValid = false;
-    }
-    if (!validateField(correoInput, isEmail(correoInput.value.trim()), "Correo no válido.")) {
-        isFormValid = false;
-    }
-    if (!validateField(passwordInput, passwordInput.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres.")) {
+    if (!validateField(nombreInput, nombreInput.value.trim() !== "", "El nombre no puede estar vacío.")) { isFormValid = false; }
+    if (!validateField(apellidoInput, apellidoInput.value.trim() !== "", "El apellido no puede estar vacío.")) { isFormValid = false; }
+    if (!validateField(correoInput, isEmail(correoInput.value.trim()), "Correo no válido.")) { isFormValid = false; }
+    if (!validateField(domicilioInput, domicilioInput.value.trim() !== "", "El domicilio no puede estar vacío.")) { isFormValid = false; }
+    if (!validateField(contrasenaInput, contrasenaInput.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres.")) { isFormValid = false; }
+    if (!validateField(confirmarContrasenaInput, contrasenaInput.value.trim() === confirmarContrasenaInput.value.trim(), "Las contraseñas no coinciden.")) { isFormValid = false; }
+    if (!validateField(telefonoInput, telefonoInput.value.trim() !== "", "El teléfono no puede estar vacío.")) { isFormValid = false; }
+    if (!terminosInput.checked) {
+        showAlert("danger", "Debe aceptar los términos y condiciones.", form);
         isFormValid = false;
     }
 
@@ -240,16 +357,19 @@ async function handleRegister(e) {
 
     const formData = {
         nombre: nombreInput.value.trim(),
+        apellido: apellidoInput.value.trim(),
         correoElectronico: correoInput.value.trim(),
-        password: passwordInput.value.trim(),
+        domicilio: domicilioInput.value.trim(),
+        contrasena: contrasenaInput.value.trim(),
+        telefono: telefonoInput.value.trim()
     };
 
-    const submitBtn = form.querySelector('button[type="submit"]'); // Cambiado a type="submit" si es lo correcto en tu HTML
+    const submitBtn = form.querySelector('button[type="submit"]');
     setLoadingState(submitBtn, true);
     showAlert("info", "Registrando usuario...");
 
     try {
-        const response = await fetch(REGISTER_ENDPOINT, {
+        const response = await fetch(`${API_BASE_URL}/api/usuarios`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -293,8 +413,15 @@ async function handleRegister(e) {
 async function handleForgotPassword(e) {
     e.preventDefault();
 
-    const email = document.getElementById("forgotEmail").value;
+    const emailInput = document.getElementById("forgotEmail");
+    const email = emailInput.value.trim();
     const submitBtn = e.target.querySelector('button[type="submit"]');
+
+    clearFormErrors(e.target);
+
+    if (!validateField(emailInput, isEmail(email), "Por favor, ingresa un correo electrónico válido.")) {
+        return;
+    }
 
     setLoadingState(submitBtn, true);
     showAlert("info", "Enviando enlace de recuperación...");
@@ -317,82 +444,60 @@ async function handleForgotPassword(e) {
 }
 
 function setupRealTimeValidation() {
-    const loginInputs = document.querySelectorAll(".inicio-sesion input[required]");
-    const registerInputs = document.querySelectorAll(".registro input[required]");
-    const adminInputs = document.querySelectorAll("#adminForm input[required]"); // Seleccionar inputs del formulario de administrador
-    const deliveryInputs = document.querySelectorAll("#deliveryForm input[required]"); // Seleccionar inputs del formulario de repartidor
+    const loginInputs = document.querySelectorAll("#formularioInicioSesion input[required]");
+    const registerInputs = document.querySelectorAll("#formularioRegistro input[required]");
+    const adminInputs = document.querySelectorAll("#adminForm input[required]");
+    const deliveryInputs = document.querySelectorAll("#deliveryForm input[required]");
+    const forgotInputs = document.querySelectorAll("#forgotPasswordForm input[required]");
 
-
-    loginInputs.forEach((input) => {
+    [...loginInputs, ...registerInputs, ...adminInputs, ...deliveryInputs, ...forgotInputs].forEach((input) => {
         input.addEventListener("blur", function() {
-            if (this.id === "correoInicio") {
-                validateField(this, isEmail(this.value.trim()), "Correo no válido");
-            } else if (this.id === "contraseñaInicio") {
-                validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
-            } else {
-                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
-            }
-        });
-        input.addEventListener("input", function() {
-            if (this.classList.contains("is-invalid")) {
-                if (this.id === "correoInicio") {
-                    validateField(this, isEmail(this.value.trim()), "Correo no válido");
-                } else if (this.id === "contraseñaInicio") {
-                    validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
-                } else {
-                    validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+            let isValid = true;
+            let errorMessage = "Este campo no puede estar vacío";
+
+            if (this.type === "email") {
+                isValid = isEmail(this.value.trim());
+                errorMessage = "Correo no válido";
+            } else if (this.type === "password") {
+                isValid = this.value.trim().length >= 8;
+                errorMessage = "La contraseña debe tener al menos 8 caracteres";
+            } else if (this.id === "nombre" || this.id === "apellido" || this.id === "direccion" || this.id === "telefono" || this.id === "adminEmail" || this.id === "deliveryEmail") {
+                isValid = this.value.trim() !== "";
+            } else if (this.id === "confirmarContraseña") {
+                isValid = this.value.trim() === document.getElementById("contraseña").value.trim();
+                errorMessage = "Las contraseñas no coinciden.";
+                if (this.value.trim() === "" && document.getElementById("contraseña").value.trim() !== "") {
+                    errorMessage = "Confirma tu contraseña.";
+                    isValid = false;
                 }
             }
-        });
-    });
 
-    registerInputs.forEach((input) => {
-        input.addEventListener("blur", function() {
-            if (this.id === "nombre") {
-                validateField(this, this.value.trim() !== "", "El nombre no puede estar vacío");
-            } else if (this.id === "correo") {
-                validateField(this, isEmail(this.value.trim()), "Correo no válido");
-            } else if (this.id === "contraseña") {
-                validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
-            } else {
-                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
-            }
+            validateField(this, isValid, errorMessage);
         });
-        input.addEventListener("input", function() {
-            if (this.classList.contains("is-invalid")) {
-                if (this.id === "nombre") {
-                    validateField(this, this.value.trim() !== "", "El nombre no puede estar vacío");
-                } else if (this.id === "correo") {
-                    validateField(this, isEmail(this.value.trim()), "Correo no válido");
-                } else if (this.id === "contraseña") {
-                    validateField(this, this.value.trim().length >= 8, "La contraseña debe tener al menos 8 caracteres");
-                } else {
-                    validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
-                }
-            }
-        });
-    });
 
-    // Validación en tiempo real para el formulario de administrador
-    adminInputs.forEach((input) => {
-        input.addEventListener("blur", function() {
-            validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
-        });
         input.addEventListener("input", function() {
+            // Limpia el error mientras el usuario escribe si ya estaba marcado como inválido
             if (this.classList.contains("is-invalid")) {
-                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
-            }
-        });
-    });
+                 let isValid = true;
+                 let errorMessage = "Este campo no puede estar vacío";
 
-    // Validación en tiempo real para el formulario de repartidor (si lo deseas implementar)
-    deliveryInputs.forEach((input) => {
-        input.addEventListener("blur", function() {
-            validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
-        });
-        input.addEventListener("input", function() {
-            if (this.classList.contains("is-invalid")) {
-                validateField(this, this.value.trim() !== "", "Este campo no puede estar vacío");
+                 if (this.type === "email") {
+                     isValid = isEmail(this.value.trim());
+                     errorMessage = "Correo no válido";
+                 } else if (this.type === "password") {
+                     isValid = this.value.trim().length >= 8;
+                     errorMessage = "La contraseña debe tener al menos 8 caracteres";
+                 } else if (this.id === "nombre" || this.id === "apellido" || this.id === "direccion" || this.id === "telefono" || this.id === "adminEmail" || this.id === "deliveryEmail") {
+                     isValid = this.value.trim() !== "";
+                 } else if (this.id === "confirmarContraseña") {
+                     isValid = this.value.trim() === document.getElementById("contraseña").value.trim();
+                     errorMessage = "Las contraseñas no coinciden.";
+                     if (this.value.trim() === "" && document.getElementById("contraseña").value.trim() !== "") {
+                         errorMessage = "Confirma tu contraseña.";
+                         isValid = false;
+                     }
+                 }
+                validateField(this, isValid, errorMessage);
             }
         });
     });
@@ -420,7 +525,7 @@ function validateField(field, condition, errorMessage) {
 
 function checkPasswordStrength(password) {
     const passwordInput = document.getElementById("contraseña");
-    if (!passwordInput) return; // Salir si el input de contraseña no existe
+    if (!passwordInput) return;
 
     let strengthIndicator = passwordInput.closest(".form-control")?.querySelector(".password-strength");
 
@@ -437,7 +542,7 @@ function checkPasswordStrength(password) {
     if (password.match(/[^a-zA-Z0-9]/)) strength++;
 
     if (strengthIndicator) {
-        strengthIndicator.className = "password-strength"; // Reset classes
+        strengthIndicator.className = "password-strength";
         if (password.length === 0) {
             strengthIndicator.innerText = "";
         } else if (strength <= 1) {
@@ -453,7 +558,6 @@ function checkPasswordStrength(password) {
     }
 }
 
-
 function checkPasswordMatch() {
     const passwordInput = document.getElementById("contraseña");
     const confirmPasswordInput = document.getElementById("confirmarContraseña");
@@ -465,43 +569,37 @@ function checkPasswordMatch() {
 
     const match = password === confirmPassword;
 
-    // Aplica validación también al campo de confirmación de contraseña
-    if (confirmPassword.length > 0) { // Solo si el usuario ha empezado a escribir en este campo
+    if (confirmPassword.length > 0) {
         validateField(confirmPasswordInput, match, "Las contraseñas no coinciden.");
     } else if (password.length > 0 && confirmPassword.length === 0) {
-         validateField(confirmPasswordInput, false, "Confirma tu contraseña.");
+        validateField(confirmPasswordInput, false, "Confirma tu contraseña.");
     } else {
-         validateField(confirmPasswordInput, true, ""); // Resetea el estado si ambos están vacíos
+        validateField(confirmPasswordInput, true, "");
     }
 
     return match;
 }
 
 function checkExistingSession() {
-    const userData = localStorage.getItem("farmalineUser") || sessionStorage.getItem("farmalineUser");
-    const userId = localStorage.getItem("farmalineUserId");
-    const adminId = localStorage.getItem("farmalineAdminId"); // Verificar si hay una sesión de administrador
+    const userRole = localStorage.getItem("userRole");
+    const userData = localStorage.getItem("userData");
 
-    if (userData) {
+    if (userRole && userData) {
         try {
             currentUser = JSON.parse(userData);
-            if (userId && !currentUser.idUsuario) {
-                currentUser.idUsuario = parseInt(userId);
+            if (userRole === 'administrador') {
+                window.location.href = "admin-inicio.html"; // Redirigir a la página de admin
+            } else if (userRole === 'repartidor') {
+                window.location.href = "repartidor-inicio.html"; // Redirigir a la página de repartidor
+            } else if (userRole === 'usuario') {
+                window.location.href = "Index.html"; // Redirigir a la página principal para usuarios normales
             }
-            window.location.href = "Index.html";
         } catch (error) {
             console.error("Error al parsear datos de sesión:", error);
-            localStorage.removeItem("farmalineUser");
-            sessionStorage.removeItem("farmalineUser");
-            localStorage.removeItem("farmalineUserId");
+            clearSession();
         }
-    } else if (adminId) { // Si hay una sesión de administrador, redirigir
-        console.log(`Sesión de administrador activa para: ${adminId}`);
-        // No hay un 'currentUser' para admin en esta estructura, pero se podría crear si es necesario
-        window.location.href = "admin-panel.html"; // Redirige directamente al panel de admin
     }
 }
-
 
 async function simulateAPICall() {
     return new Promise((resolve) => {
@@ -518,14 +616,11 @@ function setLoadingState(button, loading) {
         } else {
             button.classList.remove("loading");
             button.disabled = false;
-            // Asegúrate de restaurar el texto original del botón según el formulario
             if (button.closest('#adminForm')) {
                 button.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Ingresar como Administrador';
-            }
-            else if (button.closest('#deliveryForm')) {
+            } else if (button.closest('#deliveryForm')) {
                 button.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Ingresar como Repartidor';
-            }
-            else if (button.closest('#formularioInicioSesion')) {
+            } else if (button.closest('#formularioInicioSesion')) {
                 button.innerHTML = 'Ingresar';
             } else if (button.closest('#formularioRegistro')) {
                 button.innerHTML = 'Registrarse';
@@ -536,9 +631,7 @@ function setLoadingState(button, loading) {
     }
 }
 
-// Modificada para permitir un contenedor de alerta específico (útil para modales)
 function showAlert(type, message, container = null) {
-    // Eliminar alertas existentes del mismo contenedor
     const targetContainer = container || document.querySelector(".login-section .contenedor");
     if (!targetContainer) {
         console.error("No se encontró el contenedor para las alertas.");
@@ -554,7 +647,6 @@ function showAlert(type, message, container = null) {
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
 
-    // Insertar la alerta al principio del contenedor
     targetContainer.insertBefore(alert, targetContainer.firstChild);
 
     setTimeout(() => {
@@ -565,18 +657,28 @@ function showAlert(type, message, container = null) {
 }
 
 function logout() {
-    localStorage.removeItem("farmalineUser");
-    sessionStorage.removeItem("farmalineUser");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userData");
     localStorage.removeItem("farmalineUserId");
-    localStorage.removeItem("farmalineAdminId"); // También eliminar la sesión de administrador
+    localStorage.removeItem("farmalineAdminId");
+    localStorage.removeItem("farmalineRepartidorId"); // Añadido para Repartidor
     currentUser = null;
     window.location.href = "Login.html";
 }
 
 window.farmalineAuth = {
     logout,
-    getCurrentUser: () => currentUser,
-    isLoggedIn: () => currentUser !== null || localStorage.getItem("farmalineAdminId") !== null, // Incluir admin en isLoggedIn
+    getCurrentUser: () => {
+        const userDataString = localStorage.getItem("userData");
+        if (userDataString) {
+            return JSON.parse(userDataString);
+        }
+        return null;
+    },
+    isLoggedIn: () => {
+        return localStorage.getItem("userRole") !== null && localStorage.getItem("userData") !== null;
+    },
+    getUserRole: () => localStorage.getItem("userRole")
 };
 
 function isEmail(email) {
