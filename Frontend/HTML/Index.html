@@ -36,6 +36,20 @@
                         <li class="nav-item">
                             <a class="nav-link" href="Login.html">Cuenta</a>
                         </li>
+                        <li class="nav-item" id="navLogoutItem" style="display: block;">
+    <a class="nav-link" href="#" id="logoutButton" onclick="cerrarSesionDirecto(event)">Cerrar Sesión</a>
+</li>
+
+<script>
+    function cerrarSesionDirecto(event) {
+        event.preventDefault();
+        localStorage.removeItem("farmalineUserId");
+        localStorage.removeItem("farmalineAdminId");
+        localStorage.removeItem("farmalineRepartidorId");
+        localStorage.removeItem("userRole");
+        window.location.href = "Login.html";
+            }
+                    </script>                     
                     </ul>
                 </div>
             </div>
@@ -398,6 +412,7 @@
                         <li><a href="Glosario.html">Glosario Médico</a></li>
                         <li><a href="Pedidos.html">Mis Pedidos</a></li>
                         <li><a href="Login.html">Mi Cuenta</a></li>
+                        
                     </ul>
                 </div>
 

@@ -11,293 +11,297 @@
   <link rel="stylesheet" href="../CSS/Index.css">
 </head>
 <body>
-  <div class="main-container">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <div class="container-fluid">
-              <a class="navbar-brand d-flex align-items-center" href="#">
-                 <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="me-2">
-              </a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                  <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarNav">
-                  <ul class="navbar-nav">
-                      <li class="nav-item">
-                          <a class="nav-link" href="Index.html">Inicio</a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="Carrito.html">Carrito</a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="Pedidos.html">Pedidos</a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="Glosario.html">Glosario</a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link active" href="Login.html">Cuenta</a>
-                      </li>
-                  </ul>
-              </div>
-          </div>
-      </nav>
+    <div class="main-container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="me-2">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="Index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Carrito.html">Carrito</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Pedidos.html">Pedidos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Glosario.html">Glosario</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="Login.html">Cuenta</a>
+                        </li>
+                        <li class="nav-item" id="navLogoutItem" style="display: none;">
+                            <a class="nav-link" href="#" id="logoutButton">Cerrar Sesión</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-      <!-- Botones de Acceso Rápido -->
-      <div class="access-buttons-container">
-          <div class="container-fluid">
-              <div class="row justify-content-center">
-                  <div class="col-auto">
-                      <button class="btn access-btn admin-btn" data-bs-toggle="modal" data-bs-target="#adminModal">
-                          <i class="fas fa-user-shield"></i>
-                          ADMINISTRADOR
-                      </button>
-                  </div>
-                  <div class="col-auto">
-                      <button class="btn access-btn delivery-btn" data-bs-toggle="modal" data-bs-target="#deliveryModal">
-                          <i class="fas fa-truck"></i>
-                          REPARTIDOR
-                      </button>
-                  </div>
-              </div>
-          </div>
-      </div>
+        <!-- Botones de Acceso Rápido -->
+        <div class="access-buttons-container">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <button class="btn access-btn admin-btn" data-bs-toggle="modal" data-bs-target="#adminModal">
+                            <i class="fas fa-user-shield"></i>
+                            ADMINISTRADOR
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn access-btn delivery-btn" data-bs-toggle="modal" data-bs-target="#deliveryModal">
+                            <i class="fas fa-truck"></i>
+                            REPARTIDOR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      <!-- Sección de Login -->
-      <section class="login-section">
-          <!-- Contenedor principal -->
-          <div class="contenedor" id="contenedor">
-              <!-- Registro de datos -->
-              <div class="formulario-contenedor registro">
-                  <form id="formularioRegistro" novalidate>
-                      <h1>Crear Cuenta</h1>
-                      <span>Complete todos los campos para registrarse</span>
-                      
-                      <!-- Nombre y Apellido lado a lado -->
-                      <div class="name-row">
-                          <div class="input-group">
-                              <input type="text" id="nombre" name="nombre" placeholder="Nombre" maxlength="40" required>
-                              <small class="error-message"></small>
-                          </div>
-                          
-                          <div class="input-group">
-                              <input type="text" id="apellido" name="apellido" placeholder="Apellido" maxlength="40" required>
-                              <small class="error-message"></small>
-                          </div>
-                      </div>
-                      
-                      <!-- Correo -->
-                      <div class="input-group">
-                          <input type="email" id="correo" name="correo" placeholder="Correo Electrónico" maxlength="85" required>
-                          <small class="error-message"></small>
-                      </div>
-                      
-                      <!-- Dirección -->
-                      <div class="input-group">
-                          <input type="text" id="direccion" name="direccion" placeholder="Dirección completa" maxlength="180" required>
-                          <small class="error-message"></small>
-                      </div>
-                      
-                      <!-- Contraseñas lado a lado -->
-                      <div class="password-row">
-                          <div class="input-group">
-                              <div class="password-input-container">
-                                  <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" maxlength="50" required>
-                                  <i class="fas fa-eye toggle-password" onclick="togglePassword('contraseña')"></i>
-                              </div>
-                              <small class="error-message"></small>
-                              <div class="password-strength" id="password-strength"></div>
-                          </div>
-                          
-                          <div class="input-group">
-                              <div class="password-input-container">
-                                  <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Confirmar Contraseña" maxlength="50" required>
-                                  <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmarContraseña')"></i>
-                              </div>
-                              <small class="error-message"></small>
-                          </div>
-                      </div>
+        <!-- Sección de Login -->
+        <section class="login-section">
+            <!-- Contenedor principal -->
+            <div class="contenedor" id="contenedor">
+                <!-- Registro de datos -->
+                <div class="formulario-contenedor registro">
+                    <form id="formularioRegistro" novalidate>
+                        <h1>Crear Cuenta</h1>
+                        <span>Complete todos los campos para registrarse</span>
 
-                      <!-- Teléfono -->
-                      <div class="input-group">
-                          <input type="tel" id="telefono" name="telefono" placeholder="Número de teléfono" maxlength="15" required>
-                          <small class="error-message"></small>
-                      </div>
+                        <!-- Nombre y Apellido lado a lado -->
+                        <div class="name-row">
+                            <div class="input-group">
+                                <input type="text" id="nombre" name="nombre" placeholder="Nombre" maxlength="40" required>
+                                <small class="error-message"></small>
+                            </div>
 
-                      <!-- Términos y condiciones -->
-                      <div class="checkbox-container">
-                          <input type="checkbox" id="terminos" name="terminos" required>
-                          <label for="terminos">
-                              Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">términos y condiciones</a>
-                          </label>
-                      </div>
-                      
-                      <button type="submit">Registrarse</button>
-                  </form>
-              </div>
+                            <div class="input-group">
+                                <input type="text" id="apellido" name="apellido" placeholder="Apellido" maxlength="40" required>
+                                <small class="error-message"></small>
+                            </div>
+                        </div>
 
-              <!-- Inicio de sesion -->
-              <div class="formulario-contenedor inicio-sesion">
-                  <form id="formularioInicioSesion" novalidate>
-                      <h1>Iniciar Sesión</h1>
-                      <span>Ingrese su E-mail y Contraseña</span>
-                      
-                      <div class="input-group">
-                          <input type="email" id="correoInicio" name="correoInicio" placeholder="Correo Electrónico" required>
-                          <small class="error-message"></small>
-                      </div>
-                      
-                      <div class="input-group">
-                          <div class="password-input-container">
-                              <input type="password" id="contraseñaInicio" name="contraseñaInicio" placeholder="Contraseña" required>
-                              <i class="fas fa-eye toggle-password" onclick="togglePassword('contraseñaInicio')"></i>
-                          </div>
-                          <small class="error-message"></small>
-                      </div>
-                      
-                      <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">¿Olvidó su contraseña?</a>
-                      <button type="submit">Ingresar</button>
-                  </form>
-              </div>
+                        <!-- Correo -->
+                        <div class="input-group">
+                            <input type="email" id="correo" name="correo" placeholder="Correo Electrónico" maxlength="85" required>
+                            <small class="error-message"></small>
+                        </div>
 
-              <!-- botones de animacion -->
-              <div class="contenedor-toggle">
-                  <div class="toggle">
-                      <div class="panel-toggle panel-izquierdo">
-                          <h1>¡Bienvenido de nuevo!</h1>
-                          <p>Ingrese sus datos personales para usar todas las funciones del sitio</p>
-                          <button class="oculto" id="iniciarSesion">Ingresar</button>
-                      </div>
-                      <div class="panel-toggle panel-derecho">
-                          <h1>¡Bienvenido!</h1>
-                          <p>Regístrese con sus datos personales para usar todas las funciones del sitio</p>
-                          <button class="oculto" id="registrarse">Registrarse</button>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </section>
-  </div>
+                        <!-- Dirección -->
+                        <div class="input-group">
+                            <input type="text" id="direccion" name="direccion" placeholder="Dirección completa" maxlength="180" required>
+                            <small class="error-message"></small>
+                        </div>
 
-  <!-- Modal Administrador - CON ICONO DE OJO -->
-  <div class="modal fade" id="adminModal" tabindex="-1">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header bg-danger text-white">
-                  <h5 class="modal-title">
-                      <i class="fas fa-user-shield me-2"></i>
-                      Acceso Administrador
-                  </h5>
-                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                  <form id="adminForm">
-                      <div class="mb-3">
-                          <label for="adminEmail" class="form-label">Correo Electrónico</label>
-                          <input type="text" class="form-control" id="adminEmail" required>
-                      </div>
-                      <div class="mb-3">
-                          <label for="adminPassword" class="form-label">Contraseña</label>
-                          <div class="password-input-container">
-                              <input type="password" class="form-control" id="adminPassword" required>
-                              <i class="fas fa-eye toggle-password" onclick="togglePassword('adminPassword')"></i>
-                          </div>
-                      </div>
-                      <button type="submit" class="btn btn-danger w-100">
-                          <i class="fas fa-sign-in-alt me-2"></i>
-                          Ingresar como Administrador
-                      </button>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
+                        <!-- Contraseñas lado a lado -->
+                        <div class="password-row">
+                            <div class="input-group">
+                                <div class="password-input-container">
+                                    <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" maxlength="50" required>
+                                    <i class="fas fa-eye toggle-password" id="togglePasswordRegistro"></i> <!-- ID añadido -->
+                                </div>
+                                <small class="error-message"></small>
+                                <div class="password-strength" id="password-strength"></div>
+                            </div>
 
-  <!-- Modal Repartidor - CON ICONO DE OJO -->
-  <div class="modal fade" id="deliveryModal" tabindex="-1">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header bg-success text-white">
-                  <h5 class="modal-title">
-                      <i class="fas fa-truck me-2"></i>
-                      Acceso Repartidor
-                  </h5>
-                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                  <form id="deliveryForm">
-                      <div class="mb-3">
-                          <label for="deliveryEmail" class="form-label">Correo Electrónico</label>
-                          <input type="email" class="form-control" id="deliveryEmail" required>
-                      </div>
-                      <div class="mb-3">
-                          <label for="deliveryPassword" class="form-label">Contraseña</label>
-                          <div class="password-input-container">
-                              <input type="password" class="form-control" id="deliveryPassword" required>
-                              <i class="fas fa-eye toggle-password" onclick="togglePassword('deliveryPassword')"></i>
-                          </div>
-                      </div>
-                      <button type="submit" class="btn btn-success w-100">
-                          <i class="fas fa-sign-in-alt me-2"></i>
-                          Ingresar como Repartidor
-                      </button>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
+                            <div class="input-group">
+                                <div class="password-input-container">
+                                    <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Confirmar Contraseña" maxlength="50" required>
+                                    <i class="fas fa-eye toggle-password" id="toggleConfirmPasswordRegistro"></i> <!-- ID añadido -->
+                                </div>
+                                <small class="error-message"></small>
+                            </div>
+                        </div>
 
-  <!-- Modal Recuperar Contraseña -->
-  <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title">Recuperar Contraseña</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                  <form id="forgotPasswordForm">
-                      <div class="mb-3">
-                          <label for="forgotEmail" class="form-label">Correo Electrónico</label>
-                          <input type="email" class="form-control" id="forgotEmail" required>
-                          <div class="form-text">
-                              Te enviaremos un enlace para restablecer tu contraseña.
-                          </div>
-                      </div>
-                      <button type="submit" class="btn btn-teal w-100">
-                          Enviar Enlace
-                      </button>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
+                        <!-- Teléfono -->
+                        <div class="input-group">
+                            <input type="tel" id="telefono" name="telefono" placeholder="Número de teléfono" maxlength="15" required>
+                            <small class="error-message"></small>
+                        </div>
 
-  <div class="modal fade" id="termsModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title">Términos y Condiciones</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                  <h6>1. Aceptación de términos</h6>
-                  <p>Al utilizar nuestros servicios, aceptas estos términos y condiciones.</p>
-                  
-                  <h6>2. Uso del servicio</h6>
-                  <p>Nuestro servicio está destinado para uso personal y no comercial.</p>
-                  
-                  <h6>3. Privacidad</h6>
-                  <p>Respetamos tu privacidad y protegemos tus datos personales según nuestra política de privacidad.</p>
-                  
-                  <h6>4. Productos farmacéuticos</h6>
-                  <p>Algunos productos requieren receta médica. Es responsabilidad del usuario cumplir con las regulaciones locales.</p>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              </div>
-          </div>
-      </div>
-  </div>
+                        <!-- Términos y condiciones -->
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="terminos" name="terminos" required>
+                            <label for="terminos">
+                                Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">términos y condiciones</a>
+                            </label>
+                        </div>
+
+                        <button type="submit">Registrarse</button>
+                    </form>
+                </div>
+
+                <!-- Inicio de sesion -->
+                <div class="formulario-contenedor inicio-sesion">
+                    <form id="formularioInicioSesion" novalidate>
+                        <h1>Iniciar Sesión</h1>
+                        <span>Ingrese su E-mail y Contraseña</span>
+
+                        <div class="input-group">
+                            <input type="email" id="correoInicio" name="correoInicio" placeholder="Correo Electrónico" required>
+                            <small class="error-message"></small>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="password-input-container">
+                                <input type="password" id="contraseñaInicio" name="contraseñaInicio" placeholder="Contraseña" required>
+                                <i class="fas fa-eye toggle-password" id="togglePasswordInicio"></i> <!-- ID añadido -->
+                            </div>
+                            <small class="error-message"></small>
+                        </div>
+
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">¿Olvidó su contraseña?</a>
+                        <button type="submit">Ingresar</button>
+                    </form>
+                </div>
+
+                <!-- botones de animacion -->
+                <div class="contenedor-toggle">
+                    <div class="toggle">
+                        <div class="panel-toggle panel-izquierdo">
+                            <h1>¡Bienvenido de nuevo!</h1>
+                            <p>Ingrese sus datos personales para usar todas las funciones del sitio</p>
+                            <button class="oculto" id="iniciarSesion">Ingresar</button>
+                        </div>
+                        <div class="panel-toggle panel-derecho">
+                            <h1>¡Bienvenido!</h1>
+                            <p>Regístrese con sus datos personales para usar todas las funciones del sitio</p>
+                            <button class="oculto" id="registrarse">Registrarse</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal Administrador - CON ICONO DE OJO -->
+    <div class="modal fade" id="adminModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-shield me-2"></i>
+                        Acceso Administrador
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminForm">
+                        <div class="mb-3">
+                            <label for="adminEmail" class="form-label">Correo Electrónico</label>
+                            <input type="text" class="form-control" id="adminEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminPassword" class="form-label">Contraseña</label>
+                            <div class="password-input-container">
+                                <input type="password" class="form-control" id="adminPassword" required>
+                                <i class="fas fa-eye toggle-password" id="toggleAdminPassword"></i> <!-- ID añadido -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Ingresar como Administrador
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Repartidor - CON ICONO DE OJO -->
+    <div class="modal fade" id="deliveryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-truck me-2"></i>
+                        Acceso Repartidor
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deliveryForm">
+                        <div class="mb-3">
+                            <label for="deliveryEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="deliveryEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deliveryPassword" class="form-label">Contraseña</label>
+                            <div class="password-input-container">
+                                <input type="password" class="form-control" id="deliveryPassword" required>
+                                <i class="fas fa-eye toggle-password" id="toggleDeliveryPassword"></i> <!-- ID añadido -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Ingresar como Repartidor
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Recuperar Contraseña -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Recuperar Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="forgotPasswordForm">
+                        <div class="mb-3">
+                            <label for="forgotEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="forgotEmail" required>
+                            <div class="form-text">
+                                Te enviaremos un enlace para restablecer tu contraseña.
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-teal w-100">
+                            Enviar Enlace
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="termsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Términos y Condiciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Aceptación de términos</h6>
+                    <p>Al utilizar nuestros servicios, aceptas estos términos y condiciones.</p>
+
+                    <h6>2. Uso del servicio</h6>
+                    <p>Nuestro servicio está destinado para uso personal y no comercial.</p>
+
+                    <h6>3. Privacidad</h6>
+                    <p>Respetamos tu privacidad y protegemos tus datos personales según nuestra política de privacidad.</p>
+
+                    <h6>4. Productos farmacéuticos</h6>
+                    <p>Algunos productos requieren receta médica. Es responsabilidad del usuario cumplir con las regulaciones locales.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
   <!-- Footer (sin cambios) -->
   <footer class="footer-section">
