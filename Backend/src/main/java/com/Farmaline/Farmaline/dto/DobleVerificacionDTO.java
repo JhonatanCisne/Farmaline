@@ -4,9 +4,9 @@ public class DobleVerificacionDTO {
     private Integer idDobleVerifiacion;
     private String estadoUsuario;
     private String estadoRepartidor;
-    private Integer idUsuario;   // ID del usuario involucrado en la verificación
-    private Integer idRepartidor; // ID del repartidor involucrado en la verificación
-    private Integer idPedido;    // ID del pedido que se está verificando
+    private Integer idUsuario;  
+    private Integer idRepartidor;
+    private Integer idPedido;   
 
     public DobleVerificacionDTO() {
     }

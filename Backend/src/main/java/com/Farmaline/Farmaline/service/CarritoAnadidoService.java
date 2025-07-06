@@ -19,96 +19,102 @@ import com.farmaline.farmaline.repository.ProductoRepository;
 @Service
 public class CarritoAnadidoService {
 
-    private final CarritoAnadidoRepository carritoAnadidoRepository;
-    private final CarritoRepository carritoRepository;
-    private final ProductoRepository productoRepository;
-
     @Autowired
-    public CarritoAnadidoService(CarritoAnadidoRepository carritoAnadidoRepository, CarritoRepository carritoRepository, ProductoRepository productoRepository) {
-        this.carritoAnadidoRepository = carritoAnadidoRepository;
-        this.carritoRepository = carritoRepository;
-        this.productoRepository = productoRepository;
-    }
+    private CarritoAnadidoRepository carritoAnadidoRepository;
+    @Autowired
+    private CarritoRepository carritoRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
 
-    public List<CarritoAnadidoDTO> obtenerTodosCarritoAnadido() {
+    public List<CarritoAnadidoDTO> getAllCarritoAnadidos() {
         return carritoAnadidoRepository.findAll().stream()
-                .map(this::convertirACarritoAnadidoDTO)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<CarritoAnadidoDTO> obtenerCarritoAnadidoPorId(Integer id) {
+    public Optional<CarritoAnadidoDTO> getCarritoAnadidoById(Integer id) {
         return carritoAnadidoRepository.findById(id)
-                .map(this::convertirACarritoAnadidoDTO);
+                .map(this::convertToDTO);
     }
 
-    public List<CarritoAnadidoDTO> obtenerItemsCarritoPorIdCarrito(Integer idCarrito) {
-        return carritoAnadidoRepository.findByCarritoIdCarrito(idCarrito).stream()
-                .map(this::convertirACarritoAnadidoDTO)
+    public List<CarritoAnadidoDTO> getCarritoAnadidosByCarritoId(Integer idCarrito) {
+        return carritoAnadidoRepository.findByCarrito_IdCarrito(idCarrito).stream()
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CarritoAnadidoDTO crearCarritoAnadido(CarritoAnadidoDTO carritoAnadidoDTO) {
-        Carrito_Anadido carritoAnadido = new Carrito_Anadido();
-        carritoAnadido.setCantidad(carritoAnadidoDTO.getCantidad());
-
-        Producto producto = productoRepository.findById(carritoAnadidoDTO.getIdProducto())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        carritoAnadido.setProducto(producto);
-
+    public CarritoAnadidoDTO addProductoToCarrito(CarritoAnadidoDTO carritoAnadidoDTO) {
         Carrito carrito = carritoRepository.findById(carritoAnadidoDTO.getIdCarrito())
-                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        carritoAnadido.setCarrito(carrito);
+                .orElseThrow(() -> new IllegalArgumentException("Carrito no encontrado con ID: " + carritoAnadidoDTO.getIdCarrito()));
+        
+        Producto producto = productoRepository.findById(carritoAnadidoDTO.getIdProducto())
+                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado con ID: " + carritoAnadidoDTO.getIdProducto()));
 
-        carritoAnadido = carritoAnadidoRepository.save(carritoAnadido);
-        return convertirACarritoAnadidoDTO(carritoAnadido);
+        if (carritoAnadidoDTO.getCantidad() <= 0) {
+            throw new IllegalArgumentException("La cantidad debe ser mayor que cero para añadir al carrito.");
+        }
+
+        Optional<Carrito_Anadido> existingItem = carritoAnadidoRepository.findByCarrito_IdCarritoAndProducto_IdProducto(
+            carritoAnadidoDTO.getIdCarrito(), carritoAnadidoDTO.getIdProducto());
+
+        Carrito_Anadido carritoAnadido;
+
+        if (existingItem.isPresent()) {
+            carritoAnadido = existingItem.get();
+            carritoAnadido.setCantidad(carritoAnadido.getCantidad() + carritoAnadidoDTO.getCantidad());
+        } else {
+            carritoAnadido = new Carrito_Anadido();
+            carritoAnadido.setCarrito(carrito);
+            carritoAnadido.setProducto(producto);
+            carritoAnadido.setCantidad(carritoAnadidoDTO.getCantidad());
+        }
+        
+        Carrito_Anadido savedItem = carritoAnadidoRepository.save(carritoAnadido);
+        return convertToDTO(savedItem);
     }
 
     @Transactional
-    public Optional<CarritoAnadidoDTO> actualizarCarritoAnadido(Integer id, CarritoAnadidoDTO carritoAnadidoDTO) {
-        return carritoAnadidoRepository.findById(id)
-                .map(carritoAnadidoExistente -> {
-                    carritoAnadidoExistente.setCantidad(carritoAnadidoDTO.getCantidad());
+    public Optional<CarritoAnadidoDTO> updateCantidadInCarrito(Integer idCarritoAnadido, int newCantidad) {
+        Optional<Carrito_Anadido> itemOptional = carritoAnadidoRepository.findById(idCarritoAnadido);
 
-                    if (carritoAnadidoDTO.getIdProducto() != null) {
-                        Producto producto = productoRepository.findById(carritoAnadidoDTO.getIdProducto())
-                                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-                        carritoAnadidoExistente.setProducto(producto);
-                    }
+        if (itemOptional.isPresent()) {
+            Carrito_Anadido existingItem = itemOptional.get();
 
-                    if (carritoAnadidoDTO.getIdCarrito() != null) {
-                        Carrito carrito = carritoRepository.findById(carritoAnadidoDTO.getIdCarrito())
-                                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-                        carritoAnadidoExistente.setCarrito(carrito);
-                    }
-                    return convertirACarritoAnadidoDTO(carritoAnadidoRepository.save(carritoAnadidoExistente));
-                });
+            if (newCantidad <= 0) {
+                carritoAnadidoRepository.delete(existingItem);
+                return Optional.empty();
+            } else {
+                existingItem.setCantidad(newCantidad);
+                Carrito_Anadido updatedItem = carritoAnadidoRepository.save(existingItem);
+                return Optional.of(convertToDTO(updatedItem));
+            }
+        }
+        return Optional.empty();
     }
-
-    public boolean eliminarCarritoAnadido(Integer id) {
-        if (carritoAnadidoRepository.existsById(id)) {
-            carritoAnadidoRepository.deleteById(id);
+    
+    @Transactional
+    public boolean removeProductoFromCarrito(Integer idCarrito, Integer idProducto) {
+        Optional<Carrito_Anadido> itemToRemove = carritoAnadidoRepository.findByCarrito_IdCarritoAndProducto_IdProducto(idCarrito, idProducto);
+        if (itemToRemove.isPresent()) {
+            carritoAnadidoRepository.delete(itemToRemove.get());
             return true;
         }
         return false;
     }
 
     @Transactional
-    public void limpiarItemsDeCarrito(Integer idCarrito) {
-        carritoAnadidoRepository.deleteByCarritoIdCarrito(idCarrito);
+    public void clearCarrito(Integer idCarrito) {
+        carritoAnadidoRepository.deleteByCarrito_IdCarrito(idCarrito);
     }
 
-    private CarritoAnadidoDTO convertirACarritoAnadidoDTO(Carrito_Anadido carritoAnadido) {
+    private CarritoAnadidoDTO convertToDTO(Carrito_Anadido carritoAnadido) {
         CarritoAnadidoDTO dto = new CarritoAnadidoDTO();
         dto.setIdCarritoAnadido(carritoAnadido.getIdCarritoAnadido());
         dto.setCantidad(carritoAnadido.getCantidad());
-        if (carritoAnadido.getProducto() != null) {
-            dto.setIdProducto(carritoAnadido.getProducto().getIdProducto());
-            dto.setNombreProducto(carritoAnadido.getProducto().getNombre());
-        }
-        if (carritoAnadido.getCarrito() != null) {
-            dto.setIdCarrito(carritoAnadido.getCarrito().getIdCarrito());
-        }
+        dto.setIdProducto(carritoAnadido.getProducto() != null ? carritoAnadido.getProducto().getIdProducto() : null);
+        dto.setIdCarrito(carritoAnadido.getCarrito() != null ? carritoAnadido.getCarrito().getIdCarrito() : null);
         return dto;
     }
+
 }

@@ -1,9 +1,9 @@
-package com.Farmaline.farmaline.service;
+package com.farmaline.farmaline.service;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Collectors; 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,54 +11,88 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.farmaline.farmaline.dto.ProductoDTO;
 import com.farmaline.farmaline.model.Producto;
+import com.farmaline.farmaline.repository.CalificacionRepository;
+import com.farmaline.farmaline.repository.CarritoAnadidoRepository; 
 import com.farmaline.farmaline.repository.ProductoRepository;
 
 @Service
 public class ProductoService {
 
-    private final ProductoRepository productoRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
 
     @Autowired
-    public ProductoService(ProductoRepository productoRepository) {
-        this.productoRepository = productoRepository;
-    }
+    private CalificacionRepository calificacionRepository;
+    @Autowired
+    private CarritoAnadidoRepository carritoAnadidoRepository;
 
-    public List<ProductoDTO> obtenerTodosProductos() {
+    public List<ProductoDTO> getAllProductos() {
         return productoRepository.findAll().stream()
-                .map(this::convertirAProductoDTO)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<ProductoDTO> obtenerProductoPorId(Integer id) {
+    public Optional<ProductoDTO> getProductoById(Integer id) {
         return productoRepository.findById(id)
-                .map(this::convertirAProductoDTO);
-    }
-
-    public ProductoDTO crearProducto(ProductoDTO productoDTO) {
-        Producto producto = convertirAProductoEntidad(productoDTO);
-        producto = productoRepository.save(producto);
-        return convertirAProductoDTO(producto);
+                .map(this::convertToDTO);
     }
 
     @Transactional
-    public Optional<ProductoDTO> actualizarProducto(Integer id, ProductoDTO productoDTO) {
-        return productoRepository.findById(id)
-                .map(productoExistente -> {
-                    productoExistente.setNombre(productoDTO.getNombre());
-                    productoExistente.setDescripcion(productoDTO.getDescripcion());
-                    productoExistente.setStockDisponible(productoDTO.getStockDisponible());
-                    productoExistente.setPrecio(productoDTO.getPrecio());
-                    productoExistente.setImagen(productoDTO.getImagen());
-                    productoExistente.setFechaCaducidad(productoDTO.getFechaCaducidad());
-                    productoExistente.setFechaIngreso(productoDTO.getFechaIngreso());
-                    productoExistente.setIgv(productoDTO.getIgv());
-                    productoExistente.setPrecioFinal(productoDTO.getPrecioFinal());
-                    return convertirAProductoDTO(productoRepository.save(productoExistente));
-                });
+    public ProductoDTO createProducto(ProductoDTO productoDTO) {
+        if (productoRepository.existsByNombreIgnoreCase(productoDTO.getNombre())) {
+            throw new IllegalArgumentException("Ya existe un producto con el mismo nombre.");
+        }
+
+        Producto producto = convertToEntity(productoDTO);
+        if (producto.getPrecio() != null && producto.getIgv() != null) {
+            BigDecimal igvMonto = producto.getPrecio().multiply(producto.getIgv());
+            producto.setPrecioFinal(producto.getPrecio().add(igvMonto));
+        } else {
+            throw new IllegalArgumentException("Precio e IGV son requeridos para calcular el Precio Final.");
+        }
+
+        Producto savedProducto = productoRepository.save(producto);
+        return convertToDTO(savedProducto);
     }
 
-    public boolean eliminarProducto(Integer id) {
+    @Transactional
+    public Optional<ProductoDTO> updateProducto(Integer id, ProductoDTO productoDTO) {
+        return productoRepository.findById(id).map(existingProducto -> {
+            if (!existingProducto.getNombre().equalsIgnoreCase(productoDTO.getNombre()) &&
+                productoRepository.existsByNombreIgnoreCase(productoDTO.getNombre())) {
+                throw new IllegalArgumentException("Ya existe otro producto con el nuevo nombre.");
+            }
+
+            existingProducto.setNombre(productoDTO.getNombre());
+            existingProducto.setDescripcion(productoDTO.getDescripcion());
+            existingProducto.setStockDisponible(productoDTO.getStockDisponible());
+            existingProducto.setPrecio(productoDTO.getPrecio());
+            existingProducto.setImagen(productoDTO.getImagen());
+            existingProducto.setFechaCaducidad(productoDTO.getFechaCaducidad());
+            existingProducto.setFechaIngreso(productoDTO.getFechaIngreso()); // Podría ser fecha de actualización o la original
+            existingProducto.setIgv(productoDTO.getIgv());
+            existingProducto.setLaboratorio(productoDTO.getLaboratorio());
+
+            if (existingProducto.getPrecio() != null && existingProducto.getIgv() != null) {
+                BigDecimal igvMonto = existingProducto.getPrecio().multiply(existingProducto.getIgv());
+                existingProducto.setPrecioFinal(existingProducto.getPrecio().add(igvMonto));
+            } else {
+                 throw new IllegalArgumentException("Precio e IGV son requeridos para recalcular el Precio Final.");
+            }
+
+            Producto updatedProducto = productoRepository.save(existingProducto);
+            return convertToDTO(updatedProducto);
+        });
+    }
+
+    @Transactional
+    public boolean deleteProducto(Integer id) {
         if (productoRepository.existsById(id)) {
+
+            calificacionRepository.deleteByProducto_IdProducto(id);
+
+            carritoAnadidoRepository.deleteByProducto_IdProducto(id);
+
             productoRepository.deleteById(id);
             return true;
         }
@@ -66,18 +100,42 @@ public class ProductoService {
     }
 
     @Transactional
-    public Optional<ProductoDTO> actualizarStock(Integer id, Integer cantidadCambio) {
-        return productoRepository.findById(id)
-                .map(productoExistente -> {
-                    if (productoExistente.getStockDisponible() + cantidadCambio < 0) {
-                        throw new RuntimeException("No hay suficiente stock para esta operación.");
-                    }
-                    productoExistente.setStockDisponible(productoExistente.getStockDisponible() + cantidadCambio);
-                    return convertirAProductoDTO(productoRepository.save(productoExistente));
-                });
+    public boolean decreaseStock(Integer productId, int quantity) {
+        Optional<Producto> productoOptional = productoRepository.findById(productId);
+        if (productoOptional.isPresent()) {
+            Producto producto = productoOptional.get();
+            if (producto.getStockDisponible() >= quantity) {
+                producto.setStockDisponible(producto.getStockDisponible() - quantity);
+                productoRepository.save(producto);
+                return true;
+            } else {
+                throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getNombre());
+            }
+        }
+        return false; 
     }
 
-    private ProductoDTO convertirAProductoDTO(Producto producto) {
+    @Transactional
+    public boolean increaseStock(Integer productId, int quantity) {
+        Optional<Producto> productoOptional = productoRepository.findById(productId);
+        if (productoOptional.isPresent()) {
+            Producto producto = productoOptional.get();
+            producto.setStockDisponible(producto.getStockDisponible() + quantity);
+            productoRepository.save(producto);
+            return true;
+        }
+        return false; 
+    }
+
+    public List<ProductoDTO> getProductosWithLowStock(int threshold) {
+        return productoRepository.findByStockDisponibleGreaterThan(threshold - 1).stream() // Obtiene los que tienen stock disponible menor o igual al umbral
+                .filter(producto -> producto.getStockDisponible() <= threshold) // Filtra para que sea realmente "bajo" si el umbral es el máximo
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    private ProductoDTO convertToDTO(Producto producto) {
         ProductoDTO dto = new ProductoDTO();
         dto.setIdProducto(producto.getIdProducto());
         dto.setNombre(producto.getNombre());
@@ -89,43 +147,23 @@ public class ProductoService {
         dto.setFechaIngreso(producto.getFechaIngreso());
         dto.setIgv(producto.getIgv());
         dto.setPrecioFinal(producto.getPrecioFinal());
+        dto.setLaboratorio(producto.getLaboratorio());
         return dto;
     }
 
-    private Producto convertirAProductoEntidad(ProductoDTO dto) {
+    private Producto convertToEntity(ProductoDTO productoDTO) {
         Producto producto = new Producto();
-        producto.setIdProducto(dto.getIdProducto());
-        producto.setNombre(dto.getNombre());
-        producto.setDescripcion(dto.getDescripcion());
-        producto.setStockDisponible(dto.getStockDisponible());
-        producto.setPrecio(dto.getPrecio());
-        producto.setImagen(dto.getImagen());
-        producto.setFechaCaducidad(dto.getFechaCaducidad());
-        producto.setFechaIngreso(dto.getFechaIngreso());
-        producto.setIgv(dto.getIgv());
-        producto.setPrecioFinal(dto.getPrecioFinal());
+        producto.setIdProducto(productoDTO.getIdProducto());
+        producto.setNombre(productoDTO.getNombre());
+        producto.setDescripcion(productoDTO.getDescripcion());
+        producto.setStockDisponible(productoDTO.getStockDisponible());
+        producto.setPrecio(productoDTO.getPrecio());
+        producto.setImagen(productoDTO.getImagen());
+        producto.setFechaCaducidad(productoDTO.getFechaCaducidad());
+        producto.setFechaIngreso(productoDTO.getFechaIngreso());
+        producto.setIgv(productoDTO.getIgv());
+        producto.setPrecioFinal(productoDTO.getPrecioFinal()); 
+        producto.setLaboratorio(productoDTO.getLaboratorio());
         return producto;
-    }
-
-    public List<ProductoDTO> obtenerProductosConFiltros(String nombre, Integer stockMinimo, Integer stockMaximo, LocalDate fechaCaducidadHasta) {
-        List<Producto> productos = productoRepository.findProductosByFilters(nombre, stockMinimo, stockMaximo, fechaCaducidadHasta);
-        return productos.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    private ProductoDTO convertToDto(Producto producto) {
-        return new ProductoDTO(
-            producto.getIdProducto(),
-            producto.getNombre(),
-            producto.getDescripcion(),
-            producto.getStockDisponible(),
-            producto.getPrecio(),
-            producto.getImagen(),
-            producto.getFechaCaducidad(),
-            producto.getFechaIngreso(),
-            producto.getIgv(),
-            producto.getPrecioFinal()
-        );
     }
 }

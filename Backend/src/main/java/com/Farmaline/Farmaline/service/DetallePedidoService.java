@@ -1,5 +1,6 @@
-package com.Farmaline.farmaline.service;
+package com.farmaline.farmaline.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,94 +20,121 @@ import com.farmaline.farmaline.repository.ProductoRepository;
 @Service
 public class DetallePedidoService {
 
-    private final DetallePedidoRepository detallePedidoRepository;
-    private final PedidoRepository pedidoRepository;
-    private final ProductoRepository productoRepository;
-
     @Autowired
-    public DetallePedidoService(DetallePedidoRepository detallePedidoRepository, PedidoRepository pedidoRepository, ProductoRepository productoRepository) {
-        this.detallePedidoRepository = detallePedidoRepository;
-        this.pedidoRepository = pedidoRepository;
-        this.productoRepository = productoRepository;
-    }
+    private DetallePedidoRepository detallePedidoRepository;
+    @Autowired
+    private PedidoRepository pedidoRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
 
-    public List<DetallePedidoDTO> obtenerTodosDetallesPedido() {
+    public List<DetallePedidoDTO> getAllDetallesPedido() {
         return detallePedidoRepository.findAll().stream()
-                .map(this::convertirADetallePedidoDTO)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<DetallePedidoDTO> obtenerDetallePedidoPorId(Integer id) {
+    public Optional<DetallePedidoDTO> getDetallePedidoById(Integer id) {
         return detallePedidoRepository.findById(id)
-                .map(this::convertirADetallePedidoDTO);
+                .map(this::convertToDTO);
     }
 
-    public List<DetallePedidoDTO> obtenerDetallesPorIdPedido(Integer idPedido) {
-        return detallePedidoRepository.findByPedidoIdPedido(idPedido).stream()
-                .map(this::convertirADetallePedidoDTO)
+    public List<DetallePedidoDTO> getDetallesByPedidoId(Integer idPedido) {
+        return detallePedidoRepository.findByPedido_IdPedido(idPedido).stream()
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public DetallePedidoDTO crearDetallePedido(DetallePedidoDTO detallePedidoDTO) {
-        DetallePedido detallePedido = new DetallePedido();
-        detallePedido.setCantidad(detallePedidoDTO.getCantidad());
-        detallePedido.setPrecioUnitarioAlMomentoCompra(detallePedidoDTO.getPrecioUnitarioAlMomentoCompra());
-
+    public DetallePedidoDTO createDetallePedido(DetallePedidoDTO detallePedidoDTO) {
         Pedido pedido = pedidoRepository.findById(detallePedidoDTO.getIdPedido())
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-        detallePedido.setPedido(pedido);
-
+                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado con ID: " + detallePedidoDTO.getIdPedido()));
+        
         Producto producto = productoRepository.findById(detallePedidoDTO.getIdProducto())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        detallePedido.setProducto(producto);
+                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado con ID: " + detallePedidoDTO.getIdProducto()));
 
-        detallePedido = detallePedidoRepository.save(detallePedido);
-        return convertirADetallePedidoDTO(detallePedido);
+        if (producto.getStockDisponible() < detallePedidoDTO.getCantidad()) {
+            throw new IllegalStateException("Stock insuficiente para el producto: " + producto.getNombre() + ". Solo quedan " + producto.getStockDisponible());
+        }
+
+        DetallePedido detallePedido = new DetallePedido();
+        detallePedido.setPedido(pedido);
+        detallePedido.setProducto(producto);
+        detallePedido.setCantidad(detallePedidoDTO.getCantidad());
+        detallePedido.setPrecioUnitarioAlMomentoCompra(producto.getPrecioFinal()); // Capturar el precio actual del producto
+        detallePedido.setSubtotalDetalle(producto.getPrecioFinal().multiply(BigDecimal.valueOf(detallePedidoDTO.getCantidad())));
+
+        producto.setStockDisponible(producto.getStockDisponible() - detallePedidoDTO.getCantidad());
+        productoRepository.save(producto);
+
+        pedido.setMontoTotalPedido(pedido.getMontoTotalPedido().add(detallePedido.getSubtotalDetalle()));
+        pedidoRepository.save(pedido);
+
+        DetallePedido savedDetalle = detallePedidoRepository.save(detallePedido);
+        return convertToDTO(savedDetalle);
     }
 
     @Transactional
-    public Optional<DetallePedidoDTO> actualizarDetallePedido(Integer id, DetallePedidoDTO detallePedidoDTO) {
-        return detallePedidoRepository.findById(id)
-                .map(detalleExistente -> {
-                    detalleExistente.setCantidad(detallePedidoDTO.getCantidad());
-                    detalleExistente.setPrecioUnitarioAlMomentoCompra(detallePedidoDTO.getPrecioUnitarioAlMomentoCompra());
+    public Optional<DetallePedidoDTO> updateDetallePedido(Integer idDetallePedido, DetallePedidoDTO detallePedidoDTO) {
+        return detallePedidoRepository.findById(idDetallePedido).map(existingDetalle -> {
+            Pedido pedido = existingDetalle.getPedido();
+            Producto producto = existingDetalle.getProducto();
+            int oldCantidad = existingDetalle.getCantidad();
+            BigDecimal oldSubtotal = existingDetalle.getSubtotalDetalle();
 
-                    if (detallePedidoDTO.getIdPedido() != null) {
-                        Pedido pedido = pedidoRepository.findById(detallePedidoDTO.getIdPedido())
-                                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-                        detalleExistente.setPedido(pedido);
-                    }
+            if (detallePedidoDTO.getCantidad() <= 0) {
+                throw new IllegalArgumentException("La cantidad debe ser mayor que cero. Para eliminar un item, usa el método deleteDetallePedido.");
+            }
 
-                    if (detallePedidoDTO.getIdProducto() != null) {
-                        Producto producto = productoRepository.findById(detallePedidoDTO.getIdProducto())
-                                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-                        detalleExistente.setProducto(producto);
-                    }
-                    return convertirADetallePedidoDTO(detallePedidoRepository.save(detalleExistente));
-                });
+            int newCantidad = detallePedidoDTO.getCantidad();
+            int diferenciaCantidad = newCantidad - oldCantidad;
+
+            if (diferenciaCantidad != 0) {
+                if (producto.getStockDisponible() < diferenciaCantidad) {
+                    throw new IllegalStateException("Stock insuficiente para actualizar el producto: " + producto.getNombre() + ". Solo quedan " + (producto.getStockDisponible() + oldCantidad - newCantidad));
+                }
+                producto.setStockDisponible(producto.getStockDisponible() - diferenciaCantidad);
+                productoRepository.save(producto);
+            }
+            
+            existingDetalle.setCantidad(newCantidad);
+            existingDetalle.setPrecioUnitarioAlMomentoCompra(producto.getPrecioFinal()); // Re-capturar precio si ha cambiado
+            BigDecimal newSubtotal = producto.getPrecioFinal().multiply(BigDecimal.valueOf(newCantidad));
+            existingDetalle.setSubtotalDetalle(newSubtotal);
+
+            pedido.setMontoTotalPedido(pedido.getMontoTotalPedido().subtract(oldSubtotal).add(newSubtotal));
+            pedidoRepository.save(pedido);
+
+            DetallePedido updatedDetalle = detallePedidoRepository.save(existingDetalle);
+            return convertToDTO(updatedDetalle);
+        });
     }
 
-    public boolean eliminarDetallePedido(Integer id) {
-        if (detallePedidoRepository.existsById(id)) {
-            detallePedidoRepository.deleteById(id);
+    @Transactional
+    public boolean deleteDetallePedido(Integer idDetallePedido) {
+        return detallePedidoRepository.findById(idDetallePedido).map(detalle -> {
+            Pedido pedido = detalle.getPedido();
+            Producto producto = detalle.getProducto();
+
+            producto.setStockDisponible(producto.getStockDisponible() + detalle.getCantidad());
+            productoRepository.save(producto);
+
+            pedido.setMontoTotalPedido(pedido.getMontoTotalPedido().subtract(detalle.getSubtotalDetalle()));
+            pedidoRepository.save(pedido);
+
+            detallePedidoRepository.delete(detalle);
             return true;
-        }
-        return false;
+        }).orElse(false);
     }
 
-    private DetallePedidoDTO convertirADetallePedidoDTO(DetallePedido detallePedido) {
+    private DetallePedidoDTO convertToDTO(DetallePedido detallePedido) {
         DetallePedidoDTO dto = new DetallePedidoDTO();
         dto.setIdDetallePedido(detallePedido.getIdDetallePedido());
+        dto.setIdPedido(detallePedido.getPedido() != null ? detallePedido.getPedido().getIdPedido() : null);
+        dto.setIdProducto(detallePedido.getProducto() != null ? detallePedido.getProducto().getIdProducto() : null);
         dto.setCantidad(detallePedido.getCantidad());
         dto.setPrecioUnitarioAlMomentoCompra(detallePedido.getPrecioUnitarioAlMomentoCompra());
-        if (detallePedido.getPedido() != null) {
-            dto.setIdPedido(detallePedido.getPedido().getIdPedido());
-        }
-        if (detallePedido.getProducto() != null) {
-            dto.setIdProducto(detallePedido.getProducto().getIdProducto());
-            dto.setNombreProducto(detallePedido.getProducto().getNombre());
-        }
+        dto.setSubtotalDetalle(detallePedido.getSubtotalDetalle());
         return dto;
     }
+
 }

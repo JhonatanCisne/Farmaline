@@ -23,4 +23,7 @@ public interface CarritoAnadidoRepository extends JpaRepository<Carrito_Anadido,
     void deleteByCarrito_IdCarritoAndProducto_IdProducto(Integer idCarrito, Integer idProducto);
 
     boolean existsByCarrito_IdCarritoAndProducto_IdProducto(Integer idCarrito, Integer idProducto);
+
+    @Transactional
+    void deleteByProducto_IdProducto(Integer idProducto);
 }

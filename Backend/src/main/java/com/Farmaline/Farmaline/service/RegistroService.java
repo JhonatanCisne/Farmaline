@@ -1,9 +1,9 @@
-package com.Farmaline.farmaline.service;
+package com.farmaline.farmaline.service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+ 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,64 +19,59 @@ import com.farmaline.farmaline.repository.RegistroRepository;
 @Service
 public class RegistroService {
 
-    private final RegistroRepository registroRepository;
-    private final PedidoRepository pedidoRepository;
-    private final DobleVerificacionRepository dobleVerificacionRepository;
-
     @Autowired
-    public RegistroService(RegistroRepository registroRepository, PedidoRepository pedidoRepository, DobleVerificacionRepository dobleVerificacionRepository) {
-        this.registroRepository = registroRepository;
-        this.pedidoRepository = pedidoRepository;
-        this.dobleVerificacionRepository = dobleVerificacionRepository;
-    }
+    private RegistroRepository registroRepository;
+    @Autowired
+    private PedidoRepository pedidoRepository;
+    @Autowired
+    private DobleVerificacionRepository dobleVerificacionRepository;
 
-    public List<RegistroDTO> obtenerTodosRegistros() {
+    public List<RegistroDTO> getAllRegistros() {
         return registroRepository.findAll().stream()
-                .map(this::convertirARegistroDTO)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<RegistroDTO> obtenerRegistroPorId(Integer id) {
+    public Optional<RegistroDTO> getRegistroById(Integer id) {
         return registroRepository.findById(id)
-                .map(this::convertirARegistroDTO);
+                .map(this::convertToDTO);
+    }
+
+    public Optional<RegistroDTO> getRegistroByPedidoId(Integer idPedido) {
+        return registroRepository.findByPedido_IdPedido(idPedido)
+                .map(this::convertToDTO);
+    }
+
+    public Optional<RegistroDTO> getRegistroByDobleVerificacionId(Integer idDobleVerificacion) {
+        return registroRepository.findByDobleVerificacion_IdDobleVerifiacion(idDobleVerificacion)
+                .map(this::convertToDTO);
     }
 
     @Transactional
-    public RegistroDTO crearRegistro(RegistroDTO registroDTO) {
-        Registro registro = new Registro();
-
+    public RegistroDTO createRegistro(RegistroDTO registroDTO) {
         Pedido pedido = pedidoRepository.findById(registroDTO.getIdPedido())
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-        registro.setPedido(pedido);
-
+                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado con ID: " + registroDTO.getIdPedido()));
+        
         Doble_Verificacion dobleVerificacion = dobleVerificacionRepository.findById(registroDTO.getIdDobleVerificacion())
-                .orElseThrow(() -> new RuntimeException("Doble Verificación no encontrada"));
-        registro.setDobleVerificacion(dobleVerificacion);
+                .orElseThrow(() -> new IllegalArgumentException("Doble Verificación no encontrada con ID: " + registroDTO.getIdDobleVerificacion()));
 
-        registro = registroRepository.save(registro);
-        return convertirARegistroDTO(registro);
+        if (registroRepository.existsByPedido_IdPedido(registroDTO.getIdPedido())) {
+            throw new IllegalStateException("Ya existe un registro para el Pedido con ID: " + registroDTO.getIdPedido());
+        }
+        if (registroRepository.existsByDobleVerificacion_IdDobleVerifiacion(registroDTO.getIdDobleVerificacion())) {
+            throw new IllegalStateException("Ya existe un registro para la Doble Verificación con ID: " + registroDTO.getIdDobleVerificacion());
+        }
+
+        Registro nuevoRegistro = new Registro();
+        nuevoRegistro.setPedido(pedido);
+        nuevoRegistro.setDobleVerificacion(dobleVerificacion);
+        
+        Registro savedRegistro = registroRepository.save(nuevoRegistro);
+        return convertToDTO(savedRegistro);
     }
 
     @Transactional
-    public Optional<RegistroDTO> actualizarRegistro(Integer id, RegistroDTO registroDTO) {
-        return registroRepository.findById(id)
-                .map(registroExistente -> {
-                    if (registroDTO.getIdPedido() != null) {
-                        Pedido pedido = pedidoRepository.findById(registroDTO.getIdPedido())
-                                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-                        registroExistente.setPedido(pedido);
-                    }
-
-                    if (registroDTO.getIdDobleVerificacion() != null) {
-                        Doble_Verificacion dobleVerificacion = dobleVerificacionRepository.findById(registroDTO.getIdDobleVerificacion())
-                                .orElseThrow(() -> new RuntimeException("Doble Verificación no encontrada"));
-                        registroExistente.setDobleVerificacion(dobleVerificacion);
-                    }
-                    return convertirARegistroDTO(registroRepository.save(registroExistente));
-                });
-    }
-
-    public boolean eliminarRegistro(Integer id) {
+    public boolean deleteRegistro(Integer id) {
         if (registroRepository.existsById(id)) {
             registroRepository.deleteById(id);
             return true;
@@ -84,15 +79,31 @@ public class RegistroService {
         return false;
     }
 
-    private RegistroDTO convertirARegistroDTO(Registro registro) {
+    @Transactional
+    public boolean deleteRegistroByPedidoId(Integer idPedido) {
+        if (registroRepository.existsByPedido_IdPedido(idPedido)) {
+            registroRepository.deleteByPedido_IdPedido(idPedido);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean deleteRegistroByDobleVerificacionId(Integer idDobleVerificacion) {
+        if (registroRepository.existsByDobleVerificacion_IdDobleVerifiacion(idDobleVerificacion)) {
+            registroRepository.deleteByDobleVerificacion_IdDobleVerifiacion(idDobleVerificacion);
+            return true;
+        }
+        return false;
+    }
+    
+
+    private RegistroDTO convertToDTO(Registro registro) {
         RegistroDTO dto = new RegistroDTO();
         dto.setIdRegistro(registro.getIdRegistro());
-        if (registro.getPedido() != null) {
-            dto.setIdPedido(registro.getPedido().getIdPedido());
-        }
-        if (registro.getDobleVerificacion() != null) {
-            dto.setIdDobleVerificacion(registro.getDobleVerificacion().getIdDobleVerifiacion());
-        }
+        dto.setIdPedido(registro.getPedido() != null ? registro.getPedido().getIdPedido() : null);
+        dto.setDobleVerificacion(registro.getDobleVerificacion() != null ? registro.getDobleVerificacion().getIdDobleVerifiacion() : null);
         return dto;
     }
+
 }

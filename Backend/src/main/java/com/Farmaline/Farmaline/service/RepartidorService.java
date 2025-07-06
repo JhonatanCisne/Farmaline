@@ -1,4 +1,4 @@
-package com.Farmaline.farmaline.service;
+package com.farmaline.farmaline.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,103 +10,120 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.farmaline.farmaline.dto.RepartidorDTO;
 import com.farmaline.farmaline.model.Repartidor;
+import com.farmaline.farmaline.repository.DobleVerificacionRepository;
+import com.farmaline.farmaline.repository.PedidoRepository;
 import com.farmaline.farmaline.repository.RepartidorRepository;
 
 @Service
 public class RepartidorService {
 
-    private final RepartidorRepository repartidorRepository;
-    // Eliminado: private final AdministradorRepository administradorRepository;
+    @Autowired
+    private RepartidorRepository repartidorRepository;
 
     @Autowired
-    public RepartidorService(RepartidorRepository repartidorRepository) { // Constructor modificado
-        this.repartidorRepository = repartidorRepository;
-        // Eliminado: this.administradorRepository = administradorRepository;
-    }
+    private PedidoRepository pedidoRepository;
+    @Autowired
+    private DobleVerificacionRepository dobleVerificacionRepository;
 
-    public List<RepartidorDTO> obtenerTodosRepartidores() {
+    public List<RepartidorDTO> getAllRepartidores() {
         return repartidorRepository.findAll().stream()
-                .map(this::convertirARepartidorDTO)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<RepartidorDTO> obtenerRepartidorPorId(Integer id) {
+    public Optional<RepartidorDTO> getRepartidorById(Integer id) {
         return repartidorRepository.findById(id)
-                .map(this::convertirARepartidorDTO);
+                .map(this::convertToDTO);
     }
 
     @Transactional
-    public RepartidorDTO crearRepartidor(RepartidorDTO repartidorDTO) {
-        Repartidor repartidor = new Repartidor();
-        repartidor.setNombre(repartidorDTO.getNombre());
-        repartidor.setApellido(repartidorDTO.getApellido());
-        repartidor.setCorreo_Electronico(repartidorDTO.getCorreo_Electronico());
-        repartidor.setTelefono(repartidorDTO.getTelefono());
+    public RepartidorDTO createRepartidor(RepartidorDTO repartidorDTO) {
+        if (repartidorRepository.existsByCorreo_Electronico(repartidorDTO.getCorreo_Electronico())) {
+            throw new IllegalArgumentException("El correo electrónico ya está registrado para otro repartidor.");
+        }
+        if (repartidorRepository.existsByTelefono(repartidorDTO.getTelefono())) {
+            throw new IllegalArgumentException("El teléfono ya está registrado para otro repartidor.");
+        }
+        if (repartidorRepository.existsByPlaca(repartidorDTO.getPlaca())) {
+            throw new IllegalArgumentException("La placa del vehículo ya está registrada para otro repartidor.");
+        }
+
+        Repartidor repartidor = convertToEntity(repartidorDTO);
         repartidor.setContrasena(repartidorDTO.getContrasena());
-        repartidor.setPlaca(repartidorDTO.getPlaca());
-
-        // Eliminado: Lógica de Administrador
-        // if (repartidorDTO.getIdAdministrador() != null) {
-        //     Administrador administrador = administradorRepository.findById(repartidorDTO.getIdAdministrador())
-        //             .orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
-        //     repartidor.setAdministrador(administrador);
-        // } else {
-        //     throw new IllegalArgumentException("El ID de Administrador es obligatorio para crear un repartidor.");
-        // }
-
-        repartidor = repartidorRepository.save(repartidor);
-        return convertirARepartidorDTO(repartidor);
+        Repartidor savedRepartidor = repartidorRepository.save(repartidor);
+        return convertToDTO(savedRepartidor);
     }
 
     @Transactional
-    public Optional<RepartidorDTO> actualizarRepartidor(Integer id, RepartidorDTO repartidorDTO) {
-        return repartidorRepository.findById(id)
-                .map(repartidorExistente -> {
-                    repartidorExistente.setNombre(repartidorDTO.getNombre());
-                    repartidorExistente.setApellido(repartidorDTO.getApellido());
-                    repartidorExistente.setCorreo_Electronico(repartidorDTO.getCorreo_Electronico());
-                    repartidorExistente.setTelefono(repartidorDTO.getTelefono());
-                    
-                    if (repartidorDTO.getContrasena() != null && !repartidorDTO.getContrasena().isEmpty()) {
-                        repartidorExistente.setContrasena(repartidorDTO.getContrasena());
-                    }
-                    
-                    repartidorExistente.setPlaca(repartidorDTO.getPlaca());
+    public Optional<RepartidorDTO> updateRepartidor(Integer id, RepartidorDTO repartidorDTO) {
+        return repartidorRepository.findById(id).map(existingRepartidor -> {
+            if (!existingRepartidor.getCorreo_Electronico().equals(repartidorDTO.getCorreo_Electronico()) &&
+                repartidorRepository.existsByCorreo_Electronico(repartidorDTO.getCorreo_Electronico())) {
+                throw new IllegalArgumentException("El nuevo correo electrónico ya está en uso por otro repartidor.");
+            }
+            if (!existingRepartidor.getTelefono().equals(repartidorDTO.getTelefono()) &&
+                repartidorRepository.existsByTelefono(repartidorDTO.getTelefono())) {
+                throw new IllegalArgumentException("El nuevo teléfono ya está en uso por otro repartidor.");
+            }
+            if (!existingRepartidor.getPlaca().equals(repartidorDTO.getPlaca()) &&
+                repartidorRepository.existsByPlaca(repartidorDTO.getPlaca())) {
+                throw new IllegalArgumentException("La nueva placa del vehículo ya está en uso por otro repartidor.");
+            }
 
-                    // Eliminado: Lógica de Administrador
-                    // if (repartidorDTO.getIdAdministrador() != null) {
-                    //     Administrador administrador = administradorRepository.findById(repartidorDTO.getIdAdministrador())
-                    //             .orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
-                    //     repartidorExistente.setAdministrador(administrador);
-                    // }
+            existingRepartidor.setNombre(repartidorDTO.getNombre());
+            existingRepartidor.setApellido(repartidorDTO.getApellido());
+            existingRepartidor.setCorreo_Electronico(repartidorDTO.getCorreo_Electronico()); // Asumo que en la Entidad es camelCase, DTO es snake_case
+            existingRepartidor.setTelefono(repartidorDTO.getTelefono());
+            existingRepartidor.setPlaca(repartidorDTO.getPlaca());
 
-                    return convertirARepartidorDTO(repartidorRepository.save(repartidorExistente));
-                });
+            if (repartidorDTO.getContrasena() != null && !repartidorDTO.getContrasena().isEmpty()) {
+                existingRepartidor.setContrasena(repartidorDTO.getContrasena()); // Sin hashing temporalmente
+            }
+
+            Repartidor updatedRepartidor = repartidorRepository.save(existingRepartidor);
+            return convertToDTO(updatedRepartidor);
+        });
     }
 
-    public boolean eliminarRepartidor(Integer id) {
+    @Transactional
+    public boolean deleteRepartidor(Integer id) {
         if (repartidorRepository.existsById(id)) {
+            pedidoRepository.deleteByRepartidor_IdRepartidor(id);
+
+            dobleVerificacionRepository.deleteByRepartidor_IdRepartidor(id);
+
             repartidorRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    public Optional<RepartidorDTO> iniciarSesion(String telefono, String contrasena) {
-        return repartidorRepository.findByTelefonoAndContrasena(telefono, contrasena)
-                .map(this::convertirARepartidorDTO);
+    public Optional<RepartidorDTO> authenticateRepartidor(String correoElectronico, String contrasena) {
+        return repartidorRepository.findByCorreo_Electronico(correoElectronico) 
+                .filter(repartidor -> contrasena.equals(repartidor.getContrasena())) 
+                .map(this::convertToDTO);
     }
 
-    private RepartidorDTO convertirARepartidorDTO(Repartidor repartidor) {
+    private RepartidorDTO convertToDTO(Repartidor repartidor) {
         RepartidorDTO dto = new RepartidorDTO();
         dto.setIdRepartidor(repartidor.getIdRepartidor());
         dto.setNombre(repartidor.getNombre());
         dto.setApellido(repartidor.getApellido());
         dto.setCorreo_Electronico(repartidor.getCorreo_Electronico());
         dto.setTelefono(repartidor.getTelefono());
-        dto.setContrasena(repartidor.getContrasena());
         dto.setPlaca(repartidor.getPlaca());
-
         return dto;
+    }
+
+    private Repartidor convertToEntity(RepartidorDTO repartidorDTO) {
+        Repartidor repartidor = new Repartidor();
+        repartidor.setIdRepartidor(repartidorDTO.getIdRepartidor());
+        repartidor.setNombre(repartidorDTO.getNombre());
+        repartidor.setApellido(repartidorDTO.getApellido());
+        repartidor.setCorreo_Electronico(repartidorDTO.getCorreo_Electronico());
+        repartidor.setTelefono(repartidorDTO.getTelefono());
+        repartidor.setPlaca(repartidorDTO.getPlaca());
+        repartidor.setContrasena(repartidorDTO.getContrasena());
+        return repartidor;
     }
 }
