@@ -1,9 +1,8 @@
 package com.farmaline.farmaline.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.Column; 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,20 +23,11 @@ public class Producto {
     @Column(name="Descripcion", nullable=true, length=500)
     private String descripcion;
 
-    @Column(name="Stock_Disponible", nullable=false)
-    private Integer stockDisponible;
-
     @Column(name="Precio", nullable=false, precision=10, scale=2)
     private BigDecimal precio;
 
     @Column(name="Imagen", nullable=true, length=255)
     private String imagen;
-
-    @Column(name = "Fecha_Caducidad", nullable = true)
-    private LocalDate fechaCaducidad;
-
-    @Column(name = "Fecha_Ingreso", nullable = false)
-    private LocalDate fechaIngreso;
 
     @Column(name = "IGV", nullable = false, precision=5, scale=2)
     private BigDecimal igv;
@@ -45,7 +35,7 @@ public class Producto {
     @Column(name = "Precio_Final", nullable = false, precision=10, scale=2)
     private BigDecimal precioFinal;
 
-    @Column(name = "Laboratorio", nullable = true, length = 100) 
+    @Column(name = "Laboratorio", nullable = true, length = 100)
     private String laboratorio;
 
     public Producto() {
@@ -75,14 +65,6 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public Integer getStockDisponible() {
-        return stockDisponible;
-    }
-
-    public void setStockDisponible(Integer stockDisponible) {
-        this.stockDisponible = stockDisponible;
-    }
-
     public BigDecimal getPrecio() {
         return precio;
     }
@@ -97,22 +79,6 @@ public class Producto {
 
     public void setImagen(String imagen) {
         this.imagen = imagen;
-    }
-
-    public LocalDate getFechaCaducidad() {
-        return fechaCaducidad;
-    }
-
-    public void setFechaCaducidad(LocalDate fechaCaducidad) {
-        this.fechaCaducidad = fechaCaducidad;
-    }
-
-    public LocalDate getFechaIngreso() {
-        return fechaIngreso;
-    }
-
-    public void setFechaIngreso(LocalDate fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
     }
 
     public BigDecimal getIgv() {
@@ -138,4 +104,5 @@ public class Producto {
     public void setLaboratorio(String laboratorio) {
         this.laboratorio = laboratorio;
     }
+
 }

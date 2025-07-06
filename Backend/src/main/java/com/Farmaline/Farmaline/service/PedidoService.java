@@ -16,14 +16,13 @@ import com.farmaline.farmaline.dto.PedidoDTO;
 import com.farmaline.farmaline.model.Carrito_Anadido;
 import com.farmaline.farmaline.model.DetallePedido;
 import com.farmaline.farmaline.model.Pedido;
-import com.farmaline.farmaline.model.Producto;
 import com.farmaline.farmaline.model.Repartidor;
 import com.farmaline.farmaline.model.Usuario;
 import com.farmaline.farmaline.repository.CarritoAnadidoRepository;
 import com.farmaline.farmaline.repository.CarritoRepository;
 import com.farmaline.farmaline.repository.DetallePedidoRepository;
 import com.farmaline.farmaline.repository.PedidoRepository;
-import com.farmaline.farmaline.repository.ProductoRepository;
+import com.farmaline.farmaline.repository.ProductoRepository; 
 import com.farmaline.farmaline.repository.RepartidorRepository;
 import com.farmaline.farmaline.repository.UsuarioRepository;
 
@@ -35,16 +34,17 @@ public class PedidoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
-    private ProductoRepository productoRepository;
+    private ProductoRepository productoRepository; 
     @Autowired
     private CarritoRepository carritoRepository;
     @Autowired
     private CarritoAnadidoRepository carritoAnadidoRepository;
     @Autowired
     private DetallePedidoRepository detallePedidoRepository;
-
     @Autowired
     private RepartidorRepository repartidorRepository;
+    @Autowired
+    private DetallePedidoService detallePedidoService; 
 
     public List<PedidoDTO> getAllPedidos() {
         return pedidoRepository.findAll().stream()
@@ -63,50 +63,38 @@ public class PedidoService {
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + idUsuario));
 
         Integer idCarrito = carritoRepository.findByUsuario_IdUsuario(idUsuario)
-                                            .map(carrito -> carrito.getIdCarrito())
-                                            .orElseThrow(() -> new IllegalStateException("Carrito no encontrado para el usuario: " + idUsuario));
+                                             .map(carrito -> carrito.getIdCarrito())
+                                             .orElseThrow(() -> new IllegalStateException("Carrito no encontrado para el usuario: " + idUsuario));
 
         List<Carrito_Anadido> itemsCarrito = carritoAnadidoRepository.findByCarrito_IdCarrito(idCarrito);
         if (itemsCarrito.isEmpty()) {
             throw new IllegalArgumentException("El carrito del usuario está vacío. No se puede crear un pedido.");
         }
 
-        BigDecimal montoTotalPedido = BigDecimal.ZERO;
-        for (Carrito_Anadido item : itemsCarrito) {
-            Producto producto = item.getProducto();
-            if (producto.getStockDisponible() < item.getCantidad()) {
-                throw new IllegalStateException("Stock insuficiente para el producto: " + producto.getNombre() + ". Solo quedan " + producto.getStockDisponible());
-            }
-            montoTotalPedido = montoTotalPedido.add(producto.getPrecioFinal().multiply(BigDecimal.valueOf(item.getCantidad())));
-        }
-
         Pedido newPedido = new Pedido();
         newPedido.setUsuario(usuario);
         newPedido.setFecha(LocalDate.now());
         newPedido.setHora(LocalTime.now());
-        newPedido.setMontoTotalPedido(montoTotalPedido);
+        newPedido.setMontoTotalPedido(BigDecimal.ZERO); 
         newPedido.setRepartidor(null);
 
         Pedido savedPedido = pedidoRepository.save(newPedido);
 
         for (Carrito_Anadido item : itemsCarrito) {
-            DetallePedido detalle = new DetallePedido();
-            detalle.setPedido(savedPedido);
-            detalle.setProducto(item.getProducto());
-            detalle.setCantidad(item.getCantidad());
-            detalle.setPrecioUnitarioAlMomentoCompra(item.getProducto().getPrecioFinal());
-            detalle.setSubtotalDetalle(item.getProducto().getPrecioFinal().multiply(BigDecimal.valueOf(item.getCantidad())));
-            detallePedidoRepository.save(detalle);
-
-            productoRepository.findById(item.getProducto().getIdProducto()).ifPresent(p -> {
-                p.setStockDisponible(p.getStockDisponible() - item.getCantidad());
-                productoRepository.save(p);
-            });
+            DetallePedidoDTO detalleDTO = new DetallePedidoDTO();
+            detalleDTO.setIdPedido(savedPedido.getIdPedido());
+            detalleDTO.setIdProducto(item.getProducto().getIdProducto());
+            detalleDTO.setCantidad(item.getCantidad());
+            
+            detallePedidoService.createDetallePedido(detalleDTO);
         }
+
+        Pedido finalPedido = pedidoRepository.findById(savedPedido.getIdPedido())
+                                .orElseThrow(() -> new IllegalStateException("Pedido no encontrado después de creación."));
 
         carritoAnadidoRepository.deleteByCarrito_IdCarrito(idCarrito);
 
-        return convertToDTO(savedPedido);
+        return convertToDTO(finalPedido);
     }
 
     @Transactional
@@ -114,16 +102,15 @@ public class PedidoService {
         return pedidoRepository.findById(idPedido).map(existingPedido -> {
             existingPedido.setFecha(pedidoDTO.getFecha());
             existingPedido.setHora(pedidoDTO.getHora());
-            existingPedido.setMontoTotalPedido(pedidoDTO.getMontoTotalPedido());
             
             if (pedidoDTO.getIdUsuario() != null) {
                 usuarioRepository.findById(pedidoDTO.getIdUsuario())
-                        .ifPresent(existingPedido::setUsuario);
+                                 .ifPresent(existingPedido::setUsuario);
             }
 
             if (pedidoDTO.getIdRepartidor() != null) {
                 repartidorRepository.findById(pedidoDTO.getIdRepartidor())
-                        .ifPresent(existingPedido::setRepartidor);
+                                 .orElseThrow(() -> new IllegalArgumentException("Repartidor no encontrado con ID: " + pedidoDTO.getIdRepartidor()));
             } else {
                 existingPedido.setRepartidor(null);
             }
@@ -139,7 +126,7 @@ public class PedidoService {
             Repartidor repartidor = null;
             if (idRepartidor != null) {
                 repartidor = repartidorRepository.findById(idRepartidor)
-                                .orElseThrow(() -> new IllegalArgumentException("Repartidor no encontrado con ID: " + idRepartidor));
+                                         .orElseThrow(() -> new IllegalArgumentException("Repartidor no encontrado con ID: " + idRepartidor));
             }
             pedido.setRepartidor(repartidor);
             Pedido updatedPedido = pedidoRepository.save(pedido);
@@ -150,16 +137,7 @@ public class PedidoService {
     @Transactional
     public boolean deletePedido(Integer id) {
         if (pedidoRepository.existsById(id)) {
-
-            List<DetallePedido> detalles = detallePedidoRepository.findByPedido_IdPedido(id);
-            for (DetallePedido dp : detalles) {
-                productoRepository.findById(dp.getProducto().getIdProducto()).ifPresent(p -> {
-                    p.setStockDisponible(p.getStockDisponible() + dp.getCantidad());
-                    productoRepository.save(p);
-                });
-            }
-            
-            detallePedidoRepository.deleteByPedido_IdPedido(id);
+            detallePedidoRepository.deleteByPedido_IdPedido(id); 
             
             pedidoRepository.deleteById(id);
             return true;
@@ -177,9 +155,9 @@ public class PedidoService {
         dto.setIdRepartidor(pedido.getRepartidor() != null ? pedido.getRepartidor().getIdRepartidor() : null);
 
         List<DetallePedidoDTO> detallesDTO = detallePedidoRepository.findByPedido_IdPedido(pedido.getIdPedido())
-                                            .stream()
-                                            .map(this::convertDetalleToDTO)
-                                            .collect(Collectors.toList());
+                                                                     .stream()
+                                                                     .map(this::convertDetalleToDTO)
+                                                                     .collect(Collectors.toList());
         dto.setDetallesPedido(detallesDTO);
         return dto;
     }

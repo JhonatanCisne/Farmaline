@@ -1,4 +1,4 @@
-package com.Farmaline.farmaline.controller;
+package com.farmaline.farmaline.controller;
 
 import java.util.List;
 
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,50 +20,65 @@ import com.farmaline.farmaline.service.RegistroService;
 @RequestMapping("/api/registros")
 public class RegistroController {
 
-    private final RegistroService registroService;
-
     @Autowired
-    public RegistroController(RegistroService registroService) {
-        this.registroService = registroService;
-    }
+    private RegistroService registroService;
 
     @GetMapping
-    public ResponseEntity<List<RegistroDTO>> obtenerTodosRegistros() {
-        List<RegistroDTO> registros = registroService.obtenerTodosRegistros();
+    public ResponseEntity<List<RegistroDTO>> getAllRegistros() {
+        List<RegistroDTO> registros = registroService.getAllRegistros();
         return ResponseEntity.ok(registros);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RegistroDTO> obtenerRegistroPorId(@PathVariable Integer id) {
-        return registroService.obtenerRegistroPorId(id)
+    public ResponseEntity<RegistroDTO> getRegistroById(@PathVariable Integer id) {
+        return registroService.getRegistroById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/pedido/{idPedido}")
+    public ResponseEntity<RegistroDTO> getRegistroByPedidoId(@PathVariable Integer idPedido) {
+        return registroService.getRegistroByPedidoId(idPedido)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/doble-verificacion/{idDobleVerificacion}")
+    public ResponseEntity<RegistroDTO> getRegistroByDobleVerificacionId(@PathVariable Integer idDobleVerificacion) {
+        return registroService.getRegistroByDobleVerificacionId(idDobleVerificacion)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<RegistroDTO> crearRegistro(@RequestBody RegistroDTO registroDTO) {
+    public ResponseEntity<RegistroDTO> createRegistro(@RequestBody RegistroDTO registroDTO) {
         try {
-            RegistroDTO nuevoRegistro = registroService.crearRegistro(registroDTO);
-            return new ResponseEntity<>(nuevoRegistro, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<RegistroDTO> actualizarRegistro(@PathVariable Integer id, @RequestBody RegistroDTO registroDTO) {
-        try {
-            return registroService.actualizarRegistro(id, registroDTO)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (RuntimeException e) {
+            RegistroDTO createdRegistro = registroService.createRegistro(registroDTO);
+            return new ResponseEntity<>(createdRegistro, HttpStatus.CREATED);
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarRegistro(@PathVariable Integer id) {
-        if (registroService.eliminarRegistro(id)) {
+    public ResponseEntity<Void> deleteRegistro(@PathVariable Integer id) {
+        if (registroService.deleteRegistro(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/pedido/{idPedido}")
+    public ResponseEntity<Void> deleteRegistroByPedidoId(@PathVariable Integer idPedido) {
+        if (registroService.deleteRegistroByPedidoId(idPedido)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/doble-verificacion/{idDobleVerificacion}")
+    public ResponseEntity<Void> deleteRegistroByDobleVerificacionId(@PathVariable Integer idDobleVerificacion) {
+        if (registroService.deleteRegistroByDobleVerificacionId(idDobleVerificacion)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

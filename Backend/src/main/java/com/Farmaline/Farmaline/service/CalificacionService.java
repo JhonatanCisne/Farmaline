@@ -1,156 +1,149 @@
 package com.farmaline.farmaline.service;
 
-import com.farmaline.farmaline.model.Repartidor;
-import com.farmaline.farmaline.repository.RepartidorRepository;
-import com.farmaline.farmaline.repository.PedidoRepository;
-import com.farmaline.farmaline.repository.DobleVerificacionRepository;
-
-import com.farmaline.farmaline.dto.RepartidorDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.farmaline.farmaline.dto.CalificacionDTO; 
+import com.farmaline.farmaline.model.Calificacion;
+import com.farmaline.farmaline.model.Producto;
+import com.farmaline.farmaline.model.Usuario;
+import com.farmaline.farmaline.repository.CalificacionRepository;
+import com.farmaline.farmaline.repository.ProductoRepository;
+import com.farmaline.farmaline.repository.UsuarioRepository;
+
 @Service
-public class RepartidorService {
+public class CalificacionService {
 
     @Autowired
-    private RepartidorRepository repartidorRepository;
-
+    private CalificacionRepository calificacionRepository;
     @Autowired
-    private PedidoRepository pedidoRepository;
+    private UsuarioRepository usuarioRepository;
     @Autowired
-    private DobleVerificacionRepository dobleVerificacionRepository;
+    private ProductoRepository productoRepository;
 
-    // --- Métodos de Gestión de Repartidores ---
-
-    // Obtener todos los repartidores
-    public List<RepartidorDTO> getAllRepartidores() {
-        return repartidorRepository.findAll().stream()
+    public List<CalificacionDTO> getAllCalificaciones() {
+        return calificacionRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    // Obtener un repartidor por ID
-    public Optional<RepartidorDTO> getRepartidorById(Integer id) {
-        return repartidorRepository.findById(id)
+    public Optional<CalificacionDTO> getCalificacionById(Integer id) {
+        return calificacionRepository.findById(id)
                 .map(this::convertToDTO);
     }
 
-    // Lógica de negocio: Registrar un nuevo repartidor
-    @Transactional
-    public RepartidorDTO createRepartidor(RepartidorDTO repartidorDTO) {
-        // Validar que el correo electrónico no exista
-        if (repartidorRepository.existsByCorreo_Electronico(repartidorDTO.getCorreo_Electronico())) {
-            throw new IllegalArgumentException("El correo electrónico ya está registrado para otro repartidor.");
-        }
-        // Validar que el teléfono no exista
-        if (repartidorRepository.existsByTelefono(repartidorDTO.getTelefono())) {
-            throw new IllegalArgumentException("El teléfono ya está registrado para otro repartidor.");
-        }
-        // Validar que la placa no exista
-        if (repartidorRepository.existsByPlaca(repartidorDTO.getPlaca())) {
-            throw new IllegalArgumentException("La placa del vehículo ya está registrada para otro repartidor.");
-        }
-
-        Repartidor repartidor = convertToEntity(repartidorDTO);
-        // Guardamos la contraseña tal cual (TEMPORALMENTE sin hashing)
-        repartidor.setContrasena(repartidorDTO.getContrasena());
-        Repartidor savedRepartidor = repartidorRepository.save(repartidor);
-        return convertToDTO(savedRepartidor);
+    public List<CalificacionDTO> getCalificacionesByProductId(Integer idProducto) {
+        return calificacionRepository.findByProducto_IdProducto(idProducto).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    // Lógica de negocio: Actualizar un repartidor existente
+    public List<CalificacionDTO> getCalificacionesByUserId(Integer idUsuario) {
+        return calificacionRepository.findByUsuario_IdUsuario(idUsuario).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<CalificacionDTO> getCalificacionByUserIdAndProductId(Integer idUsuario, Integer idProducto) {
+        return calificacionRepository.findByUsuario_IdUsuarioAndProducto_IdProducto(idUsuario, idProducto)
+                .map(this::convertToDTO);
+    }
+
+    public List<CalificacionDTO> getCalificacionesGreaterThanEqual(Integer idProducto, Integer puntuacion) {
+        return calificacionRepository.findByProducto_IdProductoAndPuntuacionGreaterThanEqual(idProducto, puntuacion).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CalificacionDTO> getCalificacionesLessThanEqual(Integer idProducto, Integer puntuacion) {
+        return calificacionRepository.findByProducto_IdProductoAndPuntuacionLessThanEqual(idProducto, puntuacion).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Double getAverageRatingForProduct(Integer idProducto) {
+    List<CalificacionDTO> calificaciones = getCalificacionesByProductId(idProducto);
+    if (calificaciones.isEmpty()) {
+        return 0.0; 
+    }
+
+    double sum = calificaciones.stream()
+                               .mapToInt(CalificacionDTO::getPuntuacion)
+                               .sum();
+    return sum / calificaciones.size();
+}
+
     @Transactional
-    public Optional<RepartidorDTO> updateRepartidor(Integer id, RepartidorDTO repartidorDTO) {
-        return repartidorRepository.findById(id).map(existingRepartidor -> {
-            // Validar unicidad del correo electrónico si cambia
-            if (!existingRepartidor.getCorreoElectronico().equals(repartidorDTO.getCorreo_Electronico()) &&
-                repartidorRepository.existsByCorreo_Electronico(repartidorDTO.getCorreo_Electronico())) {
-                throw new IllegalArgumentException("El nuevo correo electrónico ya está en uso por otro repartidor.");
-            }
-            // Validar unicidad del teléfono si cambia
-            if (!existingRepartidor.getTelefono().equals(repartidorDTO.getTelefono()) &&
-                repartidorRepository.existsByTelefono(repartidorDTO.getTelefono())) {
-                throw new IllegalArgumentException("El nuevo teléfono ya está en uso por otro repartidor.");
-            }
-            // Validar unicidad de la placa si cambia
-            if (!existingRepartidor.getPlaca().equals(repartidorDTO.getPlaca()) &&
-                repartidorRepository.existsByPlaca(repartidorDTO.getPlaca())) {
-                throw new IllegalArgumentException("La nueva placa del vehículo ya está en uso por otro repartidor.");
+    public CalificacionDTO createCalificacion(CalificacionDTO calificacionDTO) {
+        Usuario usuario = usuarioRepository.findById(calificacionDTO.getIdUsuario())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + calificacionDTO.getIdUsuario()));
+        
+        Producto producto = productoRepository.findById(calificacionDTO.getIdProducto())
+                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado con ID: " + calificacionDTO.getIdProducto()));
+
+        if (calificacionRepository.existsByUsuario_IdUsuarioAndProducto_IdProducto(calificacionDTO.getIdUsuario(), calificacionDTO.getIdProducto())) {
+            throw new IllegalStateException("El usuario ya ha calificado este producto.");
+        }
+
+        if (calificacionDTO.getPuntuacion() < 1 || calificacionDTO.getPuntuacion() > 5) {
+            throw new IllegalArgumentException("La puntuación debe estar entre 1 y 5.");
+        }
+
+        Calificacion nuevaCalificacion = new Calificacion();
+        nuevaCalificacion.setUsuario(usuario);
+        nuevaCalificacion.setProducto(producto);
+        nuevaCalificacion.setPuntuacion(calificacionDTO.getPuntuacion());
+
+        Calificacion savedCalificacion = calificacionRepository.save(nuevaCalificacion);
+        return convertToDTO(savedCalificacion);
+    }
+
+    @Transactional
+    public Optional<CalificacionDTO> updateCalificacion(Integer id, CalificacionDTO calificacionDTO) {
+        return calificacionRepository.findById(id).map(existingCalificacion -> {
+
+            if (calificacionDTO.getPuntuacion() < 1 || calificacionDTO.getPuntuacion() > 5) {
+                throw new IllegalArgumentException("La puntuación debe estar entre 1 y 5.");
             }
 
-            existingRepartidor.setNombre(repartidorDTO.getNombre());
-            existingRepartidor.setApellido(repartidorDTO.getApellido());
-            existingRepartidor.setCorreoElectronico(repartidorDTO.getCorreo_Electronico()); // Asumo que en la Entidad es camelCase, DTO es snake_case
-            existingRepartidor.setTelefono(repartidorDTO.getTelefono());
-            existingRepartidor.setPlaca(repartidorDTO.getPlaca());
-
-            // Solo actualizar la contraseña si se proporciona una nueva
-            if (repartidorDTO.getContrasena() != null && !repartidorDTO.getContrasena().isEmpty()) {
-                existingRepartidor.setContrasena(repartidorDTO.getContrasena()); // Sin hashing temporalmente
-            }
-
-            Repartidor updatedRepartidor = repartidorRepository.save(existingRepartidor);
-            return convertToDTO(updatedRepartidor);
+            existingCalificacion.setPuntuacion(calificacionDTO.getPuntuacion());
+            
+            Calificacion updatedCalificacion = calificacionRepository.save(existingCalificacion);
+            return convertToDTO(updatedCalificacion);
         });
     }
 
-    // Lógica de negocio: Eliminar un repartidor y sus datos relacionados
     @Transactional
-    public boolean deleteRepartidor(Integer id) {
-        if (repartidorRepository.existsById(id)) {
-            // Lógica de eliminación en cascada en la capa de servicio
-
-            // Eliminar Pedidos asignados a este repartidor
-            // NOTA: Reafirmando la advertencia de que eliminar pedidos históricos puede no ser deseable.
-            // Si la FK en Pedido a Repartidor es nullable, considera actualizar a NULL.
-            // Si es NO-NULLABLE, el DELETE es necesario para mantener la integridad.
-            pedidoRepository.deleteByRepartidor_IdRepartidor(id);
-
-            // Eliminar registros de Doble_Verificacion donde este repartidor participó
-            dobleVerificacionRepository.deleteByRepartidor_IdRepartidor(id);
-
-            // Finalmente, eliminar el repartidor
-            repartidorRepository.deleteById(id);
+    public boolean deleteCalificacion(Integer id) {
+        if (calificacionRepository.existsById(id)) {
+            calificacionRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    // Lógica de negocio: Autenticar repartidor
-    public Optional<RepartidorDTO> authenticateRepartidor(String correoElectronico, String contrasena) {
-        return repartidorRepository.findByCorreo_Electronico(correoElectronico) // Usar el método del repo
-                .filter(repartidor -> contrasena.equals(repartidor.getContrasena())) // Comparación directa (TEMPORAL)
-                .map(this::convertToDTO);
+    @Transactional
+    public void deleteCalificacionesByProductId(Integer idProducto) {
+        calificacionRepository.deleteByProducto_IdProducto(idProducto);
     }
 
-    // --- Métodos de Conversión (Helper Methods) ---
+    @Transactional
+    public void deleteCalificacionesByUserId(Integer idUsuario) {
+        calificacionRepository.deleteByUsuario_IdUsuario(idUsuario);
+    }
 
-    private RepartidorDTO convertToDTO(Repartidor repartidor) {
-        RepartidorDTO dto = new RepartidorDTO();
-        dto.setIdRepartidor(repartidor.getIdRepartidor());
-        dto.setNombre(repartidor.getNombre());
-        dto.setApellido(repartidor.getApellido());
-        dto.setCorreo_Electronico(repartidor.getCorreoElectronico()); // Asumo entidad usa camelCase
-        dto.setTelefono(repartidor.getTelefono());
-        dto.setPlaca(repartidor.getPlaca());
-        // NO EXPONER LA CONTRASEÑA EN EL DTO PARA USO EN API REST REAL.
+    private CalificacionDTO convertToDTO(Calificacion calificacion) {
+        CalificacionDTO dto = new CalificacionDTO();
+        dto.setIdCalificacion(calificacion.getIdCalificacion());
+        dto.setPuntuacion(calificacion.getPuntuacion());
+        dto.setIdUsuario(calificacion.getUsuario() != null ? calificacion.getUsuario().getIdUsuario() : null);
+        dto.setIdProducto(calificacion.getProducto() != null ? calificacion.getProducto().getIdProducto() : null);
         return dto;
     }
 
-    private Repartidor convertToEntity(RepartidorDTO repartidorDTO) {
-        Repartidor repartidor = new Repartidor();
-        repartidor.setIdRepartidor(repartidorDTO.getIdRepartidor());
-        repartidor.setNombre(repartidorDTO.getNombre());
-        repartidor.setApellido(repartidorDTO.getApellido());
-        repartidor.setCorreoElectronico(repartidorDTO.getCorreo_Electronico()); // Asumo entidad usa camelCase, DTO es snake_case
-        repartidor.setTelefono(repartidorDTO.getTelefono());
-        repartidor.setPlaca(repartidorDTO.getPlaca());
-        repartidor.setContrasena(repartidorDTO.getContrasena());
-        return repartidor;
-    }
 }

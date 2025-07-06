@@ -1,4 +1,4 @@
-package com.Farmaline.farmaline.controller;
+package com.farmaline.farmaline.controller;
 
 import java.util.List;
 
@@ -18,61 +18,67 @@ import com.farmaline.farmaline.dto.CarritoAnadidoDTO;
 import com.farmaline.farmaline.service.CarritoAnadidoService;
 
 @RestController
-@RequestMapping("/api/carrito-anadido")
+@RequestMapping("/api/carrito-anadidos")
 public class CarritoAnadidoController {
 
-    private final CarritoAnadidoService carritoAnadidoService;
-
     @Autowired
-    public CarritoAnadidoController(CarritoAnadidoService carritoAnadidoService) {
-        this.carritoAnadidoService = carritoAnadidoService;
-    }
+    private CarritoAnadidoService carritoAnadidoService;
 
     @GetMapping
-    public ResponseEntity<List<CarritoAnadidoDTO>> obtenerTodosCarritoAnadido() {
-        List<CarritoAnadidoDTO> carritoAnadido = carritoAnadidoService.obtenerTodosCarritoAnadido();
-        return ResponseEntity.ok(carritoAnadido);
+    public ResponseEntity<List<CarritoAnadidoDTO>> getAllCarritoAnadidos() {
+        List<CarritoAnadidoDTO> carritoAnadidos = carritoAnadidoService.getAllCarritoAnadidos();
+        return ResponseEntity.ok(carritoAnadidos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CarritoAnadidoDTO> obtenerCarritoAnadidoPorId(@PathVariable Integer id) {
-        return carritoAnadidoService.obtenerCarritoAnadidoPorId(id)
+    public ResponseEntity<CarritoAnadidoDTO> getCarritoAnadidoById(@PathVariable Integer id) {
+        return carritoAnadidoService.getCarritoAnadidoById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/carrito/{idCarrito}")
-    public ResponseEntity<List<CarritoAnadidoDTO>> obtenerItemsCarritoPorIdCarrito(@PathVariable Integer idCarrito) {
-        List<CarritoAnadidoDTO> items = carritoAnadidoService.obtenerItemsCarritoPorIdCarrito(idCarrito);
-        return ResponseEntity.ok(items);
+    public ResponseEntity<List<CarritoAnadidoDTO>> getCarritoAnadidosByCarritoId(@PathVariable Integer idCarrito) {
+        List<CarritoAnadidoDTO> carritoAnadidos = carritoAnadidoService.getCarritoAnadidosByCarritoId(idCarrito);
+        return ResponseEntity.ok(carritoAnadidos);
     }
 
     @PostMapping
-    public ResponseEntity<CarritoAnadidoDTO> crearCarritoAnadido(@RequestBody CarritoAnadidoDTO carritoAnadidoDTO) {
+    public ResponseEntity<CarritoAnadidoDTO> addProductoToCarrito(@RequestBody CarritoAnadidoDTO carritoAnadidoDTO) {
         try {
-            CarritoAnadidoDTO nuevoCarritoAnadido = carritoAnadidoService.crearCarritoAnadido(carritoAnadidoDTO);
-            return new ResponseEntity<>(nuevoCarritoAnadido, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
+            CarritoAnadidoDTO addedItem = carritoAnadidoService.addProductoToCarrito(carritoAnadidoDTO);
+            return new ResponseEntity<>(addedItem, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CarritoAnadidoDTO> actualizarCarritoAnadido(@PathVariable Integer id, @RequestBody CarritoAnadidoDTO carritoAnadidoDTO) {
+    @PutMapping("/{idCarritoAnadido}/cantidad/{newCantidad}")
+    public ResponseEntity<CarritoAnadidoDTO> updateCantidadInCarrito(
+            @PathVariable Integer idCarritoAnadido,
+            @PathVariable int newCantidad) {
         try {
-            return carritoAnadidoService.actualizarCarritoAnadido(id, carritoAnadidoDTO)
+            return carritoAnadidoService.updateCantidadInCarrito(idCarritoAnadido, newCantidad)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarCarritoAnadido(@PathVariable Integer id) {
-        if (carritoAnadidoService.eliminarCarritoAnadido(id)) {
+    @DeleteMapping("/carrito/{idCarrito}/producto/{idProducto}")
+    public ResponseEntity<Void> removeProductoFromCarrito(
+            @PathVariable Integer idCarrito,
+            @PathVariable Integer idProducto) {
+        if (carritoAnadidoService.removeProductoFromCarrito(idCarrito, idProducto)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/carrito/{idCarrito}/clear")
+    public ResponseEntity<Void> clearCarrito(@PathVariable Integer idCarrito) {
+        carritoAnadidoService.clearCarrito(idCarrito);
+        return ResponseEntity.noContent().build();
     }
 }

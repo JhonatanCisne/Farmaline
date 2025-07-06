@@ -1,7 +1,6 @@
-package com.Farmaline.farmaline.controller;
+package com.farmaline.farmaline.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,53 +21,58 @@ import com.farmaline.farmaline.service.AdministradorService;
 @RequestMapping("/api/administradores")
 public class AdministradorController {
 
-    private final AdministradorService administradorService;
-
     @Autowired
-    public AdministradorController(AdministradorService administradorService) {
-        this.administradorService = administradorService;
-    }
+    private AdministradorService administradorService;
 
     @GetMapping
-    public ResponseEntity<List<AdministradorDTO>> obtenerTodosAdministradores() {
-        List<AdministradorDTO> administradores = administradorService.obtenerTodosAdministradores();
+    public ResponseEntity<List<AdministradorDTO>> getAllAdministradores() {
+        List<AdministradorDTO> administradores = administradorService.getAllAdministradores();
         return ResponseEntity.ok(administradores);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdministradorDTO> obtenerAdministradorPorId(@PathVariable Integer id) {
-        return administradorService.obtenerAdministradorPorId(id)
+    public ResponseEntity<AdministradorDTO> getAdministradorById(@PathVariable Integer id) {
+        return administradorService.getAdministradorById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<AdministradorDTO> crearAdministrador(@RequestBody AdministradorDTO administradorDTO) {
-        AdministradorDTO nuevoAdministrador = administradorService.crearAdministrador(administradorDTO);
-        return new ResponseEntity<>(nuevoAdministrador, HttpStatus.CREATED);
+    public ResponseEntity<AdministradorDTO> createAdministrador(@RequestBody AdministradorDTO administradorDTO) {
+        try {
+            AdministradorDTO createdAdministrador = administradorService.createAdministrador(administradorDTO);
+            return new ResponseEntity<>(createdAdministrador, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AdministradorDTO> actualizarAdministrador(@PathVariable Integer id, @RequestBody AdministradorDTO administradorDTO) {
-        return administradorService.actualizarAdministrador(id, administradorDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<AdministradorDTO> updateAdministrador(@PathVariable Integer id, @RequestBody AdministradorDTO administradorDTO) {
+        try {
+            return administradorService.updateAdministrador(id, administradorDTO)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarAdministrador(@PathVariable Integer id) {
-        if (administradorService.eliminarAdministrador(id)) {
+    public ResponseEntity<Void> deleteAdministrador(@PathVariable Integer id) {
+        if (administradorService.deleteAdministrador(id)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AdministradorDTO> iniciarSesion(@RequestBody Map<String, String> credenciales) {
-        String nombre = credenciales.get("nombre");
-        String contrasena = credenciales.get("contrasena");
-        return administradorService.iniciarSesion(nombre, contrasena)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<AdministradorDTO> authenticateAdministrador(@RequestBody AdministradorDTO loginRequest) {
+        String usuario = loginRequest.getUsuario();
+        String contrasena = loginRequest.getContrasena();
+
+        return administradorService.authenticateAdministrador(usuario, contrasena)
+                .map(administradorDTO -> ResponseEntity.ok(administradorDTO))
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 }

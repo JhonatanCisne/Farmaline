@@ -1,7 +1,6 @@
-package com.Farmaline.farmaline.controller;
+package com.farmaline.farmaline.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,61 +21,58 @@ import com.farmaline.farmaline.service.RepartidorService;
 @RequestMapping("/api/repartidores")
 public class RepartidorController {
 
-    private final RepartidorService repartidorService;
-
     @Autowired
-    public RepartidorController(RepartidorService repartidorService) {
-        this.repartidorService = repartidorService;
-    }
+    private RepartidorService repartidorService;
 
     @GetMapping
-    public ResponseEntity<List<RepartidorDTO>> obtenerTodosRepartidores() {
-        List<RepartidorDTO> repartidores = repartidorService.obtenerTodosRepartidores();
+    public ResponseEntity<List<RepartidorDTO>> getAllRepartidores() {
+        List<RepartidorDTO> repartidores = repartidorService.getAllRepartidores();
         return ResponseEntity.ok(repartidores);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RepartidorDTO> obtenerRepartidorPorId(@PathVariable Integer id) {
-        return repartidorService.obtenerRepartidorPorId(id)
+    public ResponseEntity<RepartidorDTO> getRepartidorById(@PathVariable Integer id) {
+        return repartidorService.getRepartidorById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<RepartidorDTO> crearRepartidor(@RequestBody RepartidorDTO repartidorDTO) {
+    public ResponseEntity<RepartidorDTO> createRepartidor(@RequestBody RepartidorDTO repartidorDTO) {
         try {
-            RepartidorDTO nuevoRepartidor = repartidorService.crearRepartidor(repartidorDTO);
-            return new ResponseEntity<>(nuevoRepartidor, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
+            RepartidorDTO createdRepartidor = repartidorService.createRepartidor(repartidorDTO);
+            return new ResponseEntity<>(createdRepartidor, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RepartidorDTO> actualizarRepartidor(@PathVariable Integer id, @RequestBody RepartidorDTO repartidorDTO) {
+    public ResponseEntity<RepartidorDTO> updateRepartidor(@PathVariable Integer id, @RequestBody RepartidorDTO repartidorDTO) {
         try {
-            return repartidorService.actualizarRepartidor(id, repartidorDTO)
+            return repartidorService.updateRepartidor(id, repartidorDTO)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarRepartidor(@PathVariable Integer id) {
-        if (repartidorService.eliminarRepartidor(id)) {
+    public ResponseEntity<Void> deleteRepartidor(@PathVariable Integer id) {
+        if (repartidorService.deleteRepartidor(id)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<RepartidorDTO> iniciarSesion(@RequestBody Map<String, String> credenciales) {
-        String telefono = credenciales.get("telefono");
-        String contrasena = credenciales.get("contrasena");
-        return repartidorService.iniciarSesion(telefono, contrasena)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<RepartidorDTO> authenticateRepartidor(@RequestBody RepartidorDTO loginRequest) {
+        String correoElectronico = loginRequest.getCorreo_Electronico();
+        String contrasena = loginRequest.getContrasena();
+
+        return repartidorService.authenticateRepartidor(correoElectronico, contrasena)
+                .map(repartidorDTO -> ResponseEntity.ok(repartidorDTO))
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 }

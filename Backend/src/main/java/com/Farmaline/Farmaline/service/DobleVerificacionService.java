@@ -121,6 +121,4 @@ public class DobleVerificacionService {
         dto.setIdPedido(verificacion.getPedido() != null ? verificacion.getPedido().getIdPedido() : null);
         return dto;
     }
-
-
 }

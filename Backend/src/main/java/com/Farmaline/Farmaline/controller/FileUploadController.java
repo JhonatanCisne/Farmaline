@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api") // La URL base para los endpoints de esta clase
-@CrossOrigin(origins = "http://localhost:8080") // O la URL específica de tu frontend
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:8080")
 public class FileUploadController {
 
     @Value("${file.upload-dir}")
@@ -49,8 +49,6 @@ public class FileUploadController {
 
             Files.copy(file.getInputStream(), filePath);
 
-            // La ruta que tu frontend espera para la imagen.
-            // Asegúrate que esta ruta relativa sea correcta desde la base del frontend.
             String relativePathForFrontend = "../images/P/" + uniqueFileName; 
 
             Map<String, String> response = new HashMap<>();
@@ -60,7 +58,6 @@ public class FileUploadController {
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (IOException e) {
-            e.printStackTrace();
             return new ResponseEntity<>("Error al subir el archivo: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

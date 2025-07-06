@@ -1,4 +1,4 @@
-package com.Farmaline.farmaline.controller;
+package com.farmaline.farmaline.controller;
 
 import java.util.List;
 
@@ -18,53 +18,75 @@ import com.farmaline.farmaline.dto.DobleVerificacionDTO;
 import com.farmaline.farmaline.service.DobleVerificacionService;
 
 @RestController
-@RequestMapping("/api/doble-verificacion")
+@RequestMapping("/api/doble-verificaciones")
 public class DobleVerificacionController {
 
-    private final DobleVerificacionService dobleVerificacionService;
-
     @Autowired
-    public DobleVerificacionController(DobleVerificacionService dobleVerificacionService) {
-        this.dobleVerificacionService = dobleVerificacionService;
-    }
+    private DobleVerificacionService dobleVerificacionService;
 
     @GetMapping
-    public ResponseEntity<List<DobleVerificacionDTO>> obtenerTodasDobleVerificaciones() {
-        List<DobleVerificacionDTO> dobleVerificaciones = dobleVerificacionService.obtenerTodasDobleVerificaciones();
-        return ResponseEntity.ok(dobleVerificaciones);
+    public ResponseEntity<List<DobleVerificacionDTO>> getAllDobleVerificaciones() {
+        List<DobleVerificacionDTO> verificaciones = dobleVerificacionService.getAllDobleVerificaciones();
+        return ResponseEntity.ok(verificaciones);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DobleVerificacionDTO> obtenerDobleVerificacionPorId(@PathVariable Integer id) {
-        return dobleVerificacionService.obtenerDobleVerificacionPorId(id)
+    public ResponseEntity<DobleVerificacionDTO> getDobleVerificacionById(@PathVariable Integer id) {
+        return dobleVerificacionService.getDobleVerificacionById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/pedido/{idPedido}")
+    public ResponseEntity<DobleVerificacionDTO> getDobleVerificacionByPedidoId(@PathVariable Integer idPedido) {
+        return dobleVerificacionService.getDobleVerificacionByPedidoId(idPedido)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<DobleVerificacionDTO>> getDobleVerificacionesByUsuarioId(@PathVariable Integer idUsuario) {
+        List<DobleVerificacionDTO> verificaciones = dobleVerificacionService.getDobleVerificacionesByUsuarioId(idUsuario);
+        return ResponseEntity.ok(verificaciones);
+    }
+
+    @GetMapping("/repartidor/{idRepartidor}")
+    public ResponseEntity<List<DobleVerificacionDTO>> getDobleVerificacionesByRepartidorId(@PathVariable Integer idRepartidor) {
+        List<DobleVerificacionDTO> verificaciones = dobleVerificacionService.getDobleVerificacionesByRepartidorId(idRepartidor);
+        return ResponseEntity.ok(verificaciones);
+    }
+
     @PostMapping
-    public ResponseEntity<DobleVerificacionDTO> crearDobleVerificacion(@RequestBody DobleVerificacionDTO dobleVerificacionDTO) {
+    public ResponseEntity<DobleVerificacionDTO> createDobleVerificacion(@RequestBody DobleVerificacionDTO dobleVerificacionDTO) {
         try {
-            DobleVerificacionDTO nuevaDobleVerificacion = dobleVerificacionService.crearDobleVerificacion(dobleVerificacionDTO);
-            return new ResponseEntity<>(nuevaDobleVerificacion, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
+            DobleVerificacionDTO createdVerificacion = dobleVerificacionService.createDobleVerificacion(dobleVerificacionDTO);
+            return new ResponseEntity<>(createdVerificacion, HttpStatus.CREATED);
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DobleVerificacionDTO> actualizarDobleVerificacion(@PathVariable Integer id, @RequestBody DobleVerificacionDTO dobleVerificacionDTO) {
-        try {
-            return dobleVerificacionService.actualizarDobleVerificacion(id, dobleVerificacionDTO)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @PutMapping("/{idDobleVerificacion}/estado-usuario")
+    public ResponseEntity<DobleVerificacionDTO> updateEstadoUsuario(
+            @PathVariable Integer idDobleVerificacion,
+            @RequestBody String nuevoEstado) { 
+        return dobleVerificacionService.updateEstadoUsuario(idDobleVerificacion, nuevoEstado)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{idDobleVerificacion}/estado-repartidor")
+    public ResponseEntity<DobleVerificacionDTO> updateEstadoRepartidor(
+            @PathVariable Integer idDobleVerificacion,
+            @RequestBody String nuevoEstado) { // Considera usar un DTO específico si el cuerpo es más complejo
+        return dobleVerificacionService.updateEstadoRepartidor(idDobleVerificacion, nuevoEstado)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarDobleVerificacion(@PathVariable Integer id) {
-        if (dobleVerificacionService.eliminarDobleVerificacion(id)) {
+    public ResponseEntity<Void> deleteDobleVerificacion(@PathVariable Integer id) {
+        if (dobleVerificacionService.deleteDobleVerificacion(id)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

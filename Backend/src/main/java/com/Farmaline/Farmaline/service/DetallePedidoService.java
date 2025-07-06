@@ -26,6 +26,8 @@ public class DetallePedidoService {
     private PedidoRepository pedidoRepository;
     @Autowired
     private ProductoRepository productoRepository;
+    @Autowired
+    private LoteProductoService loteProductoService;
 
     public List<DetallePedidoDTO> getAllDetallesPedido() {
         return detallePedidoRepository.findAll().stream()
@@ -48,23 +50,23 @@ public class DetallePedidoService {
     public DetallePedidoDTO createDetallePedido(DetallePedidoDTO detallePedidoDTO) {
         Pedido pedido = pedidoRepository.findById(detallePedidoDTO.getIdPedido())
                 .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado con ID: " + detallePedidoDTO.getIdPedido()));
-        
+
         Producto producto = productoRepository.findById(detallePedidoDTO.getIdProducto())
                 .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado con ID: " + detallePedidoDTO.getIdProducto()));
 
-        if (producto.getStockDisponible() < detallePedidoDTO.getCantidad()) {
-            throw new IllegalStateException("Stock insuficiente para el producto: " + producto.getNombre() + ". Solo quedan " + producto.getStockDisponible());
+        int stockDisponibleTotal = loteProductoService.getTotalStockByProductId(producto.getIdProducto());
+        if (stockDisponibleTotal < detallePedidoDTO.getCantidad()) {
+            throw new IllegalStateException("Stock insuficiente para el producto: " + producto.getNombre() + ". Solo quedan " + stockDisponibleTotal);
         }
 
         DetallePedido detallePedido = new DetallePedido();
         detallePedido.setPedido(pedido);
         detallePedido.setProducto(producto);
         detallePedido.setCantidad(detallePedidoDTO.getCantidad());
-        detallePedido.setPrecioUnitarioAlMomentoCompra(producto.getPrecioFinal()); // Capturar el precio actual del producto
+        detallePedido.setPrecioUnitarioAlMomentoCompra(producto.getPrecioFinal());
         detallePedido.setSubtotalDetalle(producto.getPrecioFinal().multiply(BigDecimal.valueOf(detallePedidoDTO.getCantidad())));
 
-        producto.setStockDisponible(producto.getStockDisponible() - detallePedidoDTO.getCantidad());
-        productoRepository.save(producto);
+        loteProductoService.consumeStockByExpiration(producto.getIdProducto(), detallePedidoDTO.getCantidad());
 
         pedido.setMontoTotalPedido(pedido.getMontoTotalPedido().add(detallePedido.getSubtotalDetalle()));
         pedidoRepository.save(pedido);
@@ -88,16 +90,16 @@ public class DetallePedidoService {
             int newCantidad = detallePedidoDTO.getCantidad();
             int diferenciaCantidad = newCantidad - oldCantidad;
 
-            if (diferenciaCantidad != 0) {
-                if (producto.getStockDisponible() < diferenciaCantidad) {
-                    throw new IllegalStateException("Stock insuficiente para actualizar el producto: " + producto.getNombre() + ". Solo quedan " + (producto.getStockDisponible() + oldCantidad - newCantidad));
+            if (diferenciaCantidad > 0) {
+                int stockDisponibleTotal = loteProductoService.getTotalStockByProductId(producto.getIdProducto());
+                if (stockDisponibleTotal < diferenciaCantidad) {
+                    throw new IllegalStateException("Stock insuficiente para aumentar la cantidad del producto: " + producto.getNombre() + ". Solo quedan " + stockDisponibleTotal + " unidades adicionales.");
                 }
-                producto.setStockDisponible(producto.getStockDisponible() - diferenciaCantidad);
-                productoRepository.save(producto);
+                loteProductoService.consumeStockByExpiration(producto.getIdProducto(), diferenciaCantidad);
             }
-            
+
             existingDetalle.setCantidad(newCantidad);
-            existingDetalle.setPrecioUnitarioAlMomentoCompra(producto.getPrecioFinal()); // Re-capturar precio si ha cambiado
+            existingDetalle.setPrecioUnitarioAlMomentoCompra(producto.getPrecioFinal());
             BigDecimal newSubtotal = producto.getPrecioFinal().multiply(BigDecimal.valueOf(newCantidad));
             existingDetalle.setSubtotalDetalle(newSubtotal);
 
@@ -113,11 +115,7 @@ public class DetallePedidoService {
     public boolean deleteDetallePedido(Integer idDetallePedido) {
         return detallePedidoRepository.findById(idDetallePedido).map(detalle -> {
             Pedido pedido = detalle.getPedido();
-            Producto producto = detalle.getProducto();
-
-            producto.setStockDisponible(producto.getStockDisponible() + detalle.getCantidad());
-            productoRepository.save(producto);
-
+            
             pedido.setMontoTotalPedido(pedido.getMontoTotalPedido().subtract(detalle.getSubtotalDetalle()));
             pedidoRepository.save(pedido);
 
@@ -136,5 +134,4 @@ public class DetallePedidoService {
         dto.setSubtotalDetalle(detallePedido.getSubtotalDetalle());
         return dto;
     }
-
 }

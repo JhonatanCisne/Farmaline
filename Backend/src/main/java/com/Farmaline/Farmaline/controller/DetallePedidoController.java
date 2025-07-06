@@ -1,4 +1,4 @@
-package com.Farmaline.farmaline.controller;
+package com.farmaline.farmaline.controller;
 
 import java.util.List;
 
@@ -18,59 +18,57 @@ import com.farmaline.farmaline.dto.DetallePedidoDTO;
 import com.farmaline.farmaline.service.DetallePedidoService;
 
 @RestController
-@RequestMapping("/api/detalle-pedidos")
+@RequestMapping("/api/detalles-pedido")
 public class DetallePedidoController {
 
-    private final DetallePedidoService detallePedidoService;
-
     @Autowired
-    public DetallePedidoController(DetallePedidoService detallePedidoService) {
-        this.detallePedidoService = detallePedidoService;
-    }
+    private DetallePedidoService detallePedidoService;
 
     @GetMapping
-    public ResponseEntity<List<DetallePedidoDTO>> obtenerTodosDetallesPedido() {
-        List<DetallePedidoDTO> detalles = detallePedidoService.obtenerTodosDetallesPedido();
+    public ResponseEntity<List<DetallePedidoDTO>> getAllDetallesPedido() {
+        List<DetallePedidoDTO> detalles = detallePedidoService.getAllDetallesPedido();
         return ResponseEntity.ok(detalles);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DetallePedidoDTO> obtenerDetallePedidoPorId(@PathVariable Integer id) {
-        return detallePedidoService.obtenerDetallePedidoPorId(id)
+    public ResponseEntity<DetallePedidoDTO> getDetallePedidoById(@PathVariable Integer id) {
+        return detallePedidoService.getDetallePedidoById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/pedido/{idPedido}")
-    public ResponseEntity<List<DetallePedidoDTO>> obtenerDetallesPorIdPedido(@PathVariable Integer idPedido) {
-        List<DetallePedidoDTO> detalles = detallePedidoService.obtenerDetallesPorIdPedido(idPedido);
+    public ResponseEntity<List<DetallePedidoDTO>> getDetallesByPedidoId(@PathVariable Integer idPedido) {
+        List<DetallePedidoDTO> detalles = detallePedidoService.getDetallesByPedidoId(idPedido);
         return ResponseEntity.ok(detalles);
     }
 
     @PostMapping
-    public ResponseEntity<DetallePedidoDTO> crearDetallePedido(@RequestBody DetallePedidoDTO detallePedidoDTO) {
+    public ResponseEntity<DetallePedidoDTO> createDetallePedido(@RequestBody DetallePedidoDTO detallePedidoDTO) {
         try {
-            DetallePedidoDTO nuevoDetalle = detallePedidoService.crearDetallePedido(detallePedidoDTO);
-            return new ResponseEntity<>(nuevoDetalle, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
+            DetallePedidoDTO createdDetalle = detallePedidoService.createDetallePedido(detallePedidoDTO);
+            return new ResponseEntity<>(createdDetalle, HttpStatus.CREATED);
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DetallePedidoDTO> actualizarDetallePedido(@PathVariable Integer id, @RequestBody DetallePedidoDTO detallePedidoDTO) {
+    @PutMapping("/{idDetallePedido}")
+    public ResponseEntity<DetallePedidoDTO> updateDetallePedido(
+            @PathVariable Integer idDetallePedido,
+            @RequestBody DetallePedidoDTO detallePedidoDTO) {
         try {
-            return detallePedidoService.actualizarDetallePedido(id, detallePedidoDTO)
+            return detallePedidoService.updateDetallePedido(idDetallePedido, detallePedidoDTO)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarDetallePedido(@PathVariable Integer id) {
-        if (detallePedidoService.eliminarDetallePedido(id)) {
+    @DeleteMapping("/{idDetallePedido}")
+    public ResponseEntity<Void> deleteDetallePedido(@PathVariable Integer idDetallePedido) {
+        if (detallePedidoService.deleteDetallePedido(idDetallePedido)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

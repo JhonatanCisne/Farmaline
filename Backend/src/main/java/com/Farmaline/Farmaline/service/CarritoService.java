@@ -5,8 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service; // Necesario para eliminar ítems del carrito
-import org.springframework.transaction.annotation.Transactional; // Asumiendo que tienes un CarritoDTO
+import org.springframework.stereotype.Service; 
+import org.springframework.transaction.annotation.Transactional;
 
 import com.farmaline.farmaline.dto.CarritoDTO;
 import com.farmaline.farmaline.model.Carrito;
@@ -23,10 +23,8 @@ public class CarritoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
-    private CarritoAnadidoRepository carritoAnadidoRepository; // Para limpiar los ítems del carrito si se elimina el carrito
+    private CarritoAnadidoRepository carritoAnadidoRepository; 
 
-    // Asumimos un CarritoDTO simple para este servicio, ya que el Carrito_AnadidoService maneja los detalles
-    // Si tu CarritoDTO incluye los Carrito_Anadido, la lógica de conversión aquí debería ser más compleja.
 
     public List<CarritoDTO> getAllCarritos() {
         return carritoRepository.findAll().stream()
@@ -49,7 +47,6 @@ public class CarritoService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + idUsuario));
 
-        // Verificar si el usuario ya tiene un carrito
         if (carritoRepository.findByUsuario_IdUsuario(idUsuario).isPresent()) {
             throw new IllegalStateException("El usuario con ID " + idUsuario + " ya tiene un carrito.");
         }
@@ -63,10 +60,8 @@ public class CarritoService {
 
     @Transactional
     public boolean deleteCarrito(Integer idCarrito) {
-        // Primero, elimina todos los Carrito_Anadido asociados a este carrito
         carritoAnadidoRepository.deleteByCarrito_IdCarrito(idCarrito);
 
-        // Luego, elimina el carrito
         if (carritoRepository.existsById(idCarrito)) {
             carritoRepository.deleteById(idCarrito);
             return true;
@@ -79,16 +74,13 @@ public class CarritoService {
         Optional<Carrito> carritoOptional = carritoRepository.findByUsuario_IdUsuario(idUsuario);
         if (carritoOptional.isPresent()) {
             Integer idCarrito = carritoOptional.get().getIdCarrito();
-            // Primero, elimina todos los Carrito_Anadido asociados a este carrito
             carritoAnadidoRepository.deleteByCarrito_IdCarrito(idCarrito);
-            // Luego, elimina el carrito
             carritoRepository.deleteByUsuario_IdUsuario(idUsuario);
             return true;
         }
         return false;
     }
 
-    // Suponiendo un CarritoDTO simple con solo ID_Carrito e ID_Usuario
     private CarritoDTO convertToDTO(Carrito carrito) {
         CarritoDTO dto = new CarritoDTO();
         dto.setIdCarrito(carrito.getIdCarrito());

@@ -25,6 +25,8 @@ public class ProductoService {
     private CalificacionRepository calificacionRepository;
     @Autowired
     private CarritoAnadidoRepository carritoAnadidoRepository;
+    @Autowired
+    private LoteProductoService loteProductoService; 
 
     public List<ProductoDTO> getAllProductos() {
         return productoRepository.findAll().stream()
@@ -65,11 +67,8 @@ public class ProductoService {
 
             existingProducto.setNombre(productoDTO.getNombre());
             existingProducto.setDescripcion(productoDTO.getDescripcion());
-            existingProducto.setStockDisponible(productoDTO.getStockDisponible());
             existingProducto.setPrecio(productoDTO.getPrecio());
             existingProducto.setImagen(productoDTO.getImagen());
-            existingProducto.setFechaCaducidad(productoDTO.getFechaCaducidad());
-            existingProducto.setFechaIngreso(productoDTO.getFechaIngreso()); // Podría ser fecha de actualización o la original
             existingProducto.setIgv(productoDTO.getIgv());
             existingProducto.setLaboratorio(productoDTO.getLaboratorio());
 
@@ -77,7 +76,7 @@ public class ProductoService {
                 BigDecimal igvMonto = existingProducto.getPrecio().multiply(existingProducto.getIgv());
                 existingProducto.setPrecioFinal(existingProducto.getPrecio().add(igvMonto));
             } else {
-                 throw new IllegalArgumentException("Precio e IGV son requeridos para recalcular el Precio Final.");
+                throw new IllegalArgumentException("Precio e IGV son requeridos para recalcular el Precio Final.");
             }
 
             Producto updatedProducto = productoRepository.save(existingProducto);
@@ -88,10 +87,9 @@ public class ProductoService {
     @Transactional
     public boolean deleteProducto(Integer id) {
         if (productoRepository.existsById(id)) {
-
             calificacionRepository.deleteByProducto_IdProducto(id);
-
             carritoAnadidoRepository.deleteByProducto_IdProducto(id);
+            loteProductoService.deleteByProducto_IdProducto(id);
 
             productoRepository.deleteById(id);
             return true;
@@ -99,52 +97,13 @@ public class ProductoService {
         return false;
     }
 
-    @Transactional
-    public boolean decreaseStock(Integer productId, int quantity) {
-        Optional<Producto> productoOptional = productoRepository.findById(productId);
-        if (productoOptional.isPresent()) {
-            Producto producto = productoOptional.get();
-            if (producto.getStockDisponible() >= quantity) {
-                producto.setStockDisponible(producto.getStockDisponible() - quantity);
-                productoRepository.save(producto);
-                return true;
-            } else {
-                throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getNombre());
-            }
-        }
-        return false; 
-    }
-
-    @Transactional
-    public boolean increaseStock(Integer productId, int quantity) {
-        Optional<Producto> productoOptional = productoRepository.findById(productId);
-        if (productoOptional.isPresent()) {
-            Producto producto = productoOptional.get();
-            producto.setStockDisponible(producto.getStockDisponible() + quantity);
-            productoRepository.save(producto);
-            return true;
-        }
-        return false; 
-    }
-
-    public List<ProductoDTO> getProductosWithLowStock(int threshold) {
-        return productoRepository.findByStockDisponibleGreaterThan(threshold - 1).stream() // Obtiene los que tienen stock disponible menor o igual al umbral
-                .filter(producto -> producto.getStockDisponible() <= threshold) // Filtra para que sea realmente "bajo" si el umbral es el máximo
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-
     private ProductoDTO convertToDTO(Producto producto) {
         ProductoDTO dto = new ProductoDTO();
         dto.setIdProducto(producto.getIdProducto());
         dto.setNombre(producto.getNombre());
         dto.setDescripcion(producto.getDescripcion());
-        dto.setStockDisponible(producto.getStockDisponible());
         dto.setPrecio(producto.getPrecio());
         dto.setImagen(producto.getImagen());
-        dto.setFechaCaducidad(producto.getFechaCaducidad());
-        dto.setFechaIngreso(producto.getFechaIngreso());
         dto.setIgv(producto.getIgv());
         dto.setPrecioFinal(producto.getPrecioFinal());
         dto.setLaboratorio(producto.getLaboratorio());
@@ -156,11 +115,8 @@ public class ProductoService {
         producto.setIdProducto(productoDTO.getIdProducto());
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
-        producto.setStockDisponible(productoDTO.getStockDisponible());
         producto.setPrecio(productoDTO.getPrecio());
         producto.setImagen(productoDTO.getImagen());
-        producto.setFechaCaducidad(productoDTO.getFechaCaducidad());
-        producto.setFechaIngreso(productoDTO.getFechaIngreso());
         producto.setIgv(productoDTO.getIgv());
         producto.setPrecioFinal(productoDTO.getPrecioFinal()); 
         producto.setLaboratorio(productoDTO.getLaboratorio());
