@@ -30,7 +30,7 @@ public class Repartidor {
     @Column(name="Placa", nullable = false, unique = true, length = 10)
     private String placa;
 
-    @Column(name="Contrasena", nullable = false, length = 100) // Se recomienda almacenar contraseñas hasheadas
+    @Column(name="Contrasena", nullable = false, length = 100) 
     private String contrasena;
 
     public Integer getIdRepartidor() {
