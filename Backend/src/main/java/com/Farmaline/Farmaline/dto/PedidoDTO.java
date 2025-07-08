@@ -15,6 +15,8 @@ public class PedidoDTO {
     private String estadoPedido; 
     private String estadoUsuarioVerificacion; 
     private String estadoRepartidorVerificacion;
+    private String nombreUsuario;
+    private String domicilioUsuario;
     private List<DetallePedidoDTO> detallesPedido;
 
     public PedidoDTO() {
@@ -103,6 +105,22 @@ public class PedidoDTO {
 
     public void setEstadoRepartidorVerificacion(String estadoRepartidorVerificacion) {
         this.estadoRepartidorVerificacion = estadoRepartidorVerificacion;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    public String getDomicilioUsuario() {
+        return domicilioUsuario;
+    }
+
+    public void setDomicilioUsuario(String domicilioUsuario) {
+        this.domicilioUsuario = domicilioUsuario;
     }
 
     public List<DetallePedidoDTO> getDetallesPedido() {

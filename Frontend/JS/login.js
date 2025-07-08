@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initializeLoginPage() {
     setupEventListeners();
-    checkExistingSession();
+    // Esta función redirige si ya hay una sesión. Es importante que se ejecute antes de cualquier interacción de login.
+    checkExistingSession(); 
     const contenedor = document.getElementById("contenedor");
     const registrarseBtn = document.getElementById("registrarse");
     const iniciarSesionBtn = document.getElementById("iniciarSesion");
@@ -18,6 +19,8 @@ function initializeLoginPage() {
         registrarseBtn.addEventListener("click", () => {
             contenedor.classList.add("activo");
             clearFormErrors(document.getElementById('formularioInicioSesion'));
+            // Limpiar también el formulario de registro al cambiar a él si ya se había interactuado
+            // clearFormErrors(document.getElementById('formularioRegistro')); 
         });
     }
 
@@ -25,6 +28,8 @@ function initializeLoginPage() {
         iniciarSesionBtn.addEventListener("click", () => {
             contenedor.classList.remove("activo");
             clearFormErrors(document.getElementById('formularioRegistro'));
+            // Limpiar también el formulario de inicio de sesión al cambiar a él si ya se había interactuado
+            // clearFormErrors(document.getElementById('formularioInicioSesion'));
         });
     }
 }
@@ -32,14 +37,14 @@ function initializeLoginPage() {
 function setupEventListeners() {
     const loginForm = document.getElementById("formularioInicioSesion");
     if (loginForm) {
-        loginForm.addEventListener("submit", handleUserLogin); // Cambiado a handleUserLogin
+        loginForm.addEventListener("submit", handleUserLogin); 
     } else {
         console.error("No se encontró el formulario de inicio de sesión con ID 'formularioInicioSesion'.");
     }
 
     const registerForm = document.getElementById("formularioRegistro");
     if (registerForm) {
-        registerForm.addEventListener("submit", handleUserRegistration); // Cambiado a handleUserRegistration
+        registerForm.addEventListener("submit", handleUserRegistration); 
     } else {
         console.error("No se encontró el formulario de registro con ID 'formularioRegistro'.");
     }
@@ -56,7 +61,7 @@ function setupEventListeners() {
         console.warn("No se encontró el formulario de administrador con ID 'adminForm'.");
     }
 
-    const deliveryForm = document.getElementById("deliveryForm"); // Añadido para el repartidor
+    const deliveryForm = document.getElementById("deliveryForm"); 
     if (deliveryForm) {
         deliveryForm.addEventListener("submit", handleDeliveryLogin);
     } else {
@@ -66,7 +71,7 @@ function setupEventListeners() {
     setupRealTimeValidation();
 
     const registerPasswordInput = document.getElementById("contraseña");
-    const confirmPasswordInput = document.getElementById("confirmarContraseña"); // Asegúrate de que este ID exista en tu HTML
+    const confirmPasswordInput = document.getElementById("confirmarContraseña"); 
 
     if (confirmPasswordInput && registerPasswordInput) {
         confirmPasswordInput.addEventListener("input", checkPasswordMatch);
@@ -76,7 +81,6 @@ function setupEventListeners() {
         });
     }
 
-    // Configurar toggles de contraseña para todos los campos relevantes
     setupPasswordToggle("togglePasswordInicio", "contraseñaInicio");
     setupPasswordToggle("togglePasswordRegistro", "contraseña");
     setupPasswordToggle("toggleConfirmPasswordRegistro", "confirmarContraseña");
@@ -112,7 +116,6 @@ function clearFormErrors(form) {
         if (formControl) formControl.classList.remove("error");
         if (small) small.innerText = "";
     });
-    // También elimina las alertas dentro del formulario
     form.querySelectorAll(".alert").forEach(alert => alert.remove());
 }
 
@@ -159,8 +162,8 @@ async function handleAdminLogin(e) {
             const adminData = await response.json();
             localStorage.setItem('userRole', 'administrador');
             localStorage.setItem('userData', JSON.stringify(adminData));
-            console.log("Admin Data:", adminData); // Para depuración, muestra todo el DTO
-            if (adminData.idAdministrador) { // Asume que el DTO tiene un campo idAdministrador
+            console.log("Admin Data:", adminData); 
+            if (adminData.idAdministrador) { 
                 localStorage.setItem("farmalineAdminId", adminData.idAdministrador);
             }
             showAlert("success", `¡Bienvenido, Administrador ${adminData.usuario || adminData.nombre || ''}! Acceso concedido.`, adminModalBody);
@@ -225,10 +228,11 @@ async function handleDeliveryLogin(e) {
 
         if (response.ok) {
             const deliveryData = await response.json();
+            // *** ESTAS LÍNEAS SON LAS QUE GUARDAN EN LOCALSTORAGE ***
             localStorage.setItem('userRole', 'repartidor');
             localStorage.setItem('userData', JSON.stringify(deliveryData));
-            console.log("Delivery Data:", deliveryData); // Para depuración
-            if (deliveryData.idRepartidor) { // Asume que el DTO tiene un campo idRepartidor
+            console.log("Delivery Data:", deliveryData); 
+            if (deliveryData.idRepartidor) { 
                 localStorage.setItem("farmalineRepartidorId", deliveryData.idRepartidor);
             }
             showAlert("success", `¡Bienvenido, Repartidor ${deliveryData.nombre || deliveryData.correoElectronico || ''}! Acceso concedido.`, deliveryModalBody);
@@ -253,7 +257,7 @@ async function handleDeliveryLogin(e) {
     }
 }
 
-async function handleUserLogin(e) { // Renombrado de handleLogin a handleUserLogin
+async function handleUserLogin(e) { 
     e.preventDefault();
 
     const form = e.target;
@@ -292,10 +296,11 @@ async function handleUserLogin(e) { // Renombrado de handleLogin a handleUserLog
 
         if (response.ok) {
             const userData = await response.json();
+            // *** ESTAS LÍNEAS SON LAS QUE GUARDAN EN LOCALSTORAGE ***
             localStorage.setItem('userRole', 'usuario');
             localStorage.setItem("userData", JSON.stringify(userData));
-            console.log("User Data:", userData); // Para depuración
-            if (userData.idUsuario) { // Asume que el DTO tiene un campo idUsuario
+            console.log("User Data:", userData); 
+            if (userData.idUsuario) { 
                 localStorage.setItem("farmalineUserId", userData.idUsuario);
             }
             currentUser = userData;
@@ -323,18 +328,18 @@ async function handleUserLogin(e) { // Renombrado de handleLogin a handleUserLog
     }
 }
 
-async function handleUserRegistration(e) { // Renombrado de handleRegister a handleUserRegistration
+async function handleUserRegistration(e) { 
     e.preventDefault();
 
     const form = e.target;
     const nombreInput = document.getElementById("nombre");
-    const apellidoInput = document.getElementById("apellido"); // Asegúrate de que este ID exista
+    const apellidoInput = document.getElementById("apellido"); 
     const correoInput = document.getElementById("correo");
-    const domicilioInput = document.getElementById("direccion"); // Asegúrate de que este ID exista
+    const domicilioInput = document.getElementById("direccion"); 
     const contrasenaInput = document.getElementById("contraseña");
-    const confirmarContrasenaInput = document.getElementById("confirmarContraseña"); // Asegúrate de que este ID exista
-    const telefonoInput = document.getElementById("telefono"); // Asegúrate de que este ID exista
-    const terminosInput = document.getElementById("terminos"); // Asegúrate de que este ID exista
+    const confirmarContrasenaInput = document.getElementById("confirmarContraseña"); 
+    const telefonoInput = document.getElementById("telefono"); 
+    const terminosInput = document.getElementById("terminos");
 
     clearFormErrors(form);
 
@@ -427,7 +432,7 @@ async function handleForgotPassword(e) {
     showAlert("info", "Enviando enlace de recuperación...");
 
     try {
-        await simulateAPICall();
+        await simulateAPICall(); // Esto es solo una simulación, no un endpoint real
 
         showAlert("success", "Se ha enviado un enlace de recuperación a tu correo electrónico.");
 
@@ -476,7 +481,6 @@ function setupRealTimeValidation() {
         });
 
         input.addEventListener("input", function() {
-            // Limpia el error mientras el usuario escribe si ya estaba marcado como inválido
             if (this.classList.contains("is-invalid")) {
                  let isValid = true;
                  let errorMessage = "Este campo no puede estar vacío";
@@ -587,18 +591,38 @@ function checkExistingSession() {
     if (userRole && userData) {
         try {
             currentUser = JSON.parse(userData);
+            // Redirige solo si no estamos ya en la página de destino para evitar bucles.
+            // Considera si la página actual ya es la de destino antes de redirigir.
+            const currentPath = window.location.pathname.split('/').pop();
+
             if (userRole === 'administrador') {
-                window.location.href = "admin-inicio.html"; // Redirigir a la página de admin
+                if (currentPath !== "admin-inicio.html") {
+                    window.location.href = "admin-inicio.html";
+                }
             } else if (userRole === 'repartidor') {
-                window.location.href = "repartidor-inicio.html"; // Redirigir a la página de repartidor
+                if (currentPath !== "repartidor-inicio.html") {
+                    window.location.href = "repartidor-inicio.html"; 
+                }
             } else if (userRole === 'usuario') {
-                window.location.href = "Index.html"; // Redirigir a la página principal para usuarios normales
+                if (currentPath !== "Index.html") {
+                    window.location.href = "Index.html"; 
+                }
             }
         } catch (error) {
-            console.error("Error al parsear datos de sesión:", error);
-            clearSession();
+            console.error("Error al parsear datos de sesión desde localStorage:", error);
+            clearSession(); // Limpia la sesión si los datos están corruptos
         }
     }
+}
+
+// Función auxiliar para limpiar la sesión (útil si userData está corrupto)
+function clearSession() {
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userData");
+    localStorage.removeItem("farmalineUserId");
+    localStorage.removeItem("farmalineAdminId");
+    localStorage.removeItem("farmalineRepartidorId");
+    currentUser = null;
 }
 
 async function simulateAPICall() {
@@ -616,6 +640,7 @@ function setLoadingState(button, loading) {
         } else {
             button.classList.remove("loading");
             button.disabled = false;
+            // Restaurar el texto original del botón según su formulario
             if (button.closest('#adminForm')) {
                 button.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Ingresar como Administrador';
             } else if (button.closest('#deliveryForm')) {
@@ -637,8 +662,8 @@ function showAlert(type, message, container = null) {
         console.error("No se encontró el contenedor para las alertas.");
         return;
     }
-    const existingAlerts = targetContainer.querySelectorAll(".alert");
-    existingAlerts.forEach((alert) => alert.remove());
+    // Eliminar alertas existentes del mismo tipo o todas antes de añadir una nueva
+    targetContainer.querySelectorAll(".alert").forEach((alert) => alert.remove());
 
     const alert = document.createElement("div");
     alert.className = `alert alert-${type} alert-dismissible fade show mt-3`;
@@ -649,6 +674,7 @@ function showAlert(type, message, container = null) {
 
     targetContainer.insertBefore(alert, targetContainer.firstChild);
 
+    // Auto-eliminar la alerta después de un tiempo
     setTimeout(() => {
         if (alert.parentNode) {
             alert.remove();

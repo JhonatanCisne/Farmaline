@@ -9,7 +9,6 @@
     <link href="../CSS/admin.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Sidebar -->
     <div class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="mb-2">
@@ -55,7 +54,6 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <header class="admin-header">
             <div class="d-flex justify-content-between align-items-center">
@@ -81,71 +79,24 @@
         </header>
 
         <div class="content-area">
-            <!-- Tarjetas de estadísticas -->
             <div class="row mb-4">
                 <div class="col-md-3 mb-3">
-                    <div class="card stats-card clickable-card" data-action="pedidos" data-filter="">
+                    <div class="card stats-card clickable-card" data-action="pedidos" data-filter="pendientes-doble-verificacion">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h3 id="total-pedidos" class="mb-1">0</h3>
-                                    <p class="mb-0">Pedidos Pendientes</p>
+                                    <p class="mb-0">Pedidos Pendientes (Doble Verificación)</p>
                                 </div>
                                 <div>
-                                    <i class="fas fa-box fa-2x opacity-75"></i>
+                                    <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card stats-card warning clickable-card" data-action="pedidos" data-filter="en-camino">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h3 id="en-camino" class="mb-1">0</h3>
-                                    <p class="mb-0">En Camino</p>
-                                </div>
-                                <div>
-                                    <i class="fas fa-shipping-fast fa-2x opacity-75"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card stats-card success clickable-card" data-action="historial" data-filter="entregados">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h3 id="entregados-hoy" class="mb-1">0</h3>
-                                    <p class="mb-0">Entregados Hoy</p>
-                                </div>
-                                <div>
-                                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card stats-card info clickable-card" data-action="perfil" data-filter="">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h3 id="zona-actual" class="mb-1">N/A</h3>
-                                    <p class="mb-0">Mi Zona</p>
-                                </div>
-                                <div>
-                                    <i class="fas fa-map-marker-alt fa-2x opacity-75"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Próximas entregas -->
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
@@ -179,7 +130,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../JS/repartidor.js"></script>
     <script src="../JS/repartidor-inicio.js"></script>
 </body>
 </html>

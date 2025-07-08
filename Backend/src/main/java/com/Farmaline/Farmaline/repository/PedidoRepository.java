@@ -27,4 +27,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
     @Transactional
     void deleteByRepartidor_IdRepartidor(Integer idRepartidor);
+
+    List<Pedido> findByRepartidor_IdRepartidorAndEstadoRepartidorVerificacion(Integer idRepartidor, String estadoRepartidorVerificacion);
+
+    List<Pedido> findByRepartidor_IdRepartidorAndEstado(Integer idRepartidor, String estado);
 }

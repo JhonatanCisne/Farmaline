@@ -33,9 +33,16 @@ public class PedidoController {
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<PedidoDTO>> getPedidosByUsuarioId(@PathVariable Integer idUsuario) {
         List<PedidoDTO> pedidos = pedidoService.getPedidosByUsuarioId(idUsuario);
-        // CAMBIO: Si la lista de pedidos está vacía, devuelve un 200 OK con una lista JSON vacía []
-        // en lugar de un 204 No Content. Esto es más fácil de manejar para el frontend.
         return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/repartidor/{idRepartidor}")
+    public ResponseEntity<List<PedidoDTO>> getPedidosByRepartidorId(@PathVariable Integer idRepartidor) {
+        List<PedidoDTO> pedidos = pedidoService.getPedidosByRepartidorId(idRepartidor);
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Devuelve 204 No Content si la lista está vacía
+        }
+        return ResponseEntity.ok(pedidos); // Devuelve 200 OK con la lista si hay pedidos
     }
 
     @GetMapping("/{id}")
@@ -51,7 +58,7 @@ public class PedidoController {
             PedidoDTO createdPedido = pedidoService.createPedidoFromCarrito(idUsuario);
             return new ResponseEntity<>(createdPedido, HttpStatus.CREATED);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(null); 
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
@@ -87,8 +94,6 @@ public class PedidoController {
         return ResponseEntity.notFound().build();
     }
 
-    // --- Nuevos Endpoints para la Doble Verificación ---
-
     @PutMapping("/{idPedido}/confirmar-entrega")
     public ResponseEntity<PedidoDTO> confirmarEntregaUsuario(@PathVariable Integer idPedido) {
         try {
@@ -96,7 +101,7 @@ public class PedidoController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409 Conflict si ya está confirmado o completado
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -109,13 +114,11 @@ public class PedidoController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409 Conflict si ya está confirmado o completado
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
-    // --- Nuevos Endpoints de Búsqueda por Estado General ---
 
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<PedidoDTO>> getPedidosByEstado(@PathVariable String estado) {
