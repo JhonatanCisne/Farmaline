@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.farmaline.farmaline.dto.UsuarioDTO; 
+import com.farmaline.farmaline.dto.UsuarioDTO;
 import com.farmaline.farmaline.model.Usuario;
 import com.farmaline.farmaline.repository.CalificacionRepository;
 import com.farmaline.farmaline.repository.CarritoRepository;
-import com.farmaline.farmaline.repository.DobleVerificacionRepository;
 import com.farmaline.farmaline.repository.PedidoRepository;
 import com.farmaline.farmaline.repository.RegistroRepository;
 import com.farmaline.farmaline.repository.UsuarioRepository;
@@ -24,15 +23,13 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private CarritoRepository carritoRepository; 
+    private CarritoRepository carritoRepository;
     @Autowired
     private PedidoRepository pedidoRepository;
     @Autowired
     private CalificacionRepository calificacionRepository;
     @Autowired
-    private RegistroRepository registroRepository; 
-    @Autowired
-    private DobleVerificacionRepository dobleVerificacionRepository; 
+    private RegistroRepository registroRepository;
 
     public List<UsuarioDTO> getAllUsuarios() {
         return usuarioRepository.findAll().stream()
@@ -79,7 +76,7 @@ public class UsuarioService {
             existingUsuario.setTelefono(usuarioDTO.getTelefono());
 
             if (usuarioDTO.getContrasena() != null && !usuarioDTO.getContrasena().isEmpty()) {
-                existingUsuario.setContrasena(usuarioDTO.getContrasena()); 
+                existingUsuario.setContrasena(usuarioDTO.getContrasena());
             }
 
             Usuario updatedUsuario = usuarioRepository.save(existingUsuario);
@@ -93,7 +90,7 @@ public class UsuarioService {
 
             calificacionRepository.deleteByUsuario_IdUsuario(id);
 
-            dobleVerificacionRepository.deleteByUsuario_IdUsuario(id);
+            registroRepository.deleteByPedido_IdPedido(id); 
 
             pedidoRepository.deleteByUsuario_IdUsuario(id);
 
@@ -107,7 +104,7 @@ public class UsuarioService {
 
     public Optional<UsuarioDTO> authenticateUsuario(String correoElectronico, String contrasena) {
         return usuarioRepository.findByCorreoElectronico(correoElectronico)
-                .filter(usuario -> contrasena.equals(usuario.getContrasena())) 
+                .filter(usuario -> contrasena.equals(usuario.getContrasena()))
                 .map(this::convertToDTO);
     }
 
@@ -125,13 +122,13 @@ public class UsuarioService {
 
     private Usuario convertToEntity(UsuarioDTO usuarioDTO) {
         Usuario usuario = new Usuario();
-        usuario.setIdUsuario(usuarioDTO.getIdUsuario()); // Puede ser null para nuevas entidades
+        usuario.setIdUsuario(usuarioDTO.getIdUsuario());
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setApellido(usuarioDTO.getApellido());
         usuario.setCorreoElectronico(usuarioDTO.getCorreoElectronico());
         usuario.setDomicilio(usuarioDTO.getDomicilio());
         usuario.setTelefono(usuarioDTO.getTelefono());
-        usuario.setContrasena(usuarioDTO.getContrasena()); // Contraseña se setea aquí para consistencia
+        usuario.setContrasena(usuarioDTO.getContrasena());
         return usuario;
     }
 }

@@ -43,20 +43,13 @@ public class RegistroController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/doble-verificacion/{idDobleVerificacion}")
-    public ResponseEntity<RegistroDTO> getRegistroByDobleVerificacionId(@PathVariable Integer idDobleVerificacion) {
-        return registroService.getRegistroByDobleVerificacionId(idDobleVerificacion)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
     @PostMapping
     public ResponseEntity<RegistroDTO> createRegistro(@RequestBody RegistroDTO registroDTO) {
         try {
             RegistroDTO createdRegistro = registroService.createRegistro(registroDTO);
             return new ResponseEntity<>(createdRegistro, HttpStatus.CREATED);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null); // Se recomienda pasar el mensaje de error si es necesario
         }
     }
 
@@ -71,14 +64,6 @@ public class RegistroController {
     @DeleteMapping("/pedido/{idPedido}")
     public ResponseEntity<Void> deleteRegistroByPedidoId(@PathVariable Integer idPedido) {
         if (registroService.deleteRegistroByPedidoId(idPedido)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    @DeleteMapping("/doble-verificacion/{idDobleVerificacion}")
-    public ResponseEntity<Void> deleteRegistroByDobleVerificacionId(@PathVariable Integer idDobleVerificacion) {
-        if (registroService.deleteRegistroByDobleVerificacionId(idDobleVerificacion)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

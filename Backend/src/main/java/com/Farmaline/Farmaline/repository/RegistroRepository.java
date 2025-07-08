@@ -13,16 +13,9 @@ public interface RegistroRepository extends JpaRepository<Registro, Integer> {
 
     Optional<Registro> findByPedido_IdPedido(Integer idPedido);
 
-    Optional<Registro> findByDobleVerificacion_IdDobleVerifiacion(Integer idDobleVerificacion);
-
     boolean existsByPedido_IdPedido(Integer idPedido);
-
-    boolean existsByDobleVerificacion_IdDobleVerifiacion(Integer idDobleVerificacion);
 
     @Transactional
     void deleteByPedido_IdPedido(Integer idPedido);
-
-    @Transactional
-    void deleteByDobleVerificacion_IdDobleVerifiacion(Integer idDobleVerificacion);
 
 }

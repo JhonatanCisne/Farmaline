@@ -30,6 +30,14 @@ public class PedidoController {
         return ResponseEntity.ok(pedidos);
     }
 
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<PedidoDTO>> getPedidosByUsuarioId(@PathVariable Integer idUsuario) {
+        List<PedidoDTO> pedidos = pedidoService.getPedidosByUsuarioId(idUsuario);
+        // CAMBIO: Si la lista de pedidos está vacía, devuelve un 200 OK con una lista JSON vacía []
+        // en lugar de un 204 No Content. Esto es más fácil de manejar para el frontend.
+        return ResponseEntity.ok(pedidos);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PedidoDTO> getPedidoById(@PathVariable Integer id) {
         return pedidoService.getPedidoById(id)
@@ -43,7 +51,7 @@ public class PedidoController {
             PedidoDTO createdPedido = pedidoService.createPedidoFromCarrito(idUsuario);
             return new ResponseEntity<>(createdPedido, HttpStatus.CREATED);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null); 
         }
     }
 
@@ -54,7 +62,7 @@ public class PedidoController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
@@ -67,7 +75,7 @@ public class PedidoController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
@@ -77,5 +85,62 @@ public class PedidoController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // --- Nuevos Endpoints para la Doble Verificación ---
+
+    @PutMapping("/{idPedido}/confirmar-entrega")
+    public ResponseEntity<PedidoDTO> confirmarEntregaUsuario(@PathVariable Integer idPedido) {
+        try {
+            return pedidoService.confirmarEntregaUsuario(idPedido)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409 Conflict si ya está confirmado o completado
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PutMapping("/{idPedido}/confirmar-pago")
+    public ResponseEntity<PedidoDTO> confirmarPagoRepartidor(@PathVariable Integer idPedido) {
+        try {
+            return pedidoService.confirmarPagoRepartidor(idPedido)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409 Conflict si ya está confirmado o completado
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    // --- Nuevos Endpoints de Búsqueda por Estado General ---
+
+    @GetMapping("/estado/{estado}")
+    public ResponseEntity<List<PedidoDTO>> getPedidosByEstado(@PathVariable String estado) {
+        List<PedidoDTO> pedidos = pedidoService.getPedidosByEstado(estado);
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/pendientes")
+    public ResponseEntity<List<PedidoDTO>> getPedidosPendientes() {
+        List<PedidoDTO> pedidos = pedidoService.getPedidosPendientes();
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/realizados")
+    public ResponseEntity<List<PedidoDTO>> getPedidosRealizados() {
+        List<PedidoDTO> pedidos = pedidoService.getPedidosRealizados();
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(pedidos);
     }
 }

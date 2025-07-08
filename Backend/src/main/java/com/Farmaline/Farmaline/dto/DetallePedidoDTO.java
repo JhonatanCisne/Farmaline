@@ -6,6 +6,7 @@ public class DetallePedidoDTO {
     private Integer idDetallePedido;
     private Integer idPedido;
     private Integer idProducto;
+    private String nombreProducto; // ¡NUEVO CAMPO AQUÍ!
     private int cantidad;
     private BigDecimal precioUnitarioAlMomentoCompra;
     private BigDecimal subtotalDetalle;
@@ -13,10 +14,11 @@ public class DetallePedidoDTO {
     public DetallePedidoDTO() {
     }
 
-    public DetallePedidoDTO(Integer idDetallePedido, Integer idPedido, Integer idProducto, int cantidad, BigDecimal precioUnitarioAlMomentoCompra, BigDecimal subtotalDetalle) {
+    public DetallePedidoDTO(Integer idDetallePedido, Integer idPedido, Integer idProducto, String nombreProducto, int cantidad, BigDecimal precioUnitarioAlMomentoCompra, BigDecimal subtotalDetalle) {
         this.idDetallePedido = idDetallePedido;
         this.idPedido = idPedido;
         this.idProducto = idProducto;
+        this.nombreProducto = nombreProducto; 
         this.cantidad = cantidad;
         this.precioUnitarioAlMomentoCompra = precioUnitarioAlMomentoCompra;
         this.subtotalDetalle = subtotalDetalle;
@@ -44,6 +46,14 @@ public class DetallePedidoDTO {
 
     public void setIdProducto(Integer idProducto) {
         this.idProducto = idProducto;
+    }
+
+    public String getNombreProducto() {
+        return nombreProducto;
+    }
+
+    public void setNombreProducto(String nombreProducto) {
+        this.nombreProducto = nombreProducto;
     }
 
     public int getCantidad() {

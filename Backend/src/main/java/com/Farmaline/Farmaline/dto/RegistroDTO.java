@@ -3,15 +3,13 @@ package com.farmaline.farmaline.dto;
 public class RegistroDTO {
     private Integer idRegistro;
     private Integer idPedido;
-    private Integer idDobleVerificacion;
 
     public RegistroDTO() {
     }
 
-    public RegistroDTO(Integer idRegistro, Integer idPedido, Integer idDobleVerificacion) {
+    public RegistroDTO(Integer idRegistro, Integer idPedido) {
         this.idRegistro = idRegistro;
         this.idPedido = idPedido;
-        this.idDobleVerificacion = idDobleVerificacion;
     }
 
     public Integer getIdRegistro() {
@@ -28,13 +26,5 @@ public class RegistroDTO {
 
     public void setIdPedido(Integer idPedido) {
         this.idPedido = idPedido;
-    }
-
-    public Integer getIdDobleVerificacion() {
-        return idDobleVerificacion;
-    }
-
-    public void setDobleVerificacion(Integer idDobleVerificacion) {
-        this.idDobleVerificacion = idDobleVerificacion;
     }
 }

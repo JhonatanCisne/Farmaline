@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +33,15 @@ public class Pedido {
     @Column(name="Monto_Total_Pedido", nullable = false, precision = 10, scale = 2)
     private BigDecimal montoTotalPedido;
 
+    @Column(name="Estado", nullable = false, length = 50)
+    private String estado;
+
+    @Column(name="Estado_Usuario_Verificacion", nullable = false, length = 50)
+    private String estadoUsuarioVerificacion;
+
+    @Column(name="Estado_Repartidor_Verificacion", nullable = false, length = 50) 
+    private String estadoRepartidorVerificacion;
+
     @ManyToOne 
     @JoinColumn(name = "ID_Usuario", referencedColumnName = "ID_Usuario", nullable = false)
     private Usuario usuario;
@@ -40,7 +50,7 @@ public class Pedido {
     @JoinColumn(name = "ID_Repartidor", referencedColumnName = "ID_Repartidor", nullable = true)
     private Repartidor repartidor;
 
-    @OneToMany(mappedBy = "pedido")
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DetallePedido> detallesPedido;
 
     public Integer getIdPedido() {
@@ -73,6 +83,30 @@ public class Pedido {
 
     public void setMontoTotalPedido(BigDecimal montoTotalPedido) {
         this.montoTotalPedido = montoTotalPedido;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getEstadoUsuarioVerificacion() {
+        return estadoUsuarioVerificacion;
+    }
+
+    public void setEstadoUsuarioVerificacion(String estadoUsuarioVerificacion) {
+        this.estadoUsuarioVerificacion = estadoUsuarioVerificacion;
+    }
+
+    public String getEstadoRepartidorVerificacion() {
+        return estadoRepartidorVerificacion;
+    }
+
+    public void setEstadoRepartidorVerificacion(String estadoRepartidorVerificacion) {
+        this.estadoRepartidorVerificacion = estadoRepartidorVerificacion;
     }
 
     public Usuario getUsuario() {

@@ -661,7 +661,7 @@ function logout() {
     localStorage.removeItem("userData");
     localStorage.removeItem("farmalineUserId");
     localStorage.removeItem("farmalineAdminId");
-    localStorage.removeItem("farmalineRepartidorId"); // Añadido para Repartidor
+    localStorage.removeItem("farmalineRepartidorId");
     currentUser = null;
     window.location.href = "Login.html";
 }

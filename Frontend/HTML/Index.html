@@ -10,7 +10,6 @@
 </head>
 <body>
     <div class="main-container">
-        <!-- Incluir Menu -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand d-flex align-items-center" href="#">
@@ -37,246 +36,236 @@
                             <a class="nav-link" href="Login.html">Cuenta</a>
                         </li>
                         <li class="nav-item" id="navLogoutItem" style="display: block;">
-    <a class="nav-link" href="#" id="logoutButton" onclick="cerrarSesionDirecto(event)">Cerrar Sesión</a>
-</li>
-
-<script>
-    function cerrarSesionDirecto(event) {
-        event.preventDefault();
-        localStorage.removeItem("farmalineUserId");
-        localStorage.removeItem("farmalineAdminId");
-        localStorage.removeItem("farmalineRepartidorId");
-        localStorage.removeItem("userRole");
-        window.location.href = "Login.html";
-            }
-                    </script>                     
+                            <a class="nav-link" href="#" id="logoutButton" onclick="cerrarSesionDirecto(event)">Cerrar Sesión</a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-    <!-- Header con búsqueda -->
-    <header class="bg-teal text-white py-3">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-0">
-                            <i class="fas fa-search text-muted"></i>
-                        </span>
-                        <input type="text" id="searchInput" class="form-control border-0" placeholder="Buscar productos...">
+        <script>
+            function cerrarSesionDirecto(event) {
+                event.preventDefault();
+                localStorage.removeItem("farmalineUserId");
+                localStorage.removeItem("farmalineAdminId");
+                localStorage.removeItem("farmalineRepartidorId");
+                localStorage.removeItem("userRole");
+                window.location.href = "Login.html";
+            }
+        </script>
+
+        <header class="bg-teal text-white py-3">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" id="searchInput" class="form-control border-0" placeholder="Buscar productos...">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Navegación de categorías -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-        <div class="container">
-            <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-chevron-down me-1"></i> Categorías
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item category-filter" href="#" data-category="all">Todos</a></li>
-                    <li><a class="dropdown-item category-filter" href="#" data-category="medicamentos">Medicamentos</a></li>
-                    <li><a class="dropdown-item category-filter" href="#" data-category="cuidado-personal">Cuidado personal</a></li>
-                    <li><a class="dropdown-item category-filter" href="#" data-category="bebes">Bebés</a></li>
-                    <li><a class="dropdown-item category-filter" href="#" data-category="vitaminas">Vitaminas</a></li>
-                </ul>
-            </div>
-            <div class="navbar-nav ms-4 d-none d-lg-flex">
-                <a class="nav-link category-filter" href="#" data-category="cuidado-cabello">Cuidado para el cabello</a>
-                <a class="nav-link category-filter" href="#" data-category="bebes">Bebés</a>
-                <a class="nav-link category-filter" href="#" data-category="medicamentos">Medicamentos</a>
-                <a class="nav-link category-filter" href="#" data-category="fotoproteccion">Fotoprotección</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Banner Hero Carousel -->
-    <section class="hero-banner bg-teal text-white py-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-1">
-                    <button class="btn btn-link text-white p-0" id="prevSlide">
-                        <i class="fas fa-chevron-left fa-2x"></i>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+            <div class="container">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-chevron-down me-1"></i> Categorías
                     </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item category-filter" href="#" data-category="all">Todos</a></li>
+                        <li><a class="dropdown-item category-filter" href="#" data-category="medicamentos">Medicamentos</a></li>
+                        <li><a class="dropdown-item category-filter" href="#" data-category="cuidado-personal">Cuidado personal</a></li>
+                        <li><a class="dropdown-item category-filter" href="#" data-category="bebes">Bebés</a></li>
+                        <li><a class="dropdown-item category-filter" href="#" data-category="vitaminas">Vitaminas</a></li>
+                    </ul>
                 </div>
-                <div class="col-10">
-                    <div class="carousel-container">
-                        <!-- Slide 1 - NAN Sin Lactosa -->
-                        <div class="carousel-slide active" data-product-id="9">
-                            <div class="row align-items-center">
-                                <div class="col-md-4">
-                                    <div class="price-section">
-                                        <h2 class="display-4 fw-bold mb-1">S/. 71.90</h2>
-                                        <p class="fs-5 mb-3">Soles</p>
-                                        <h3 class="h2 fw-bold mb-3">NAN Sin Lactosa</h3>
-                                        <p class="small mb-3">Fórmula diseñada especialmente para el manejo dietario de una mala digestión/intolerancia a la lactosa.</p>
-                                        <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="9">
-                                            <i class="fas fa-shopping-cart me-2"></i>
-                                            Comprar Ahora
-                                        </button>
+                <div class="navbar-nav ms-4 d-none d-lg-flex">
+                    <a class="nav-link category-filter" href="#" data-category="cuidado-cabello">Cuidado para el cabello</a>
+                    <a class="nav-link category-filter" href="#" data-category="bebes">Bebés</a>
+                    <a class="nav-link category-filter" href="#" data-category="medicamentos">Medicamentos</a>
+                    <a class="nav-link category-filter" href="#" data-category="fotoproteccion">Fotoprotección</a>
+                </div>
+            </div>
+        </nav>
+
+        <section class="hero-banner bg-teal text-white py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-1">
+                        <button class="btn btn-link text-white p-0" id="prevSlide">
+                            <i class="fas fa-chevron-left fa-2x"></i>
+                        </button>
+                    </div>
+                    <div class="col-10">
+                        <div class="carousel-container">
+                            <div class="carousel-slide active" data-product-id="9">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <div class="price-section">
+                                            <h2 class="display-4 fw-bold mb-1">S/. 71.90</h2>
+                                            <p class="fs-5 mb-3">Soles</p>
+                                            <h3 class="h2 fw-bold mb-3">NAN Sin Lactosa</h3>
+                                            <p class="small mb-3">Fórmula diseñada especialmente para el manejo dietario de una mala digestión/intolerancia a la lactosa.</p>
+                                            <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="9">
+                                                <i class="fas fa-shopping-cart me-2"></i>
+                                                Comprar Ahora
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="../images/P/NanC.png" alt="NAN Sin Lactosa" class="img-fluid" style="max-height: 200px;">
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="heartbeat-line">
+                                            <div class="pulse-line"></div>
+                                            <i class="fas fa-heart fa-2x ms-3"></i>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 text-center">
-                                    <img src="../images/P/NanC.png" alt="NAN Sin Lactosa" class="img-fluid" style="max-height: 200px;">
+                            </div>
+
+                            <div class="carousel-slide" data-product-id="4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <div class="price-section">
+                                            <h2 class="display-4 fw-bold mb-1">S/. 15.90</h2>
+                                            <p class="fs-5 mb-3">Soles</p>
+                                            <h3 class="h2 fw-bold mb-3">Vitamina C 1000mg</h3>
+                                            <p class="small mb-3">Suplemento vitamínico para fortalecer el sistema inmunológico. Tabletas efervescentes con sabor a naranja.</p>
+                                            <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="4">
+                                                <i class="fas fa-shopping-cart me-2"></i>
+                                                Comprar Ahora
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="../images/P/vitaminacC.png" alt="Vitamina C" class="img-fluid" style="max-height: 200px;">
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="heartbeat-line">
+                                            <div class="pulse-line"></div>
+                                            <i class="fas fa-heart fa-2x ms-3"></i>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="heartbeat-line">
-                                        <div class="pulse-line"></div>
-                                        <i class="fas fa-heart fa-2x ms-3"></i>
+                            </div>
+
+                            <div class="carousel-slide" data-product-id="7">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <div class="price-section">
+                                            <h2 class="display-4 fw-bold mb-1">S/. 32.90</h2>
+                                            <p class="fs-5 mb-3">Soles</p>
+                                            <h3 class="h2 fw-bold mb-3">Protector Solar SPF 50</h3>
+                                            <p class="small mb-3">Protector solar de amplio espectro para protección facial diaria. Resistente al agua y no comedogénico.</p>
+                                            <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="7">
+                                                <i class="fas fa-shopping-cart me-2"></i>
+                                                Comprar Ahora
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="../images/P/ciproC.png" alt="Protector Solar" class="img-fluid" style="max-height: 200px;">
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="heartbeat-line">
+                                            <div class="pulse-line"></div>
+                                            <i class="fas fa-heart fa-2x ms-3"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="carousel-slide" data-product-id="2">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <div class="price-section">
+                                            <h2 class="display-4 fw-bold mb-1">S/. 6.50</h2>
+                                            <p class="fs-5 mb-3">Soles</p>
+                                            <h3 class="h2 fw-bold mb-3">Paracetamol 500mg</h3>
+                                            <p class="small mb-3">Analgésico y antipirético para el alivio del dolor y la fiebre. Caja con 20 tabletas de venta libre.</p>
+                                            <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="2">
+                                                <i class="fas fa-shopping-cart me-2"></i>
+                                                Comprar Ahora
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="../images/P/paracetamolC.png" alt="Paracetamol" class="img-fluid" style="max-height: 200px;">
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="heartbeat-line">
+                                            <div class="pulse-line"></div>
+                                            <i class="fas fa-heart fa-2x ms-3"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Slide 2 - Vitamina C -->
-                        <div class="carousel-slide" data-product-id="4">
-                            <div class="row align-items-center">
-                                <div class="col-md-4">
-                                    <div class="price-section">
-                                        <h2 class="display-4 fw-bold mb-1">S/. 15.90</h2>
-                                        <p class="fs-5 mb-3">Soles</p>
-                                        <h3 class="h2 fw-bold mb-3">Vitamina C 1000mg</h3>
-                                        <p class="small mb-3">Suplemento vitamínico para fortalecer el sistema inmunológico. Tabletas efervescentes con sabor a naranja.</p>
-                                        <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="4">
-                                            <i class="fas fa-shopping-cart me-2"></i>
-                                            Comprar Ahora
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <img src="../images/P/vitaminacC.png" alt="Vitamina C" class="img-fluid" style="max-height: 200px;">
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="heartbeat-line">
-                                        <div class="pulse-line"></div>
-                                        <i class="fas fa-heart fa-2x ms-3"></i>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="carousel-indicators mt-4">
+                            <button class="indicator active" data-slide="0"></button>
+                            <button class="indicator" data-slide="1"></button>
+                            <button class="indicator" data-slide="2"></button>
+                            <button class="indicator" data-slide="3"></button>
                         </div>
+                    </div>
+                    <div class="col-1">
+                        <button class="btn btn-link text-white p-0" id="nextSlide">
+                            <i class="fas fa-chevron-right fa-2x"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                        <!-- Slide 3 - Protector Solar -->
-                        <div class="carousel-slide" data-product-id="7">
-                            <div class="row align-items-center">
-                                <div class="col-md-4">
-                                    <div class="price-section">
-                                        <h2 class="display-4 fw-bold mb-1">S/. 32.90</h2>
-                                        <p class="fs-5 mb-3">Soles</p>
-                                        <h3 class="h2 fw-bold mb-3">Protector Solar SPF 50</h3>
-                                        <p class="small mb-3">Protector solar de amplio espectro para protección facial diaria. Resistente al agua y no comedogénico.</p>
-                                        <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="7">
-                                            <i class="fas fa-shopping-cart me-2"></i>
-                                            Comprar Ahora
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <img src="../images/P/ciproC.png" alt="Protector Solar" class="img-fluid" style="max-height: 200px;">
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="heartbeat-line">
-                                        <div class="pulse-line"></div>
-                                        <i class="fas fa-heart fa-2x ms-3"></i>
-                                    </div>
-                                </div>
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="dropdown mb-3">
+                                <button class="btn w-100 text-start" type="button" data-bs-toggle="dropdown">
+                                    ≡ Filtros <i class="fas fa-chevron-down float-end"></i>
+                                </button>
                             </div>
-                        </div>
-
-                        <!-- Slide 4 - Paracetamol -->
-                        <div class="carousel-slide" data-product-id="2">
-                            <div class="row align-items-center">
-                                <div class="col-md-4">
-                                    <div class="price-section">
-                                        <h2 class="display-4 fw-bold mb-1">S/. 6.50</h2>
-                                        <p class="fs-5 mb-3">Soles</p>
-                                        <h3 class="h2 fw-bold mb-3">Paracetamol 500mg</h3>
-                                        <p class="small mb-3">Analgésico y antipirético para el alivio del dolor y la fiebre. Caja con 20 tabletas de venta libre.</p>
-                                        <button class="btn btn-light btn-lg rounded-pill px-4 buy-btn" data-product-id="2">
-                                            <i class="fas fa-shopping-cart me-2"></i>
-                                            Comprar Ahora
-                                        </button>
-                                    </div>
+                            <div class="filter-options">
+                                <div class="form-check d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-check-label small">Precio de mayor a menor</label>
+                                    <input class="form-check-input price-filter" type="radio" name="priceFilter" value="desc">
                                 </div>
-                                <div class="col-md-4 text-center">
-                                    <img src="../images/P/paracetamolC.png" alt="Paracetamol" class="img-fluid" style="max-height: 200px;">
+                                <div class="form-check d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-check-label small">Precio de menor a mayor</label>
+                                    <input class="form-check-input price-filter" type="radio" name="priceFilter" value="asc" checked>
                                 </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="heartbeat-line">
-                                        <div class="pulse-line"></div>
-                                        <i class="fas fa-heart fa-2x ms-3"></i>
-                                    </div>
+                                <div class="form-check d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-check-label small">Con descuento</label>
+                                    <input class="form-check-input discount-filter" type="checkbox" id="discountFilter">
+                                </div>
+                                <div class="form-check d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-check-label small">Nuevos</label>
+                                    <input class="form-check-input new-filter" type="checkbox" id="newFilter">
+                                </div>
+                                <div class="form-check d-flex justify-content-between align-items-center">
+                                    <label class="form-check-label small">Orden alfabético</label>
+                                    <input class="form-check-input alpha-filter" type="radio" name="priceFilter" value="alpha">
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Indicadores del carrusel -->
-                    <div class="carousel-indicators mt-4">
-                        <button class="indicator active" data-slide="0"></button>
-                        <button class="indicator" data-slide="1"></button>
-                        <button class="indicator" data-slide="2"></button>
-                        <button class="indicator" data-slide="3"></button>
-                    </div>
                 </div>
-                <div class="col-1">
-                    <button class="btn btn-link text-white p-0" id="nextSlide">
-                        <i class="fas fa-chevron-right fa-2x"></i>
-                    </button>
+                <div class="col-md-9">
+                    <div class="row" id="productsContainer"> 
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div> 
 
-    <!-- Contenido Principal -->
-    <div class="container my-5">
-        <div class="row">
-            <!-- Sidebar de Filtros -->
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="dropdown mb-3">
-                            <button class="btn w-100 text-start" type="button" data-bs-toggle="dropdown">
-                                ≡ Filtros <i class="fas fa-chevron-down float-end"></i>
-                            </button>
-                        </div>
-                        <div class="filter-options">
-                            <div class="form-check d-flex justify-content-between align-items-center mb-2">
-                                <label class="form-check-label small">Precio de mayor a menor</label>
-                                <input class="form-check-input price-filter" type="radio" name="priceFilter" value="desc">
-                            </div>
-                            <div class="form-check d-flex justify-content-between align-items-center mb-2">
-                                <label class="form-check-label small">Precio de menor a mayor</label>
-                                <input class="form-check-input price-filter" type="radio" name="priceFilter" value="asc" checked>
-                            </div>
-                            <div class="form-check d-flex justify-content-between align-items-center mb-2">
-                                <label class="form-check-label small">Con descuento</label>
-                                <input class="form-check-input discount-filter" type="checkbox" id="discountFilter">
-                            </div>
-                            <div class="form-check d-flex justify-content-between align-items-center mb-2">
-                                <label class="form-check-label small">Nuevos</label>
-                                <input class="form-check-input new-filter" type="checkbox" id="newFilter">
-                            </div>
-                            <div class="form-check d-flex justify-content-between align-items-center">
-                                <label class="form-check-label small">Orden alfabético</label>
-                                <input class="form-check-input alpha-filter" type="radio" name="priceFilter" value="alpha">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div class="row" id="productsContainer">         
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para detalles del producto -->
     <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -311,41 +300,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <hr>
-                    
-                    <!-- Sección de comentarios -->
-                    <div class="comments-section">
-                        <h5>Comentarios y Reseñas</h5>
-                        
-                        <!-- Formulario para nuevo comentario -->
-                        <div class="mb-4">
-                            <h6>Agregar comentario:</h6>
-                            <div class="mb-2">
-                                <label for="rating" class="form-label">Calificación:</label>
-                                <div class="rating-stars">
-                                    <i class="fas fa-star star" data-rating="1"></i>
-                                    <i class="fas fa-star star" data-rating="2"></i>
-                                    <i class="fas fa-star star" data-rating="3"></i>
-                                    <i class="fas fa-star star" data-rating="4"></i>
-                                    <i class="fas fa-star star" data-rating="5"></i>
-                                </div>
-                                <input type="hidden" id="selectedRating" value="0">
-                            </div>
-                            <div class="mb-2">
-                                <input type="text" class="form-control" id="commentAuthor" placeholder="Tu nombre">
-                            </div>
-                            <div class="mb-2">
-                                <textarea class="form-control" id="commentText" rows="3" placeholder="Escribe tu comentario..."></textarea>
-                            </div>
-                            <button type="button" class="btn btn-teal" id="addComment">Agregar Comentario</button>
-                        </div>
-                        
-                        <!-- Lista de comentarios -->
-                        <div id="commentsList">
-                            <!-- Los comentarios se cargarán aquí -->
-                        </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -354,14 +308,10 @@
             </div>
         </div>
     </div>
-        </div>
-    </div>
 
-    <!-- Footer -->
     <footer class="footer-section">
         <div class="container">
             <div class="row">
-                <!-- Logo y descripción -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="footer-logo mb-3">
                         <img src="../images/farmaline-logo.png" alt="Farmaline Logo" height="40" class="me-2">
@@ -373,7 +323,6 @@
                     </p>
                 </div>
 
-                <!-- Horarios -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-title">
                         <i class="fas fa-clock me-2"></i>
@@ -400,7 +349,6 @@
                     </div>
                 </div>
 
-                <!-- Navegación -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-title">Guía de Navegación</h5>
                     <ul class="footer-links">
@@ -412,11 +360,9 @@
                         <li><a href="Glosario.html">Glosario Médico</a></li>
                         <li><a href="Pedidos.html">Mis Pedidos</a></li>
                         <li><a href="Login.html">Mi Cuenta</a></li>
-                        
                     </ul>
                 </div>
 
-                <!-- Contacto -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-title">Contacto</h5>
                     <div class="footer-contact">
@@ -449,7 +395,6 @@
                         </div>
                     </div>
 
-                    <!-- Redes sociales -->
                     <div class="social-links mt-3">
                         <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
@@ -460,7 +405,6 @@
                 </div>
             </div>
 
-            <!-- Copyright -->
             <hr class="footer-divider">
             <div class="row">
                 <div class="col-md-6">
@@ -481,6 +425,6 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../JS/products.js"></script>
+    <script src="../JS/index.js"></script>
 </body>
 </html>

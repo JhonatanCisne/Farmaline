@@ -20,6 +20,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
     List<Pedido> findByFechaAndUsuario_IdUsuario(LocalDate fecha, Integer idUsuario);
 
+    List<Pedido> findByEstado(String estado);
+
     @Transactional
     void deleteByUsuario_IdUsuario(Integer idUsuario);
 

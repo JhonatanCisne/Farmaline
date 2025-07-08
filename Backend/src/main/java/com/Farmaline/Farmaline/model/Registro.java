@@ -17,13 +17,9 @@ public class Registro {
     @Column(name="ID_Registro")
     private Integer idRegistro;
 
-    @OneToOne 
+    @OneToOne
     @JoinColumn(name = "ID_Pedido", referencedColumnName = "ID_Pedido", nullable = false, unique = true)
     private Pedido pedido;
-
-    @OneToOne 
-    @JoinColumn(name = "ID_Doble_Verificacion", referencedColumnName = "ID_Doble_Verificacion", nullable = false, unique = true)
-    private Doble_Verificacion dobleVerificacion;
 
     public Integer getIdRegistro() {
         return idRegistro;
@@ -39,13 +35,5 @@ public class Registro {
 
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
-    }
-
-    public Doble_Verificacion getDobleVerificacion() {
-        return dobleVerificacion;
-    }
-
-    public void setDobleVerificacion(Doble_Verificacion dobleVerificacion) {
-        this.dobleVerificacion = dobleVerificacion;
     }
 }

@@ -3,7 +3,7 @@ package com.farmaline.farmaline.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List; 
+import java.util.List;
 
 public class PedidoDTO {
     private Integer idPedido;
@@ -11,19 +11,25 @@ public class PedidoDTO {
     private LocalTime hora;
     private BigDecimal montoTotalPedido;
     private Integer idUsuario;
-    private Integer idRepartidor; 
-    private List<DetallePedidoDTO> detallesPedido; 
+    private Integer idRepartidor;
+    private String estadoPedido; 
+    private String estadoUsuarioVerificacion; 
+    private String estadoRepartidorVerificacion;
+    private List<DetallePedidoDTO> detallesPedido;
 
     public PedidoDTO() {
     }
 
-    public PedidoDTO(Integer idPedido, LocalDate fecha, LocalTime hora, BigDecimal montoTotalPedido, Integer idUsuario, Integer idRepartidor, List<DetallePedidoDTO> detallesPedido) {
+    public PedidoDTO(Integer idPedido, LocalDate fecha, LocalTime hora, BigDecimal montoTotalPedido, Integer idUsuario, Integer idRepartidor, String estadoPedido, String estadoUsuarioVerificacion, String estadoRepartidorVerificacion, List<DetallePedidoDTO> detallesPedido) {
         this.idPedido = idPedido;
         this.fecha = fecha;
         this.hora = hora;
         this.montoTotalPedido = montoTotalPedido;
         this.idUsuario = idUsuario;
         this.idRepartidor = idRepartidor;
+        this.estadoPedido = estadoPedido;
+        this.estadoUsuarioVerificacion = estadoUsuarioVerificacion;
+        this.estadoRepartidorVerificacion = estadoRepartidorVerificacion;
         this.detallesPedido = detallesPedido;
     }
 
@@ -73,6 +79,30 @@ public class PedidoDTO {
 
     public void setIdRepartidor(Integer idRepartidor) {
         this.idRepartidor = idRepartidor;
+    }
+
+    public String getEstadoPedido() {
+        return estadoPedido;
+    }
+
+    public void setEstadoPedido(String estadoPedido) {
+        this.estadoPedido = estadoPedido;
+    }
+
+    public String getEstadoUsuarioVerificacion() {
+        return estadoUsuarioVerificacion;
+    }
+
+    public void setEstadoUsuarioVerificacion(String estadoUsuarioVerificacion) {
+        this.estadoUsuarioVerificacion = estadoUsuarioVerificacion;
+    }
+
+    public String getEstadoRepartidorVerificacion() {
+        return estadoRepartidorVerificacion;
+    }
+
+    public void setEstadoRepartidorVerificacion(String estadoRepartidorVerificacion) {
+        this.estadoRepartidorVerificacion = estadoRepartidorVerificacion;
     }
 
     public List<DetallePedidoDTO> getDetallesPedido() {

@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.farmaline.farmaline.dto.RepartidorDTO;
 import com.farmaline.farmaline.model.Repartidor;
-import com.farmaline.farmaline.repository.DobleVerificacionRepository;
 import com.farmaline.farmaline.repository.PedidoRepository;
 import com.farmaline.farmaline.repository.RepartidorRepository;
 
@@ -22,8 +21,6 @@ public class RepartidorService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
-    @Autowired
-    private DobleVerificacionRepository dobleVerificacionRepository;
 
     public List<RepartidorDTO> getAllRepartidores() {
         return repartidorRepository.findAll().stream()
@@ -72,12 +69,12 @@ public class RepartidorService {
 
             existingRepartidor.setNombre(repartidorDTO.getNombre());
             existingRepartidor.setApellido(repartidorDTO.getApellido());
-            existingRepartidor.setCorreoElectronico(repartidorDTO.getCorreoElectronico()); // Asumo que en la Entidad es camelCase, DTO es snake_case
+            existingRepartidor.setCorreoElectronico(repartidorDTO.getCorreoElectronico());
             existingRepartidor.setTelefono(repartidorDTO.getTelefono());
             existingRepartidor.setPlaca(repartidorDTO.getPlaca());
 
             if (repartidorDTO.getContrasena() != null && !repartidorDTO.getContrasena().isEmpty()) {
-                existingRepartidor.setContrasena(repartidorDTO.getContrasena()); // Sin hashing temporalmente
+                existingRepartidor.setContrasena(repartidorDTO.getContrasena());
             }
 
             Repartidor updatedRepartidor = repartidorRepository.save(existingRepartidor);
@@ -88,9 +85,10 @@ public class RepartidorService {
     @Transactional
     public boolean deleteRepartidor(Integer id) {
         if (repartidorRepository.existsById(id)) {
+            // Se asume que deleteByRepartidor_IdRepartidor en PedidoRepository
+            // manejará las dependencias de los pedidos asociados a este repartidor,
+            // incluyendo los campos de verificación que ahora están en Pedido.
             pedidoRepository.deleteByRepartidor_IdRepartidor(id);
-
-            dobleVerificacionRepository.deleteByRepartidor_IdRepartidor(id);
 
             repartidorRepository.deleteById(id);
             return true;
@@ -99,8 +97,8 @@ public class RepartidorService {
     }
 
     public Optional<RepartidorDTO> authenticateRepartidor(String correoElectronico, String contrasena) {
-        return repartidorRepository.findByCorreoElectronico(correoElectronico) 
-                .filter(repartidor -> contrasena.equals(repartidor.getContrasena())) 
+        return repartidorRepository.findByCorreoElectronico(correoElectronico)
+                .filter(repartidor -> contrasena.equals(repartidor.getContrasena()))
                 .map(this::convertToDTO);
     }
 
