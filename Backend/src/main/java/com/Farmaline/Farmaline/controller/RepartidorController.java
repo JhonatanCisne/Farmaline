@@ -1,6 +1,7 @@
 package com.farmaline.farmaline.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,24 @@ public class RepartidorController {
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Void> updateRepartidorPassword(@PathVariable Integer id, @RequestBody Map<String, String> requestBody) {
+        String newPassword = requestBody.get("contrasena");
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            boolean updated = repartidorService.updateRepartidorPassword(id, newPassword);
+            if (updated) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

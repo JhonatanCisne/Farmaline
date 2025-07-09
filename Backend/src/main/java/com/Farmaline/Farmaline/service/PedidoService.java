@@ -68,6 +68,13 @@ public class PedidoService {
                 .collect(Collectors.toList());
     }
 
+    // Nuevo método para obtener pedidos no asignados
+    public List<PedidoDTO> getPedidosNoAsignados() {
+        return pedidoRepository.findByRepartidorIsNull().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public Optional<PedidoDTO> getPedidoById(Integer id) {
         return pedidoRepository.findById(id)
                 .map(this::convertToDTO);
@@ -137,18 +144,18 @@ public class PedidoService {
             
             if (pedidoDTO.getIdUsuario() != null) {
                 usuarioRepository.findById(pedidoDTO.getIdUsuario())
-                                        .ifPresent(existingPedido::setUsuario);
+                                         .ifPresent(existingPedido::setUsuario);
             }
 
             if (pedidoDTO.getIdRepartidor() != null) {
                 repartidorRepository.findById(pedidoDTO.getIdRepartidor())
-                                        .orElseThrow(() -> new IllegalArgumentException("Repartidor no encontrado con ID: " + pedidoDTO.getIdRepartidor()));
+                                         .orElseThrow(() -> new IllegalArgumentException("Repartidor no encontrado con ID: " + pedidoDTO.getIdRepartidor()));
             } else {
                 existingPedido.setRepartidor(null);
             }
 
-            if (pedidoDTO.getEstadoPedido() != null && !pedidoDTO.getEstadoPedido().isEmpty()) {
-                existingPedido.setEstado(pedidoDTO.getEstadoPedido());
+            if (pedidoDTO.getEstado() != null && !pedidoDTO.getEstado().isEmpty()) {
+                existingPedido.setEstado(pedidoDTO.getEstado());
             }
             
             if (pedidoDTO.getEstadoUsuarioVerificacion() != null && !pedidoDTO.getEstadoUsuarioVerificacion().isEmpty()) {
@@ -170,7 +177,7 @@ public class PedidoService {
             Repartidor repartidor = null;
             if (idRepartidor != null) {
                 repartidor = repartidorRepository.findById(idRepartidor)
-                                                .orElseThrow(() -> new IllegalArgumentException("Repartidor no encontrado con ID: " + idRepartidor));
+                                                 .orElseThrow(() -> new IllegalArgumentException("Repartidor no encontrado con ID: " + idRepartidor));
             }
             pedido.setRepartidor(repartidor);
             Pedido updatedPedido = pedidoRepository.save(pedido);
@@ -267,7 +274,7 @@ public class PedidoService {
         dto.setMontoTotalPedido(pedido.getMontoTotalPedido());
         dto.setIdUsuario(pedido.getUsuario() != null ? pedido.getUsuario().getIdUsuario() : null);
         dto.setIdRepartidor(pedido.getRepartidor() != null ? pedido.getRepartidor().getIdRepartidor() : null);
-        dto.setEstadoPedido(pedido.getEstado());
+        dto.setEstado(pedido.getEstado());
         dto.setEstadoUsuarioVerificacion(pedido.getEstadoUsuarioVerificacion());
         dto.setEstadoRepartidorVerificacion(pedido.getEstadoRepartidorVerificacion());
 

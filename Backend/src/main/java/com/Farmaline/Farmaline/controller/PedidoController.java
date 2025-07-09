@@ -40,9 +40,18 @@ public class PedidoController {
     public ResponseEntity<List<PedidoDTO>> getPedidosByRepartidorId(@PathVariable Integer idRepartidor) {
         List<PedidoDTO> pedidos = pedidoService.getPedidosByRepartidorId(idRepartidor);
         if (pedidos.isEmpty()) {
-            return ResponseEntity.noContent().build(); // Devuelve 204 No Content si la lista está vacía
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(pedidos); // Devuelve 200 OK con la lista si hay pedidos
+        return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/no-asignados")
+    public ResponseEntity<List<PedidoDTO>> getPedidosNoAsignados() {
+        List<PedidoDTO> pedidos = pedidoService.getPedidosNoAsignados();
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(pedidos);
     }
 
     @GetMapping("/{id}")

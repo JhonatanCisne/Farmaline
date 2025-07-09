@@ -10,29 +10,22 @@ public class PedidoDTO {
     private LocalDate fecha;
     private LocalTime hora;
     private BigDecimal montoTotalPedido;
+    private String estado;
+    private String estadoUsuarioVerificacion;
+    private String estadoRepartidorVerificacion;
     private Integer idUsuario;
     private Integer idRepartidor;
-    private String estadoPedido; 
-    private String estadoUsuarioVerificacion; 
-    private String estadoRepartidorVerificacion;
+    private String nombreRepartidor;
+
     private String nombreUsuario;
+    private String apellidoUsuario;
+    private String correoUsuario;
     private String domicilioUsuario;
-    private List<DetallePedidoDTO> detallesPedido;
+    private String telefonoUsuario;
+
+    private List<DetallePedidoDTO> detallesPedido; 
 
     public PedidoDTO() {
-    }
-
-    public PedidoDTO(Integer idPedido, LocalDate fecha, LocalTime hora, BigDecimal montoTotalPedido, Integer idUsuario, Integer idRepartidor, String estadoPedido, String estadoUsuarioVerificacion, String estadoRepartidorVerificacion, List<DetallePedidoDTO> detallesPedido) {
-        this.idPedido = idPedido;
-        this.fecha = fecha;
-        this.hora = hora;
-        this.montoTotalPedido = montoTotalPedido;
-        this.idUsuario = idUsuario;
-        this.idRepartidor = idRepartidor;
-        this.estadoPedido = estadoPedido;
-        this.estadoUsuarioVerificacion = estadoUsuarioVerificacion;
-        this.estadoRepartidorVerificacion = estadoRepartidorVerificacion;
-        this.detallesPedido = detallesPedido;
     }
 
     public Integer getIdPedido() {
@@ -67,28 +60,12 @@ public class PedidoDTO {
         this.montoTotalPedido = montoTotalPedido;
     }
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public String getEstado() {
+        return estado;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public Integer getIdRepartidor() {
-        return idRepartidor;
-    }
-
-    public void setIdRepartidor(Integer idRepartidor) {
-        this.idRepartidor = idRepartidor;
-    }
-
-    public String getEstadoPedido() {
-        return estadoPedido;
-    }
-
-    public void setEstadoPedido(String estadoPedido) {
-        this.estadoPedido = estadoPedido;
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public String getEstadoUsuarioVerificacion() {
@@ -107,6 +84,30 @@ public class PedidoDTO {
         this.estadoRepartidorVerificacion = estadoRepartidorVerificacion;
     }
 
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public Integer getIdRepartidor() {
+        return idRepartidor;
+    }
+
+    public void setIdRepartidor(Integer idRepartidor) {
+        this.idRepartidor = idRepartidor;
+    }
+
+    public String getNombreRepartidor() {
+        return nombreRepartidor;
+    }
+
+    public void setNombreRepartidor(String nombreRepartidor) {
+        this.nombreRepartidor = nombreRepartidor;
+    }
+
     public String getNombreUsuario() {
         return nombreUsuario;
     }
@@ -115,12 +116,36 @@ public class PedidoDTO {
         this.nombreUsuario = nombreUsuario;
     }
 
+    public String getApellidoUsuario() {
+        return apellidoUsuario;
+    }
+
+    public void setApellidoUsuario(String apellidoUsuario) {
+        this.apellidoUsuario = apellidoUsuario;
+    }
+
+    public String getCorreoUsuario() {
+        return correoUsuario;
+    }
+
+    public void setCorreoUsuario(String correoUsuario) {
+        this.correoUsuario = correoUsuario;
+    }
+
     public String getDomicilioUsuario() {
         return domicilioUsuario;
     }
 
     public void setDomicilioUsuario(String domicilioUsuario) {
         this.domicilioUsuario = domicilioUsuario;
+    }
+
+    public String getTelefonoUsuario() {
+        return telefonoUsuario;
+    }
+
+    public void setTelefonoUsuario(String telefonoUsuario) {
+        this.telefonoUsuario = telefonoUsuario;
     }
 
     public List<DetallePedidoDTO> getDetallesPedido() {

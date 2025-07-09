@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.farmaline.farmaline.dto.ProductoDTO;
 import com.farmaline.farmaline.model.Producto;
 import com.farmaline.farmaline.repository.CalificacionRepository;
-import com.farmaline.farmaline.repository.CarritoAnadidoRepository; 
+import com.farmaline.farmaline.repository.CarritoAnadidoRepository;
+import com.farmaline.farmaline.repository.DetallePedidoRepository;
 import com.farmaline.farmaline.repository.ProductoRepository;
 
 @Service
@@ -24,9 +25,11 @@ public class ProductoService {
     @Autowired
     private CalificacionRepository calificacionRepository;
     @Autowired
-    private CarritoAnadidoRepository carritoAnadidoRepository;
+    private CarritoAnadidoRepository carritoAnadidoRepository; 
     @Autowired
     private LoteProductoService loteProductoService; 
+    @Autowired
+    private DetallePedidoRepository detallePedidoRepository;
 
     public List<ProductoDTO> getAllProductos() {
         return productoRepository.findAll().stream()
@@ -90,6 +93,7 @@ public class ProductoService {
             calificacionRepository.deleteByProducto_IdProducto(id);
             carritoAnadidoRepository.deleteByProducto_IdProducto(id);
             loteProductoService.deleteByProducto_IdProducto(id);
+            detallePedidoRepository.deleteByProducto_IdProducto(id);
 
             productoRepository.deleteById(id);
             return true;

@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            pedidos.sort((a, b) => {
+                const statusOrder = { 'Pendiente': 1, 'Procesando': 2, 'Enviado': 3, 'Entregado': 4, 'Cancelado': 5 };
+                return statusOrder[a.estado] - statusOrder[b.estado];
+            });
+
             for (const pedido of pedidos) {
                 renderPedidoCard(pedido);
             }
@@ -56,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error al cargar los pedidos:', error);
             ordersContainer.innerHTML = `<div class="alert alert-danger" role="alert">
                                             Error al cargar los pedidos. Por favor, intente de nuevo.
-                                          </div>`;
+                                        </div>`;
         }
     }
 
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'PENDIENTE':
                 estadoUsuarioDVBadgeClass = 'bg-warning';
                 break;
-            case 'VERIFICADO':
+            case 'Confirmado': // Aquí usamos 'Confirmado'
                 estadoUsuarioDVBadgeClass = 'bg-success';
                 break;
             default:
@@ -106,17 +111,33 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'PENDIENTE':
                 estadoRepartidorDVBadgeClass = 'bg-warning';
                 break;
-            case 'VERIFICADO':
+            case 'VERIFICADO': // Mantén 'VERIFICADO' para el repartidor si es así
                 estadoRepartidorDVBadgeClass = 'bg-success';
                 break;
             default:
                 estadoRepartidorDVBadgeClass = 'bg-secondary';
         }
 
-        const confirmButtonHtml = `
-            <button class="btn btn-teal btn-sm confirm-reception-btn" data-pedido-id="${pedido.idPedido}">
-                <i class="fas fa-check-circle me-1"></i> Confirmar Recepción
-            </button>`;
+        // --- CAMBIO CLAVE EN EL RENDERIZADO DEL BOTÓN ---
+        // El botón solo se muestra si el estadoUsuarioVerificacion NO es 'Confirmado'
+        const showConfirmButton = pedido.estadoUsuarioVerificacion !== 'Confirmado'; 
+        
+        let confirmButtonHtml = '';
+        let confirmMessageHtml = '';
+
+        if (showConfirmButton) {
+            confirmButtonHtml = `
+                <button class="btn btn-teal btn-sm confirm-reception-btn" data-pedido-id="${pedido.idPedido}">
+                    <i class="fas fa-check-circle me-1"></i> Confirmar Recepción
+                </button>`;
+        } else {
+            // Si el botón no se muestra, significa que el estadoUsuarioVerificacion ya es 'Confirmado'.
+            confirmMessageHtml = `
+                <div class="alert alert-success py-2 px-3 mt-3 d-flex align-items-center justify-content-center" role="alert">
+                    <i class="fas fa-check-double me-2"></i> Pedido Confirmado por Usuario
+                </div>`;
+        }
+        // --- FIN CAMBIO CLAVE ---
 
         orderCard.innerHTML = `
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -144,16 +165,32 @@ document.addEventListener('DOMContentLoaded', () => {
                         <strong>Estado Repartidor:</strong> <span class="badge ${estadoRepartidorDVBadgeClass}">${estadoRepartidorDV}</span>
                     </p>
                     ${confirmButtonHtml}
+                    ${confirmMessageHtml}
                 </div>
             </div>
         `;
         ordersContainer.appendChild(orderCard);
 
-        orderCard.querySelector('.confirm-reception-btn').addEventListener('click', handleConfirmReception);
+        const buttonElement = orderCard.querySelector('.confirm-reception-btn');
+        if (buttonElement) { 
+            buttonElement.addEventListener('click', handleConfirmReception);
+        }
     }
 
     async function handleConfirmReception(event) {
-        const pedidoId = event.target.dataset.pedidoId;
+        const confirmButton = event.target.closest('.confirm-reception-btn');
+
+        if (!confirmButton) {
+            console.error('Botón de confirmación no encontrado. Esto no debería ocurrir.');
+            return;
+        }
+
+        const pedidoId = confirmButton.dataset.pedidoId;
+
+        if (!pedidoId) {
+            console.error('ID de pedido no encontrado en el botón para la confirmación.');
+            return;
+        }
 
         const confirmation = confirm("¿Estás seguro de que quieres confirmar la recepción de este pedido? Esta acción no se puede deshacer.");
 
@@ -161,10 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!pedidoId) {
-            console.error('ID de pedido no encontrado para la confirmación.');
-            return;
-        }
+        confirmButton.disabled = true;
+        confirmButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Confirmando...`;
 
         try {
             const response = await fetch(`${API_BASE_URL}/pedidos/${pedidoId}/confirmar-entrega`, {
@@ -175,16 +210,39 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                alert('¡Recepción del pedido confirmada con éxito!');
-                fetchAndRenderOrders();
+                alert('¡Recepción del pedido confirmada con éxito! ✅');
+                
+                const buttonContainer = confirmButton.parentElement;
+                
+                if (buttonContainer) {
+                    confirmButton.remove();
+
+                    const confirmedMessage = document.createElement('div');
+                    confirmedMessage.classList.add('alert', 'alert-success', 'py-2', 'px-3', 'mt-3', 'd-flex', 'align-items-center', 'justify-content-center');
+                    confirmedMessage.setAttribute('role', 'alert');
+                    confirmedMessage.innerHTML = `<i class="fas fa-check-double me-2"></i> Pedido Confirmado por Usuario`;
+                    
+                    buttonContainer.appendChild(confirmedMessage);
+                }
+
+                // Esto recargará los pedidos. Asegúrate de que tu backend envíe
+                // estadoUsuarioVerificacion: "Confirmado" después de tu acción PUT.
+                fetchAndRenderOrders(); 
+
             } else {
+                confirmButton.disabled = false;
+                confirmButton.innerHTML = `<i class="fas fa-check-circle me-1"></i> Confirmar Recepción`;
+
                 const errorText = await response.text();
-                alert(`Error al confirmar la recepción: ${errorText}`);
+                alert(`Error al confirmar la recepción: ${errorText} ⚠️`);
                 console.error('Error al confirmar la recepción:', response.status, errorText);
             }
         } catch (error) {
+            confirmButton.disabled = false;
+            confirmButton.innerHTML = `<i class="fas fa-check-circle me-1"></i> Confirmar Recepción`;
+
             console.error('Error de red al confirmar la recepción:', error);
-            alert('Error de red al intentar confirmar la recepción.');
+            alert('Error de red al intentar confirmar la recepción. 🌐');
         }
     }
 

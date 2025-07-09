@@ -5,8 +5,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional; // Asegúrate de tener esta importación
 
 import com.farmaline.farmaline.dto.RepartidorDTO;
 import com.farmaline.farmaline.model.Repartidor;
@@ -21,6 +22,9 @@ public class RepartidorService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
+
+    @Autowired(required = false)
+    private BCryptPasswordEncoder passwordEncoder;
 
     public List<RepartidorDTO> getAllRepartidores() {
         return repartidorRepository.findAll().stream()
@@ -46,7 +50,11 @@ public class RepartidorService {
         }
 
         Repartidor repartidor = convertToEntity(repartidorDTO);
-        repartidor.setContrasena(repartidorDTO.getContrasena());
+        if (repartidorDTO.getContrasena() != null && passwordEncoder != null) {
+            repartidor.setContrasena(passwordEncoder.encode(repartidorDTO.getContrasena()));
+        } else {
+            repartidor.setContrasena(repartidorDTO.getContrasena()); // Esto solo si no hay encoder, no recomendado
+        }
         Repartidor savedRepartidor = repartidorRepository.save(repartidor);
         return convertToDTO(savedRepartidor);
     }
@@ -73,9 +81,15 @@ public class RepartidorService {
             existingRepartidor.setTelefono(repartidorDTO.getTelefono());
             existingRepartidor.setPlaca(repartidorDTO.getPlaca());
 
-            if (repartidorDTO.getContrasena() != null && !repartidorDTO.getContrasena().isEmpty()) {
-                existingRepartidor.setContrasena(repartidorDTO.getContrasena());
-            }
+            // No se actualiza la contraseña aquí, ya que hay un método dedicado para ello.
+            // Si el DTO de actualización contiene una contraseña, esta línea se encargaría:
+            // if (repartidorDTO.getContrasena() != null && !repartidorDTO.getContrasena().isEmpty()) {
+            //     if (passwordEncoder != null) {
+            //         existingRepartidor.setContrasena(passwordEncoder.encode(repartidorDTO.getContrasena()));
+            //     } else {
+            //         existingRepartidor.setContrasena(repartidorDTO.getContrasena());
+            //     }
+            // }
 
             Repartidor updatedRepartidor = repartidorRepository.save(existingRepartidor);
             return convertToDTO(updatedRepartidor);
@@ -85,9 +99,6 @@ public class RepartidorService {
     @Transactional
     public boolean deleteRepartidor(Integer id) {
         if (repartidorRepository.existsById(id)) {
-            // Se asume que deleteByRepartidor_IdRepartidor en PedidoRepository
-            // manejará las dependencias de los pedidos asociados a este repartidor,
-            // incluyendo los campos de verificación que ahora están en Pedido.
             pedidoRepository.deleteByRepartidor_IdRepartidor(id);
 
             repartidorRepository.deleteById(id);
@@ -96,9 +107,27 @@ public class RepartidorService {
         return false;
     }
 
+    @Transactional
+    public boolean updateRepartidorPassword(Integer id, String newPassword) {
+        return repartidorRepository.findById(id).map(repartidor -> {
+            if (newPassword != null && !newPassword.trim().isEmpty()) {
+                if (passwordEncoder != null) {
+                    repartidor.setContrasena(passwordEncoder.encode(newPassword));
+                } else {
+                    repartidor.setContrasena(newPassword); // Esto solo si no hay encoder, no recomendado
+                }
+                repartidorRepository.save(repartidor);
+                return true;
+            }
+            return false;
+        }).orElse(false);
+    }
+
     public Optional<RepartidorDTO> authenticateRepartidor(String correoElectronico, String contrasena) {
         return repartidorRepository.findByCorreoElectronico(correoElectronico)
-                .filter(repartidor -> contrasena.equals(repartidor.getContrasena()))
+                .filter(repartidor -> passwordEncoder != null ?
+                                        passwordEncoder.matches(contrasena, repartidor.getContrasena()) :
+                                        contrasena.equals(repartidor.getContrasena()))
                 .map(this::convertToDTO);
     }
 
